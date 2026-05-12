@@ -1,0 +1,10 @@
+node_modules
+dist
+.vite
+coverage
+public
+*.lock
+package-lock.json
+ref
+_trash-design-system
+src/styles.css

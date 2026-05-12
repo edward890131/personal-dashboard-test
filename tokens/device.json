@@ -1,0 +1,117 @@
+{
+  "$description": "Dayboard Device-aware Semantic Tokens. 3 modes（Desktop / Tablet / Mobile）對應 Figma Variables 的 Device collection。Tablet 與 Mobile 初始值複製 Desktop，未來做 RWD 時再差異化。命名與 semantics.json 平行（在 semantics 內已移除原本的 light.space/corner、dark.space/corner）。",
+
+  "desktop": {
+    "$description": "Desktop（≥1024px）",
+
+    "space": {
+      "$description": "語意間距（用於 layout 而非任意 spacing）。",
+      "page": {
+        "$type": "dimension",
+        "$value": "{spacing.28}",
+        "$description": "頁面外緣 padding"
+      },
+      "section": { "$type": "dimension", "$value": "{spacing.28}", "$description": "Section 之間" },
+      "card": { "$type": "dimension", "$value": "{spacing.18}", "$description": "卡片內 padding" },
+      "card-gap": {
+        "$type": "dimension",
+        "$value": "{spacing.14}",
+        "$description": "卡片內元素 gap"
+      },
+      "grid": { "$type": "dimension", "$value": "{spacing.16}", "$description": "Bento grid gap" },
+      "inline-sm": {
+        "$type": "dimension",
+        "$value": "{spacing.4}",
+        "$description": "Inline 元素小間距（icon-text）"
+      },
+      "inline-md": {
+        "$type": "dimension",
+        "$value": "{spacing.8}",
+        "$description": "Inline 元素中間距"
+      },
+      "inline-lg": {
+        "$type": "dimension",
+        "$value": "{spacing.10}",
+        "$description": "Inline 元素大間距（card-h gap）"
+      }
+    },
+
+    "corner": {
+      "$description": "語意圓角。",
+      "button": {
+        "$type": "dimension",
+        "$value": "{radius.xl}",
+        "$description": "Button 圓角（8px）"
+      },
+      "card": { "$type": "dimension", "$value": "{radius.xl}", "$description": "Card 圓角（8px）" },
+      "chip": {
+        "$type": "dimension",
+        "$value": "{radius.lg}",
+        "$description": "Chip / tag 圓角（6px）"
+      },
+      "input": {
+        "$type": "dimension",
+        "$value": "{radius.lg-2}",
+        "$description": "Input 圓角（7px，Tweaks 內 input）"
+      },
+      "badge": {
+        "$type": "dimension",
+        "$value": "{radius.full}",
+        "$description": "Badge / pill 圓角"
+      },
+      "popover": {
+        "$type": "dimension",
+        "$value": "{radius.2xl}",
+        "$description": "Tweaks panel / popover（14px）"
+      }
+    }
+  },
+
+  "tablet": {
+    "$description": "Tablet（768–1024px）— 目前值同 Desktop，未來做 RWD 時可差異化",
+
+    "space": {
+      "page": { "$type": "dimension", "$value": "{spacing.28}" },
+      "section": { "$type": "dimension", "$value": "{spacing.28}" },
+      "card": { "$type": "dimension", "$value": "{spacing.18}" },
+      "card-gap": { "$type": "dimension", "$value": "{spacing.14}" },
+      "grid": { "$type": "dimension", "$value": "{spacing.16}" },
+      "inline-sm": { "$type": "dimension", "$value": "{spacing.4}" },
+      "inline-md": { "$type": "dimension", "$value": "{spacing.8}" },
+      "inline-lg": { "$type": "dimension", "$value": "{spacing.10}" }
+    },
+
+    "corner": {
+      "button": { "$type": "dimension", "$value": "{radius.xl}" },
+      "card": { "$type": "dimension", "$value": "{radius.xl}" },
+      "chip": { "$type": "dimension", "$value": "{radius.lg}" },
+      "input": { "$type": "dimension", "$value": "{radius.lg-2}" },
+      "badge": { "$type": "dimension", "$value": "{radius.full}" },
+      "popover": { "$type": "dimension", "$value": "{radius.2xl}" }
+    }
+  },
+
+  "mobile": {
+    "$description": "Mobile（<768px）— 目前值同 Desktop",
+
+    "space": {
+      "page": { "$type": "dimension", "$value": "{spacing.28}" },
+      "section": { "$type": "dimension", "$value": "{spacing.28}" },
+      "card": { "$type": "dimension", "$value": "{spacing.18}" },
+      "card-gap": { "$type": "dimension", "$value": "{spacing.14}" },
+      "grid": { "$type": "dimension", "$value": "{spacing.16}" },
+      "inline-sm": { "$type": "dimension", "$value": "{spacing.4}" },
+      "inline-md": { "$type": "dimension", "$value": "{spacing.8}" },
+      "inline-lg": { "$type": "dimension", "$value": "{spacing.10}" }
+    },
+
+    "corner": {
+      "button": { "$type": "dimension", "$value": "{radius.xl}" },
+      "card": { "$type": "dimension", "$value": "{radius.xl}" },
+      "chip": { "$type": "dimension", "$value": "{radius.lg}" },
+      "input": { "$type": "dimension", "$value": "{radius.lg-2}" },
+      "badge": { "$type": "dimension", "$value": "{radius.full}" },
+      "popover": { "$type": "dimension", "$value": "{radius.2xl}" }
+    }
+  }
+}

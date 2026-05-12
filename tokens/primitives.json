@@ -1,0 +1,234 @@
+{
+  "$description": "Dayboard Design Tokens — Primitives (W3C Design Tokens Format). 單一 set，無 mode。色階、數值原子。所有 semantic tokens 都應 alias 到這份。",
+  "color": {
+    "$description": "原始色票庫，不直接用於設計，由 semantic tokens 引用。",
+
+    "blue": {
+      "$description": "品牌藍色階，從 #0E4FE7 衍生。100 為 soft、600 為 default、900 為 ink。",
+      "50": { "$type": "color", "$value": "#EEF4FF", "$description": "最淺底色（預留）" },
+      "100": {
+        "$type": "color",
+        "$value": "#BADDFF",
+        "$description": "Brand soft（light primary-soft）"
+      },
+      "200": { "$type": "color", "$value": "#8DC2FF", "$description": "預留" },
+      "400": { "$type": "color", "$value": "#4A82FF", "$description": "預留" },
+      "600": { "$type": "color", "$value": "#0E4FE7", "$description": "Brand default（primary）" },
+      "700": {
+        "$type": "color",
+        "$value": "#0935AD",
+        "$description": "Brand deep（比 brand 深一階）"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "#122559",
+        "$description": "Brand ink（light primary-ink）"
+      },
+      "600-a8": {
+        "$type": "color",
+        "$value": "rgba(14, 79, 231, 0.08)",
+        "$description": "Primary 8% alpha — chart-area light（freeze 自 blue/600 8% alpha）"
+      }
+    },
+
+    "blue-dark": {
+      "$description": "Dark mode 專用的 brand 衍生色（從 color-mix freeze）。",
+      "soft": {
+        "$type": "color",
+        "$value": "#1A2B5C",
+        "$description": "Dark primary-soft（mix primary 22% + bg）"
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "#7AA8F5",
+        "$description": "Dark primary-ink（mix primary 60% + white）"
+      },
+      "ink-a20": {
+        "$type": "color",
+        "$value": "rgba(122, 168, 245, 0.2)",
+        "$description": "Dark ink 20% alpha — chart-area dark（freeze 自 ink 20% alpha）"
+      }
+    },
+
+    "neutral": {
+      "$description": "Light mode 中性灰階。",
+      "0": { "$type": "color", "$value": "#FFFFFF" },
+      "25": { "$type": "color", "$value": "#FAFBFC" },
+      "50": { "$type": "color", "$value": "#F6F7F9" },
+      "75": { "$type": "color", "$value": "#F4F5F7" },
+      "100": { "$type": "color", "$value": "#EEF0F3" },
+      "200": { "$type": "color", "$value": "#E7E9EE" },
+      "300": { "$type": "color", "$value": "#D5D9E0" },
+      "400": { "$type": "color", "$value": "#C9CDD4" },
+      "500": { "$type": "color", "$value": "#9AA1AC" },
+      "600": { "$type": "color", "$value": "#6B7280" },
+      "800": { "$type": "color", "$value": "#2A3142" },
+      "950": { "$type": "color", "$value": "#0B1220" }
+    },
+
+    "neutral-dark": {
+      "$description": "Dark mode 中性灰階。不是 light 的反轉，是另外調過的。",
+      "50": { "$type": "color", "$value": "#ECEEF2" },
+      "100": { "$type": "color", "$value": "#C9CED7" },
+      "200": { "$type": "color", "$value": "#8A92A0" },
+      "300": { "$type": "color", "$value": "#6A727E" },
+      "400": { "$type": "color", "$value": "#3A414D" },
+      "500": { "$type": "color", "$value": "#2A323F" },
+      "600": { "$type": "color", "$value": "#1E242E" },
+      "700": { "$type": "color", "$value": "#181D25" },
+      "800": { "$type": "color", "$value": "#161B23" },
+      "850": { "$type": "color", "$value": "#11151C" },
+      "900": { "$type": "color", "$value": "#0E1218" },
+      "950": { "$type": "color", "$value": "#0A0D12" }
+    },
+
+    "green": {
+      "500": {
+        "$type": "color",
+        "$value": "#28AD5E",
+        "$description": "Status positive（OKLCH 0.66 0.16 152 → sRGB）"
+      }
+    },
+    "red": {
+      "500": {
+        "$type": "color",
+        "$value": "#E64343",
+        "$description": "Status negative（OKLCH 0.62 0.20 25 → sRGB）"
+      }
+    },
+    "orange": {
+      "500": {
+        "$type": "color",
+        "$value": "#E38F00",
+        "$description": "Status warning（OKLCH 0.72 0.16 70 → sRGB）"
+      }
+    },
+
+    "white": { "$type": "color", "$value": "#FFFFFF" },
+    "black": { "$type": "color", "$value": "#000000" }
+  },
+
+  "spacing": {
+    "$description": "間距尺度。8-pt grid 為基底，含 4/6/10/14/22 等密度微調值。",
+    "0": { "$type": "dimension", "$value": "0px" },
+    "2": { "$type": "dimension", "$value": "2px" },
+    "4": { "$type": "dimension", "$value": "4px" },
+    "6": { "$type": "dimension", "$value": "6px" },
+    "8": { "$type": "dimension", "$value": "8px" },
+    "10": { "$type": "dimension", "$value": "10px" },
+    "12": { "$type": "dimension", "$value": "12px" },
+    "14": { "$type": "dimension", "$value": "14px" },
+    "16": { "$type": "dimension", "$value": "16px" },
+    "18": { "$type": "dimension", "$value": "18px" },
+    "22": { "$type": "dimension", "$value": "22px" },
+    "24": { "$type": "dimension", "$value": "24px" },
+    "28": { "$type": "dimension", "$value": "28px" },
+    "40": { "$type": "dimension", "$value": "40px" },
+    "60": { "$type": "dimension", "$value": "60px" }
+  },
+
+  "radius": {
+    "$description": "圓角尺度。",
+    "none": { "$type": "dimension", "$value": "0px" },
+    "xs": { "$type": "dimension", "$value": "2px" },
+    "sm": { "$type": "dimension", "$value": "4px" },
+    "md": { "$type": "dimension", "$value": "5px" },
+    "lg": { "$type": "dimension", "$value": "6px" },
+    "lg-2": { "$type": "dimension", "$value": "7px" },
+    "xl": { "$type": "dimension", "$value": "8px", "$description": "預設卡片 / 按鈕圓角" },
+    "2xl": { "$type": "dimension", "$value": "14px", "$description": "Tweaks panel" },
+    "full": { "$type": "dimension", "$value": "999px", "$description": "Pill / badge" }
+  },
+
+  "fontSize": {
+    "$description": "字級階梯（8 階）。",
+    "2xs": { "$type": "dimension", "$value": "10px", "$description": "Section eyebrow" },
+    "xs": { "$type": "dimension", "$value": "10.5px", "$description": "Tag、kbd" },
+    "sm": { "$type": "dimension", "$value": "11.5px", "$description": "Meta、small label" },
+    "md": { "$type": "dimension", "$value": "13px", "$description": "Card title" },
+    "base": { "$type": "dimension", "$value": "14px", "$description": "預設 body / nav / button" },
+    "lg": { "$type": "dimension", "$value": "18px", "$description": "Section h2" },
+    "xl": { "$type": "dimension", "$value": "22px", "$description": "Secondary num" },
+    "2xl": { "$type": "dimension", "$value": "24px", "$description": "KPI num" },
+    "3xl": { "$type": "dimension", "$value": "28px", "$description": "Hero h1 / Card num" }
+  },
+
+  "fontWeight": {
+    "$description": "字重階梯。450 / 550 需 Inter Variable Font。",
+    "regular": { "$type": "fontWeight", "$value": 400 },
+    "book": { "$type": "fontWeight", "$value": 450, "$description": "Sidebar nav、todo title" },
+    "medium": { "$type": "fontWeight", "$value": 500 },
+    "book-bold": {
+      "$type": "fontWeight",
+      "$value": 550,
+      "$description": "Card title、active nav、button"
+    },
+    "semibold": {
+      "$type": "fontWeight",
+      "$value": 600,
+      "$description": "All numbers、hero h1、section h2"
+    }
+  },
+
+  "lineHeight": {
+    "$description": "行高階梯（無單位倍數）。",
+    "tight": { "$type": "number", "$value": 1.1, "$description": "大數字" },
+    "snug": { "$type": "number", "$value": 1.15, "$description": "Hero h1" },
+    "normal": { "$type": "number", "$value": 1.2, "$description": "標題" },
+    "relaxed": { "$type": "number", "$value": 1.3, "$description": "Todo title" },
+    "loose": { "$type": "number", "$value": 1.5, "$description": "預設 body" }
+  },
+
+  "letterSpacing": {
+    "$description": "字距階梯。",
+    "tightest": { "$type": "dimension", "$value": "-0.025em", "$description": "Hero h1、card num" },
+    "tighter": { "$type": "dimension", "$value": "-0.02em", "$description": "KPI num" },
+    "tight": { "$type": "dimension", "$value": "-0.01em", "$description": "Section h2" },
+    "snug": { "$type": "dimension", "$value": "-0.005em", "$description": "預設 body" },
+    "normal": { "$type": "dimension", "$value": "0" },
+    "wide": { "$type": "dimension", "$value": "0.02em", "$description": "Kbd" },
+    "wider": { "$type": "dimension", "$value": "0.04em", "$description": "Cal day-of-week" },
+    "widest": {
+      "$type": "dimension",
+      "$value": "0.08em",
+      "$description": "Section eyebrow（uppercase）"
+    }
+  },
+
+  "borderWidth": {
+    "$description": "邊線寬度。",
+    "0": { "$type": "dimension", "$value": "0px" },
+    "hairline": {
+      "$type": "dimension",
+      "$value": "0.5px",
+      "$description": "Tweaks panel inner border"
+    },
+    "thin": { "$type": "dimension", "$value": "1px", "$description": "預設 border" },
+    "thick": { "$type": "dimension", "$value": "2px", "$description": "Focus ring" }
+  },
+
+  "opacity": {
+    "$description": "透明度尺度（0–1）。",
+    "0": { "$type": "number", "$value": 0 },
+    "14": { "$type": "number", "$value": 0.14, "$description": "Status badge background" },
+    "15": { "$type": "number", "$value": 0.15, "$description": "Scrollbar thumb" },
+    "25": { "$type": "number", "$value": 0.25, "$description": "Scrollbar thumb hover" },
+    "35": { "$type": "number", "$value": 0.35, "$description": "Dark selection" },
+    "40": { "$type": "number", "$value": 0.4, "$description": "Light focus ring / scrim" },
+    "50": { "$type": "number", "$value": 0.5, "$description": "Dark focus ring" },
+    "60": { "$type": "number", "$value": 0.6, "$description": "Modal overlay" },
+    "75": { "$type": "number", "$value": 0.75, "$description": "Dark modal overlay" },
+    "100": { "$type": "number", "$value": 1 }
+  },
+
+  "iconSize": {
+    "$description": "Icon 尺寸尺度。對應 Phosphor / SVG icon 的 width/height。",
+    "xs": { "$type": "dimension", "$value": "12px" },
+    "sm": { "$type": "dimension", "$value": "14px" },
+    "md": { "$type": "dimension", "$value": "16px", "$description": "預設" },
+    "lg": { "$type": "dimension", "$value": "17px" },
+    "xl": { "$type": "dimension", "$value": "18px" },
+    "2xl": { "$type": "dimension", "$value": "20px" },
+    "3xl": { "$type": "dimension", "$value": "24px" }
+  }
+}

@@ -1,0 +1,4 @@
+/* Tailwind v4 入口
+ * 原本的 styles.css 仍是設計系統主體；Tailwind 提供 utility classes 給未來新元件使用，
+ * 兩者不衝突，可以同時並存。 */
+@import "tailwindcss";

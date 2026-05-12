@@ -1,0 +1,384 @@
+{
+  "$description": "Dayboard Design Tokens — Semantics. 全部 alias 到 primitives.json。頂層分 light / dark 兩個 set，匯入 Tokens Studio 後對應到 Figma Variables 的兩個 mode。space.* 與 corner.* 在兩個 set 中值相同（無 mode 差異），重複定義保持結構一致。",
+
+  "light": {
+    "$description": "淺色模式 semantic tokens。",
+
+    "bg": {
+      "$description": "背景色（surface 層級）。",
+      "page": { "$type": "color", "$value": "{color.neutral.50}", "$description": "頁面背景" },
+      "surface": { "$type": "color", "$value": "{color.neutral.0}", "$description": "卡片底色" },
+      "secondary": {
+        "$type": "color",
+        "$value": "{color.neutral.25}",
+        "$description": "卡片內次層、disabled 底"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "{color.neutral.75}",
+        "$description": "互動 hover 底"
+      },
+      "brand": {
+        "$type": "color",
+        "$value": "{color.blue.600}",
+        "$description": "Brand 純色背景（btn primary 等）"
+      },
+      "brand-deep": {
+        "$type": "color",
+        "$value": "{color.blue.700}",
+        "$description": "Brand 深一階（hover/active 強調）"
+      },
+      "brand-soft": {
+        "$type": "color",
+        "$value": "{color.blue.100}",
+        "$description": "Brand 淺底（active nav 等）"
+      },
+      "brand-pale": {
+        "$type": "color",
+        "$value": "{color.blue.50}",
+        "$description": "Brand 極淺底（背景襯底、subtle highlight）"
+      },
+      "chart-area": {
+        "$type": "color",
+        "$value": "{color.blue.600-a8}",
+        "$description": "圖表面積底色（Brand 8% alpha）"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{color.neutral.950}",
+        "$description": "Inverse 背景（如 tooltip、深色卡片）"
+      }
+    },
+
+    "text": {
+      "$description": "文字色。",
+      "primary": { "$type": "color", "$value": "{color.neutral.950}", "$description": "主要文字" },
+      "secondary": {
+        "$type": "color",
+        "$value": "{color.neutral.800}",
+        "$description": "次要文字"
+      },
+      "muted": { "$type": "color", "$value": "{color.neutral.600}", "$description": "輔助說明" },
+      "faint": {
+        "$type": "color",
+        "$value": "{color.neutral.400}",
+        "$description": "極弱（placeholder）"
+      },
+      "brand": {
+        "$type": "color",
+        "$value": "{color.blue.900}",
+        "$description": "在 brand-soft 上的字（primary-ink）"
+      },
+      "brand-deep": {
+        "$type": "color",
+        "$value": "{color.blue.700}",
+        "$description": "Brand 深色文字（用於 brand-pale 上的強調字）"
+      },
+      "brand-pale": {
+        "$type": "color",
+        "$value": "{color.blue.50}",
+        "$description": "Brand 極淺色文字（用於 brand-deep / dark 底色上）"
+      },
+      "on-brand": {
+        "$type": "color",
+        "$value": "{color.white}",
+        "$description": "在 brand 純色上的字"
+      },
+      "positive": {
+        "$type": "color",
+        "$value": "{color.green.500}",
+        "$description": "正向狀態文字"
+      },
+      "negative": { "$type": "color", "$value": "{color.red.500}", "$description": "負向狀態文字" },
+      "warning": { "$type": "color", "$value": "{color.orange.500}", "$description": "警示文字" },
+      "link": {
+        "$type": "color",
+        "$value": "{color.blue.600}",
+        "$description": "連結色（同 brand）"
+      },
+      "on-inverse": {
+        "$type": "color",
+        "$value": "{color.white}",
+        "$description": "在 inverse 背景上的字"
+      }
+    },
+
+    "border": {
+      "$description": "邊框色。",
+      "default": {
+        "$type": "color",
+        "$value": "{color.neutral.200}",
+        "$description": "預設卡片 / input 邊線"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "{color.neutral.300}",
+        "$description": "Hover / focus 強調邊線"
+      },
+      "divider": {
+        "$type": "color",
+        "$value": "{color.neutral.100}",
+        "$description": "卡片內分隔線"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.blue.600}",
+        "$description": "鍵盤 focus ring（搭配 opacity 40%）"
+      }
+    },
+
+    "badge": {
+      "$description": "徽章 / 標籤色組（每組含文字色與 14% alpha 背景）。",
+      "positive": {
+        "$type": "color",
+        "$value": "{color.green.500}",
+        "$description": "正向徽章文字（delta.pos）"
+      },
+      "positive-bg": {
+        "$type": "color",
+        "$value": "rgba(40, 173, 94, 0.14)",
+        "$description": "正向徽章背景（freeze 自 green.500 14% alpha）"
+      },
+      "negative": { "$type": "color", "$value": "{color.red.500}", "$description": "負向徽章文字" },
+      "negative-bg": {
+        "$type": "color",
+        "$value": "rgba(230, 67, 67, 0.14)",
+        "$description": "負向徽章背景"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "{color.orange.500}",
+        "$description": "警示徽章文字"
+      },
+      "warning-bg": {
+        "$type": "color",
+        "$value": "rgba(227, 143, 0, 0.14)",
+        "$description": "警示徽章背景"
+      },
+      "brand": {
+        "$type": "color",
+        "$value": "{color.blue.900}",
+        "$description": "Brand 徽章文字（同 primary-ink）"
+      },
+      "brand-bg": {
+        "$type": "color",
+        "$value": "{color.blue.100}",
+        "$description": "Brand 徽章背景（同 primary-soft）"
+      },
+      "neutral": {
+        "$type": "color",
+        "$value": "{color.neutral.600}",
+        "$description": "中性徽章文字"
+      },
+      "neutral-bg": {
+        "$type": "color",
+        "$value": "{color.neutral.75}",
+        "$description": "中性徽章背景"
+      }
+    },
+
+    "heatmap": {
+      "$description": "Mood heatmap 5 階。l1–l3 是 freeze 自 color-mix(blue.600, neutral.100)，因為 Figma 不支援 color-mix。",
+      "l0": {
+        "$type": "color",
+        "$value": "{color.neutral.100}",
+        "$description": "= border.divider"
+      },
+      "l1": { "$type": "color", "$value": "#C1D3F5" },
+      "l2": { "$type": "color", "$value": "#95B5F4" },
+      "l3": { "$type": "color", "$value": "#5E8EF0" },
+      "l4": { "$type": "color", "$value": "{color.blue.600}", "$description": "= brand" }
+    },
+
+    "state": {
+      "$description": "互動狀態色。",
+      "disabled-bg": {
+        "$type": "color",
+        "$value": "{color.neutral.25}",
+        "$description": "Disabled 元素底色"
+      },
+      "disabled-text": {
+        "$type": "color",
+        "$value": "{color.neutral.500}",
+        "$description": "Disabled 文字"
+      },
+      "disabled-border": {
+        "$type": "color",
+        "$value": "{color.neutral.200}",
+        "$description": "Disabled 邊線"
+      },
+      "scrim": {
+        "$type": "color",
+        "$value": "rgba(10, 13, 18, 0.4)",
+        "$description": "Mobile sidebar 遮罩"
+      },
+      "modal-overlay": {
+        "$type": "color",
+        "$value": "rgba(10, 13, 18, 0.6)",
+        "$description": "（預留）Modal 遮罩"
+      },
+      "selection": {
+        "$type": "color",
+        "$value": "{color.blue.100}",
+        "$description": "文字選取背景"
+      },
+      "scrollbar-thumb": {
+        "$type": "color",
+        "$value": "rgba(0, 0, 0, 0.15)",
+        "$description": "Scrollbar thumb"
+      },
+      "scrollbar-hover": {
+        "$type": "color",
+        "$value": "rgba(0, 0, 0, 0.25)",
+        "$description": "Scrollbar thumb hover"
+      }
+    },
+
+    "icon": {
+      "$description": "Icon 色組（多數 alias 到對應 text/* 色，少數例外如 on-inverse）。",
+      "primary": { "$type": "color", "$value": "{light.text.primary}" },
+      "secondary": { "$type": "color", "$value": "{light.text.secondary}" },
+      "muted": { "$type": "color", "$value": "{light.text.muted}" },
+      "brand": { "$type": "color", "$value": "{light.text.brand}" },
+      "brand-deep": { "$type": "color", "$value": "{light.text.brand-deep}" },
+      "brand-pale": { "$type": "color", "$value": "{light.text.brand-pale}" },
+      "on-brand": { "$type": "color", "$value": "{light.text.on-brand}" },
+      "positive": { "$type": "color", "$value": "{light.text.positive}" },
+      "negative": { "$type": "color", "$value": "{light.text.negative}" },
+      "on-inverse": { "$type": "color", "$value": "{color.white}" }
+    }
+  },
+
+  "dark": {
+    "$description": "深色模式 semantic tokens。alias 對象與 light 不同，但 token name 一致。",
+
+    "bg": {
+      "page": { "$type": "color", "$value": "{color.neutral-dark.950}" },
+      "surface": { "$type": "color", "$value": "{color.neutral-dark.850}" },
+      "secondary": { "$type": "color", "$value": "{color.neutral-dark.900}" },
+      "hover": { "$type": "color", "$value": "{color.neutral-dark.800}" },
+      "brand": {
+        "$type": "color",
+        "$value": "{color.blue.600}",
+        "$description": "Brand 在 dark 維持同色"
+      },
+      "brand-deep": {
+        "$type": "color",
+        "$value": "{color.blue.400}",
+        "$description": "Dark 中比 brand 亮一階（暗背景上更醒目的 emphasis）"
+      },
+      "brand-soft": {
+        "$type": "color",
+        "$value": "{color.blue-dark.soft}",
+        "$description": "Dark 衍生 soft（深底）"
+      },
+      "brand-pale": {
+        "$type": "color",
+        "$value": "#0F1E40",
+        "$description": "Dark 中比 brand-soft 更深的襯底（freeze）"
+      },
+      "chart-area": {
+        "$type": "color",
+        "$value": "{color.blue-dark.ink-a20}",
+        "$description": "圖表面積底色（Dark ink 20% alpha）"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{color.neutral-dark.50}",
+        "$description": "Inverse 背景（dark 模式下反而是亮色）"
+      }
+    },
+
+    "text": {
+      "primary": { "$type": "color", "$value": "{color.neutral-dark.50}" },
+      "secondary": { "$type": "color", "$value": "{color.neutral-dark.100}" },
+      "muted": { "$type": "color", "$value": "{color.neutral-dark.200}" },
+      "faint": { "$type": "color", "$value": "{color.neutral-dark.400}" },
+      "brand": {
+        "$type": "color",
+        "$value": "{color.blue-dark.ink}",
+        "$description": "Dark 衍生 ink（亮字）"
+      },
+      "brand-deep": {
+        "$type": "color",
+        "$value": "{color.blue.400}",
+        "$description": "Dark 中比 brand 亮一階的文字"
+      },
+      "brand-pale": {
+        "$type": "color",
+        "$value": "#0F1E40",
+        "$description": "Dark 中極深的 brand 文字色（freeze）"
+      },
+      "on-brand": { "$type": "color", "$value": "{color.white}" },
+      "positive": {
+        "$type": "color",
+        "$value": "{color.green.500}",
+        "$description": "Status 色 light/dark 同色"
+      },
+      "negative": { "$type": "color", "$value": "{color.red.500}" },
+      "warning": { "$type": "color", "$value": "{color.orange.500}" },
+      "link": { "$type": "color", "$value": "{color.blue.600}" },
+      "on-inverse": {
+        "$type": "color",
+        "$value": "{color.neutral.950}",
+        "$description": "Dark inverse 背景是亮色，所以字反而要用深色"
+      }
+    },
+
+    "border": {
+      "default": { "$type": "color", "$value": "{color.neutral-dark.600}" },
+      "strong": { "$type": "color", "$value": "{color.neutral-dark.500}" },
+      "divider": { "$type": "color", "$value": "{color.neutral-dark.700}" },
+      "focus": { "$type": "color", "$value": "{color.blue.600}" }
+    },
+
+    "badge": {
+      "positive": { "$type": "color", "$value": "{color.green.500}" },
+      "positive-bg": {
+        "$type": "color",
+        "$value": "rgba(40, 173, 94, 0.14)",
+        "$description": "Status bg 用 alpha 在 light/dark 通用"
+      },
+      "negative": { "$type": "color", "$value": "{color.red.500}" },
+      "negative-bg": { "$type": "color", "$value": "rgba(230, 67, 67, 0.14)" },
+      "warning": { "$type": "color", "$value": "{color.orange.500}" },
+      "warning-bg": { "$type": "color", "$value": "rgba(227, 143, 0, 0.14)" },
+      "brand": { "$type": "color", "$value": "{color.blue-dark.ink}" },
+      "brand-bg": { "$type": "color", "$value": "{color.blue-dark.soft}" },
+      "neutral": { "$type": "color", "$value": "{color.neutral-dark.200}" },
+      "neutral-bg": { "$type": "color", "$value": "{color.neutral-dark.800}" }
+    },
+
+    "heatmap": {
+      "l0": { "$type": "color", "$value": "{color.neutral-dark.700}" },
+      "l1": { "$type": "color", "$value": "#192948" },
+      "l2": { "$type": "color", "$value": "#19346D" },
+      "l3": { "$type": "color", "$value": "#17409E" },
+      "l4": { "$type": "color", "$value": "{color.blue.600}" }
+    },
+
+    "state": {
+      "disabled-bg": { "$type": "color", "$value": "{color.neutral-dark.900}" },
+      "disabled-text": { "$type": "color", "$value": "{color.neutral-dark.300}" },
+      "disabled-border": { "$type": "color", "$value": "{color.neutral-dark.600}" },
+      "scrim": { "$type": "color", "$value": "rgba(0, 0, 0, 0.6)" },
+      "modal-overlay": { "$type": "color", "$value": "rgba(0, 0, 0, 0.75)" },
+      "selection": { "$type": "color", "$value": "rgba(14, 79, 231, 0.35)" },
+      "scrollbar-thumb": { "$type": "color", "$value": "rgba(255, 255, 255, 0.15)" },
+      "scrollbar-hover": { "$type": "color", "$value": "rgba(255, 255, 255, 0.25)" }
+    },
+
+    "icon": {
+      "primary": { "$type": "color", "$value": "{dark.text.primary}" },
+      "secondary": { "$type": "color", "$value": "{dark.text.secondary}" },
+      "muted": { "$type": "color", "$value": "{dark.text.muted}" },
+      "brand": { "$type": "color", "$value": "{dark.text.brand}" },
+      "brand-deep": { "$type": "color", "$value": "{dark.text.brand-deep}" },
+      "brand-pale": { "$type": "color", "$value": "{dark.text.brand-pale}" },
+      "on-brand": { "$type": "color", "$value": "{dark.text.on-brand}" },
+      "positive": { "$type": "color", "$value": "{dark.text.positive}" },
+      "negative": { "$type": "color", "$value": "{dark.text.negative}" },
+      "on-inverse": { "$type": "color", "$value": "{color.neutral.950}" }
+    }
+  }
+}

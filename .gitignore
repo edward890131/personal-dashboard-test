@@ -1,0 +1,17 @@
+node_modules
+dist
+.vite
+*.local
+.env
+.env.local
+.env.*.local
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+coverage
+*.log
+npm-debug.log*
+
+# 之前一輪做錯方向的遷移備份；確認不需要時可手動刪掉
+_trash-design-system
