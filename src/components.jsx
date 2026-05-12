@@ -194,12 +194,12 @@ function Kpi({ icon, label, value, prefix, suffix, delta, deltaPos = true, spark
 
 /* ---------------- Today's todos ---------------- */
 const seedTodos = [
-  { id: 1, title: "Sprint 規劃會議準備", time: "10:00", tag: "work", done: true },
-  { id: 2, title: "回覆設計部 PR 修改", time: "11:30", tag: "work", done: true },
-  { id: 3, title: "健身房・腿部訓練", time: "18:00", tag: "health", done: false },
-  { id: 4, title: "看《設計心理學》第 5 章", time: "21:00", tag: "life", done: false },
-  { id: 5, title: "整理本週開銷", time: "22:00", tag: "life", done: false },
-  { id: 6, title: "與媽媽通電話", time: "20:00", tag: "life", done: false },
+  { id: 1, title: "Sprint 規劃會議準備", time: "10:00 a.m", tag: "work", done: true },
+  { id: 2, title: "回覆設計部 PR 修改", time: "11:30 a.m", tag: "work", done: true },
+  { id: 3, title: "健身房・腿部訓練", time: "6:00 p.m", tag: "health", done: false },
+  { id: 4, title: "看《設計心理學》第 5 章", time: "9:00 p.m", tag: "life", done: false },
+  { id: 5, title: "整理本週開銷", time: "10:00 p.m", tag: "life", done: false },
+  { id: 6, title: "與媽媽通電話", time: "8:00 p.m", tag: "life", done: false },
 ];
 const tagLabel = { work: "工作", health: "健康", life: "生活" };
 
@@ -219,7 +219,7 @@ function TodoCard() {
   };
 
   return (
-    <div className="card s-5" style={{ minHeight: 380 }}>
+    <div className="card s-6" style={{ minHeight: 380 }}>
       <div className="card-h">
         <div className="card-title">
           <i className="ph ph-check-square"></i>今日待辦
@@ -232,23 +232,15 @@ function TodoCard() {
       <div className="todo-progress">
         <div className="rate">
           <CountUp to={rate} suffix="%" />
-          <small>
-            {" "}
-            · {done}/{todos.length}
-          </small>
         </div>
-        <div style={{ flex: 1 }}>
-          <div className="lbl" style={{ marginBottom: 6 }}>
-            今日完成度
-          </div>
-          <div className="bar">
-            <span
-              style={{
-                transform: `scaleX(${rate / 100})`,
-                transition: "transform .9s cubic-bezier(.4,.05,.2,1)",
-              }}
-            ></span>
-          </div>
+        <div className="lbl">今日完成度</div>
+        <div className="bar" style={{ flex: 1 }}>
+          <span
+            style={{
+              transform: `scaleX(${rate / 100})`,
+              transition: "transform .9s cubic-bezier(.4,.05,.2,1)",
+            }}
+          ></span>
         </div>
       </div>
 
@@ -324,7 +316,7 @@ function FinanceCard({ chartMode }) {
   ];
   const data = period === "week" ? week : period === "year" ? year : month;
   return (
-    <div className="card s-7">
+    <div className="card s-6">
       <div className="card-h">
         <div className="card-title">
           <i className="ph ph-chart-line-up"></i>本月收支趨勢
@@ -344,11 +336,14 @@ function FinanceCard({ chartMode }) {
 
       <div className="fin-row">
         <div className="fin-stat">
-          <div className="l">本期淨餘</div>
+          <div className="l">本期淨餘（NTD）</div>
           <div className="v">
-            <small>NT$</small>
+            <small>$</small>
             <CountUp to={43200} />
           </div>
+          <span className="delta pos">
+            <i className="ph ph-trend-up"></i>+8.34%
+          </span>
         </div>
         <div className="fin-stat">
           <div className="l">收入</div>
@@ -364,9 +359,6 @@ function FinanceCard({ chartMode }) {
             <CountUp to={25000} />
           </div>
         </div>
-        <span className="delta pos" style={{ marginBottom: 4 }}>
-          <i className="ph ph-trend-up"></i>+8.34%
-        </span>
       </div>
 
       <ValueChart
@@ -397,15 +389,16 @@ function CalendarCard() {
     { time: "14:00", title: "Design review – Onboarding", sub: "5 stakeholders · Figma", bar: "" },
     { time: "16:30", title: "回診皮膚科", sub: "提醒・帶健保卡", bar: "warning" },
     { time: "19:00", title: "晚餐 with 阿哲", sub: "信義區・八兵衛", bar: "positive" },
+    { time: "21:00", title: "便利商店領貨", sub: "永和區・永騰門市", bar: "" },
   ];
   return (
-    <div className="card s-5">
+    <div className="card s-6">
       <div className="card-h">
         <div className="card-title">
-          <i className="ph ph-calendar-dots"></i>本週行程
+          <i className="ph ph-calendar-dots"></i>行事曆 · 本週
         </div>
         <button className="card-act">
-          五月 2026 <i className="ph ph-caret-down"></i>
+          <i className="ph ph-arrow-up-right"></i>這月
         </button>
       </div>
       <div className="cal-week">
@@ -448,26 +441,31 @@ function SpendCard() {
   ];
   const total = cat.reduce((s, c) => s + c.v, 0);
   return (
-    <div className="card s-4">
+    <div className="card s-6 spend-card">
       <div className="card-h">
         <div className="card-title">
           <i className="ph ph-chart-pie-slice"></i>支出分類
         </div>
-        <button className="card-act">
-          <i className="ph ph-dots-three"></i>
+        <button className="icon-btn" aria-label="notifications">
+          <i className="ph ph-bell"></i>
         </button>
       </div>
-      <div className="donut-wrap">
-        <PieDonut data={cat.map((c) => ({ value: c.v, color: c.color }))} totalLabel="本月支出" />
-        <div className="legend">
-          {cat.map((c, i) => (
-            <div key={i} className="legend-row">
-              <span className="legend-dot" style={{ background: c.color }}></span>
-              <span className="lbl">{c.lbl}</span>
-              <span className="val">{Math.round((c.v / total) * 100)}%</span>
-            </div>
-          ))}
-        </div>
+      <div className="spend-donut">
+        <PieDonut
+          data={cat.map((c) => ({ value: c.v, color: c.color }))}
+          totalLabel="本月支出（NTD）"
+          size={200}
+          stroke={24}
+        />
+      </div>
+      <div className="spend-legend">
+        {cat.map((c, i) => (
+          <div key={i} className="legend-item">
+            <span className="legend-dot" style={{ background: c.color }}></span>
+            <span className="lbl">{c.lbl}</span>
+            <span className="val">{Math.round((c.v / total) * 100)}%</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -513,12 +511,9 @@ function GoalsCard() {
               <div className="goal-h">
                 <div className="goal-t">{g.t}</div>
                 <div className="goal-v">
-                  <b>{g.now.toLocaleString()}</b>
-                  {g.unit}{" "}
-                  <span style={{ opacity: 0.6 }}>
-                    / {g.of.toLocaleString()}
-                    {g.unit}
-                  </span>
+                  {g.now.toLocaleString()}
+                  {g.unit && ` ${g.unit}`} / {g.of.toLocaleString()}
+                  {g.unit && ` ${g.unit}`}
                 </div>
               </div>
               <div className="bar">
@@ -589,7 +584,7 @@ function MoodCard() {
   const labels = ["低", "1", "2", "3", "好"];
 
   return (
-    <div className="card s-8">
+    <div className="card s-4">
       <div className="card-h">
         <div className="card-title">
           <i className="ph ph-smiley"></i>今日心情 · 30 天趨勢
@@ -599,38 +594,35 @@ function MoodCard() {
         </button>
       </div>
 
-      <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ flex: "1 1 240px", minWidth: 220 }}>
-          <div style={{ fontSize: 11.5, color: "var(--muted)", marginBottom: 8 }}>
-            今天感覺如何？
-          </div>
-          <div className="mood-pick">
-            {moods.map((m, i) => (
-              <button
-                key={i}
-                className={`mood-btn ${i === picked ? "on" : ""}`}
-                onClick={() => setPicked(i)}
-              >
-                <span className="glyph">
-                  <i className={`ph ${m.i}`}></i>
-                </span>
-                <span>{m.l}</span>
-              </button>
-            ))}
-          </div>
+      <div>
+        <div style={{ fontSize: 11.5, color: "var(--muted)", marginBottom: 8 }}>今天感覺如何？</div>
+        <div className="mood-pick">
+          {moods.map((m, i) => (
+            <button
+              key={i}
+              className={`mood-btn ${i === picked ? "on" : ""}`}
+              onClick={() => setPicked(i)}
+            >
+              <span className="glyph">
+                <i className={`ph ${m.i}`}></i>
+              </span>
+              <span>{m.l}</span>
+            </button>
+          ))}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <div style={{ fontSize: 11.5, color: "var(--muted)" }}>本月平均</div>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              letterSpacing: "-.02em",
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            <CountUp to={avg} decimals={1} suffix=" / 4" />
-          </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <div style={{ fontSize: 11.5, color: "var(--muted)" }}>本月平均</div>
+        <div
+          style={{
+            fontSize: 22,
+            fontWeight: 600,
+            letterSpacing: "-.02em",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          <CountUp to={avg} decimals={1} suffix=" / 4" />
         </div>
       </div>
 

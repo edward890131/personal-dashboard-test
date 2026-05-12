@@ -1,6 +1,6 @@
 // charts.jsx — 小型圖表元件，含 hover tooltip 與 draw-in 動畫
 // 對外輸出：CountUp、ValueChart、Donut、PieDonut、Sparkline
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 
 /* ---------------- CountUp ---------------- */
 function CountUp({ to, duration = 900, decimals = 0, prefix = "", suffix = "", className }) {
@@ -82,6 +82,8 @@ function ValueChart({
   const wrapRef = useRef(null);
   const [w, setW] = useState(600);
   const [tip, setTip] = useState(null);
+  // 每個 ValueChart 用唯一 gradient id，避免多個實例共用造成衝突
+  const gradId = `area-grad-${useId().replace(/:/g, "")}`;
   const [drawn, setDrawn] = useState(false);
   const lineRef = useRef(null);
 
@@ -106,8 +108,12 @@ function ValueChart({
   const innerW = Math.max(40, w - padL - padR);
   const innerH = height - padT - padB;
   const max = Math.max(...data.map((d) => d.value), 1);
-  const min = Math.min(...data.map((d) => d.value), 0);
+  // Y 軸從 actual data 最小值起算（對齊 Figma），而非從 0 開始
+  const min = Math.min(...data.map((d) => d.value));
   const range = max - min || 1;
+  // 大數字縮寫成 k：43200 → "43k"
+  const fmtY = (v) =>
+    Math.abs(v) >= 1000 ? `${Math.round(v / 1000)}k` : Math.round(v).toLocaleString();
 
   const pts = data.map((d, i) => {
     const x = padL + (data.length === 1 ? innerW / 2 : (i / (data.length - 1)) * innerW);
@@ -160,6 +166,13 @@ function ValueChart({
       onMouseLeave={() => setTip(null)}
     >
       <svg viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none">
+        <defs>
+          {/* 垂直線性漸層：頂端 primary 30% alpha → 底端 0%（對齊 Figma Area Chart） */}
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
         <g className="chart-grid">
           {gridY.map((y, i) => (
             <line key={i} x1={padL} x2={w - padR} y1={y} y2={y} />
@@ -171,7 +184,7 @@ function ValueChart({
               const v = max - range * t;
               return (
                 <text key={i} x={padL - 6} y={padT + innerH * t + 3} textAnchor="end">
-                  {Math.round(v).toLocaleString()}
+                  {fmtY(v)}
                 </text>
               );
             })}
@@ -192,7 +205,12 @@ function ValueChart({
         {(mode === "area" || mode === "line") && (
           <>
             {mode === "area" && drawn && (
-              <path className="line-fill" d={areaPath} style={{ animation: "card-in .5s ease" }} />
+              <path
+                className="line-fill"
+                d={areaPath}
+                fill={`url(#${gradId})`}
+                style={{ animation: "card-in .5s ease" }}
+              />
             )}
             <path
               ref={lineRef}
@@ -350,10 +368,10 @@ function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出" }) {
         })}
       </svg>
       <div className="donut-center">
-        <div className="v">
-          <CountUp to={total} prefix="$" />
-        </div>
         <div className="l">{totalLabel}</div>
+        <div className="v">
+          <CountUp to={total} prefix="$ " />
+        </div>
       </div>
     </div>
   );
@@ -363,6 +381,8 @@ function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出" }) {
 function Sparkline({ values, height = 32 }) {
   const wrapRef = useRef(null);
   const [w, setW] = useState(120);
+  // 每個 Sparkline 用唯一 gradient id，避免多個實例共用造成衝突
+  const gradId = `spark-grad-${useId().replace(/:/g, "")}`;
   useEffect(() => {
     if (!wrapRef.current) return;
     const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
@@ -381,7 +401,14 @@ function Sparkline({ values, height = 32 }) {
   return (
     <div ref={wrapRef} style={{ width: "100%" }}>
       <svg className="spark" viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none">
-        <path className="fill" d={fillPath} />
+        <defs>
+          {/* 垂直線性漸層：頂端 primary 30% alpha → 底端 0%（對齊 Figma Sparkline） */}
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path className="fill" d={fillPath} fill={`url(#${gradId})`} />
         <path className="line" d={linePath} />
       </svg>
     </div>

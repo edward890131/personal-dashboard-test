@@ -135,13 +135,13 @@ function App() {
               />
             </div>
 
-            <TodoCard />
             <FinanceCard chartMode={t.chartMode} />
-
-            <CalendarCard />
             <SpendCard />
-            <GoalsCard />
 
+            <TodoCard />
+            <CalendarCard />
+
+            <GoalsCard />
             <MoodCard />
             <QuickAddCard />
           </div>

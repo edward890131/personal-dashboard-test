@@ -142,12 +142,11 @@ input, textarea, select { font: inherit; color: inherit; }
 .main {
   padding: var(--pad);
   min-width: 0;
-  max-width: 1500px;
 }
 .dash-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
+  gap: 14px;
 }
 
 /* =============== Sidebar =============== */
@@ -226,11 +225,11 @@ input, textarea, select { font: inherit; color: inherit; }
 .nav-item:hover { background: var(--surface-hover); }
 .nav-item:hover i { color: var(--ink-2); }
 .nav-item.active {
-  background: var(--primary-soft);
-  color: var(--primary-ink);
+  background: var(--primary-pale);
+  color: var(--primary-deep);
   font-weight: 550;
 }
-.nav-item.active i { color: var(--primary-ink); }
+.nav-item.active i { color: var(--primary-deep); }
 /* nav-item 內的 .badge 預設用 subtle 樣式，active 時翻回 primary */
 .nav-item .badge {
   margin-left: auto;
@@ -417,8 +416,8 @@ input, textarea, select { font: inherit; color: inherit; }
 .weather-pill .ico {
   width: 28px; height: 28px;
   border-radius: 6px;
-  background: var(--primary-soft);
-  color: var(--primary-ink);
+  background: var(--primary-pale);
+  color: var(--primary-deep);
   display: grid; place-items: center;
 }
 .weather-pill .ico i { font-size: 18px; }
@@ -610,8 +609,8 @@ input, textarea, select { font: inherit; color: inherit; }
 .kpi-icon {
   width: 30px; height: 30px;
   border-radius: 7px;
-  background: var(--primary-soft);
-  color: var(--primary-ink);
+  background: var(--primary-pale);
+  color: var(--primary-deep);
   display: grid; place-items: center;
 }
 .kpi-icon i { font-size: 16px; }
@@ -619,7 +618,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .kpi .num { font-size: 24px; }
 .spark { display: block; width: 100%; height: 32px; }
 .spark path.line { fill: none; stroke: var(--primary); stroke-width: 1.6; }
-.spark path.fill { fill: var(--primary); opacity: .08; }
+/* .spark path.fill 現在由 SVG <linearGradient> 直接吃 url(#gid)，CSS 不再設 fill/opacity */
 
 /* progress thin */
 .bar {
@@ -785,7 +784,7 @@ input, textarea, select { font: inherit; color: inherit; }
   margin-bottom: 4px;
 }
 .cal-day {
-  border: 1px solid var(--border);
+  border: 1px solid var(--divider);
   border-radius: 6px;
   padding: 8px 6px 10px;
   display: flex;
@@ -796,7 +795,7 @@ input, textarea, select { font: inherit; color: inherit; }
   transition: all .15s;
   background: var(--surface);
 }
-.cal-day:hover { border-color: var(--border-strong); }
+.cal-day:hover { border-color: var(--border); }
 .cal-day.today {
   background: var(--primary);
   border-color: var(--primary);
@@ -817,12 +816,11 @@ input, textarea, select { font: inherit; color: inherit; }
 
 .evt-list { display: flex; flex-direction: column; gap: 0; }
 .evt {
-  display: flex; gap: 10px;
+  display: flex; align-items: center; gap: 10px;
   padding: 8px 14px;
-  border-top: 1px solid var(--divider);
+  border-radius: var(--r-card);
   transition: background .15s;
 }
-.evt:first-child { border-top: 0; }
 .evt:hover { background: var(--surface-hover); }
 .evt-time {
   width: 56px;
@@ -830,13 +828,12 @@ input, textarea, select { font: inherit; color: inherit; }
   font-size: 11.5px;
   color: var(--muted);
   flex-shrink: 0;
-  padding-top: 2px;
 }
-.evt-bar { width: 3px; border-radius: 2px; background: var(--primary); flex-shrink: 0; }
+.evt-bar { align-self: stretch; width: 3px; border-radius: 2px; background: var(--primary); flex-shrink: 0; }
 .evt-bar.b2, .evt-bar.positive { background: var(--pos); }
 .evt-bar.b3, .evt-bar.warning  { background: var(--warn); }
 .evt-body { flex: 1; min-width: 0; }
-.evt-t { font-size: 13px; font-weight: 500; line-height: 1.3; }
+.evt-t { font-size: 13px; font-weight: 600; line-height: 1.2; letter-spacing: -0.005em; }
 .evt-s { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 
 /* =============== Donut + pie legend =============== */
@@ -847,9 +844,32 @@ input, textarea, select { font: inherit; color: inherit; }
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center;
+  gap: 2px;
 }
+.donut-center .l { font-size: 11px; color: var(--muted); }
 .donut-center .v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.donut-center .l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Spend card 專用 layout：donut 在中央上方，legend 一行水平排在下方（對齊 Figma） */
+.spend-card .spend-donut {
+  display: flex; justify-content: center;
+  padding: 8px 0 4px;
+}
+.spend-card .spend-donut .donut-center .v { font-size: 24px; }
+.spend-card .spend-legend {
+  display: flex; flex-wrap: wrap; gap: 8px 14px;
+  justify-content: center;
+  margin-top: 4px;
+}
+.spend-card .spend-legend .legend-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px;
+}
+.spend-card .spend-legend .legend-dot {
+  width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
+}
+.spend-card .spend-legend .lbl { color: var(--ink-2); font-weight: 500; }
+.spend-card .spend-legend .val { color: var(--muted); font-variant-numeric: tabular-nums; }
+
 .legend { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
 .legend-row {
   display: flex; align-items: center; gap: 8px;
@@ -866,21 +886,19 @@ input, textarea, select { font: inherit; color: inherit; }
 
 /* =============== Goals =============== */
 .goal {
+  display: flex; flex-direction: column; gap: 8px;
   padding: 10px 14px;
-  border-top: 1px solid var(--divider);
+  border-radius: var(--r-card);
   transition: background .15s;
 }
-.goal:first-child { border-top: 0; padding-top: 4px; }
 .goal:hover { background: var(--surface-hover); }
 .goal-h {
   display: flex; align-items: baseline; justify-content: space-between;
   gap: 8px;
 }
-.goal-t { font-size: 13px; font-weight: 500; }
+.goal-t { font-size: 13px; font-weight: 600; letter-spacing: -0.005em; }
 .goal-v { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.goal-v b { color: var(--ink); font-weight: 600; }
-.goal .bar { margin-top: 8px; }
-.goal-meta { font-size: 11px; color: var(--muted-2); margin-top: 6px; display: flex; gap: 8px; }
+.goal-meta { font-size: 11.5px; color: var(--faint); display: flex; gap: 8px; }
 
 /* =============== Mood =============== */
 .mood-pick { display: flex; gap: 6px; }
@@ -906,16 +924,16 @@ input, textarea, select { font: inherit; color: inherit; }
 .mood-btn .glyph i { font-size: 20px; }
 .mood-btn.on {
   border-color: var(--primary);
-  background: var(--primary-soft);
-  color: var(--primary-ink);
+  background: var(--primary-pale);
+  color: var(--primary-deep);
 }
-.mood-btn.on .glyph { color: var(--primary-ink); }
+.mood-btn.on .glyph { color: var(--primary-deep); }
 
-/* mood heatmap */
+/* mood heatmap — 桌面 10×3 grid（對齊 Figma） */
 .heatmap {
   display: grid;
-  grid-template-columns: repeat(30, 1fr);
-  gap: 3px;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
   margin-top: 4px;
 }
 .hm-cell {
@@ -953,7 +971,7 @@ input, textarea, select { font: inherit; color: inherit; }
   font-family: var(--ff-sans);
 }
 .line-path { fill: none; stroke: var(--primary); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
-.line-fill { fill: var(--primary); opacity: .08; }
+/* .line-fill 由 SVG <linearGradient> 直接吃 url(#gid)，CSS 不再設 fill/opacity */
 .bar-rect { fill: var(--primary); opacity: .85; rx: 2; transition: opacity .15s; }
 .bar-rect:hover { opacity: 1; }
 .bar-rect.alt { fill: var(--primary); opacity: .25; }
@@ -986,10 +1004,13 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 
 /* finance summary */
-.fin-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-.fin-stat .l { font-size: 11.5px; color: var(--muted); margin-bottom: 4px; }
+/* 三組 stat 均分寬度（各占 1/3），fin-stat 內為 column flex 讓 delta 自動換行 */
+.fin-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.fin-stat { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; flex: 1 1 0; min-width: 0; }
+.fin-stat .l { font-size: 11.5px; color: var(--muted); }
 .fin-stat .v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.fin-stat .v small { font-size: 13px; font-weight: 500; color: var(--muted-2); margin-right: 3px; }
+/* prefix（$ / + / −）字體略小但顏色繼承 value 自己（綠收入 / 紅支出 / 黑淨餘） */
+.fin-stat .v small { font-size: 13px; font-weight: 500; color: inherit; margin-right: 3px; }
 .tab-row {
   display: inline-flex;
   background: var(--surface-2);
@@ -1038,8 +1059,8 @@ input, textarea, select { font: inherit; color: inherit; }
 .quick-btn .ico {
   width: 28px; height: 28px;
   border-radius: 6px;
-  background: var(--primary-soft);
-  color: var(--primary-ink);
+  background: var(--primary-pale);
+  color: var(--primary-deep);
   display: grid; place-items: center;
 }
 .quick-btn .ico i { font-size: 16px; }
@@ -1134,19 +1155,17 @@ input, textarea, select { font: inherit; color: inherit; }
   /* Bento → 2-up, hero full, mood + finance go full */
   .hero { gap: 14px; }
   .hero-greet h1 { font-size: 24px; }
-  .s-3 { grid-column: span 6; }   /* KPI: 2 per row */
-  .s-4 { grid-column: span 6; }
-  .s-5 { grid-column: span 6; }
-  .s-7 { grid-column: span 12; }  /* finance trend full width */
-  .s-8 { grid-column: span 12; }  /* mood heatmap full width */
-  .s-9 { grid-column: span 12; }
+  /* KPI 維持 2x2 grid，其他卡片全部堆疊成全寬（對齊 Figma Tablet 版型） */
+  .s-3 { grid-column: span 6; }
+  .s-4, .s-5, .s-6, .s-7, .s-8, .s-9 { grid-column: span 12; }
 
   /* Charts a touch shorter to fit */
   .chart-wrap { height: 160px; }
   .donut-wrap { gap: 14px; }
   .donut { width: 116px; height: 116px; }
   .donut-center .v { font-size: 19px; }
-  .heatmap { grid-template-columns: repeat(30, 1fr); }
+  /* mood card 變 s-12 全寬，cell 改 15×2 grid（cell 比桌面略大） */
+  .heatmap { grid-template-columns: repeat(15, 1fr); }
 }
 
 /* ───── Mobile (large) 480–767 ───── */
@@ -1197,7 +1216,9 @@ input, textarea, select { font: inherit; color: inherit; }
 
   /* All cards full width */
   .dash-grid { gap: 12px; }
-  .s-3, .s-4, .s-5, .s-6, .s-7, .s-8, .s-9 { grid-column: span 12; }
+  /* Mobile 也維持 KPI 2x2，其他堆疊成全寬（對齊 Figma Mobile 版型） */
+  .s-3 { grid-column: span 6; }
+  .s-4, .s-5, .s-6, .s-7, .s-8, .s-9 { grid-column: span 12; }
 
   .card { padding: 16px; }
   .card .num { font-size: 22px; }
