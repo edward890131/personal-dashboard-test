@@ -1262,9 +1262,10 @@ input, textarea, select { font: inherit; color: inherit; }
   .mood-btn { padding: 8px 2px; font-size: 10px; }
   .mood-btn .glyph i { font-size: 17px; }
 
-  /* Quick add: stack to single column */
-  .quick-grid { grid-template-columns: 1fr; }
-  .quick-btn { min-height: 64px; flex-direction: row; align-items: center; }
+  /* Quick add: 維持 2x2 grid（對齊 Figma Mobile 版型），縮 padding 讓 4 個 button 在小螢幕仍可閱讀 */
+  .quick-btn { padding: 12px; min-height: 72px; }
+  .quick-btn .lbl { font-size: 12px; }
+  .quick-btn .sub { font-size: 10.5px; }
 
   /* Calendar week: tighter */
   .cal-week { gap: 4px; }
