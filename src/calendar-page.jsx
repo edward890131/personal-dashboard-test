@@ -576,7 +576,9 @@ const TodoGroup = ({ title, count, children, defaultOpen = true }) => {
 // 配色對齊首頁 .tag CSS class（透過 TAG_COLOR_BY_CAT），讓 picker 跟 row tag 視覺一致
 const CatPicker = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState(null);
   const ref = useRef(null);
+  const btnRef = useRef(null);
   const cur = CAT_BY_ID[value];
   const curColor = TAG_COLOR_BY_CAT[value];
 
@@ -590,14 +592,39 @@ const CatPicker = ({ value, onChange }) => {
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
+  // 開啟時：吃到外層 overflow:auto 會裁掉 absolute 子層，所以改用 fixed + viewport 座標
+  // 滾動 / resize 直接關閉，避免 fixed dropdown 跟著 scroll 飄走
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
+  const toggle = (ev) => {
+    ev.stopPropagation();
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const popH = 160; // 4 個分類，預估高度
+      const flipUp = r.bottom + popH + 8 > window.innerHeight;
+      setCoords({
+        left: r.left,
+        top: flipUp ? Math.max(8, r.top - popH - 4) : r.bottom + 4,
+      });
+    }
+    setOpen((o) => !o);
+  };
+
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <button
+        ref={btnRef}
         type="button"
-        onClick={(ev) => {
-          ev.stopPropagation();
-          setOpen((o) => !o);
-        }}
+        onClick={toggle}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -618,14 +645,13 @@ const CatPicker = ({ value, onChange }) => {
           style={{ fontSize: 10, marginLeft: 1, color: curColor.ink, opacity: 0.7 }}
         ></i>
       </button>
-      {open && (
+      {open && coords && (
         <div
           style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            marginTop: 4,
-            zIndex: 20,
+            position: "fixed",
+            top: coords.top,
+            left: coords.left,
+            zIndex: 1000,
             background: "var(--surface)",
             border: "1px solid var(--border)",
             borderRadius: 7,
@@ -686,7 +712,9 @@ const CatPicker = ({ value, onChange }) => {
 // 時間選擇器 — 仿 CatPicker，避免原生 select 觸發外擊 commit
 const TimePicker = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState(null);
   const ref = useRef(null);
+  const btnRef = useRef(null);
   // HOUR_START (7) ~ HOUR_END (23) 每 30 min，共 32 個選項；多一個 null 代表「未排時間」
   const opts = useMemo(() => {
     const out = [null];
@@ -704,16 +732,40 @@ const TimePicker = ({ value, onChange }) => {
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
+  // 滾動 / resize 時關閉，避免 fixed dropdown 跟著畫面飄走
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
   const display = value == null ? "未排時間" : fmt12Lower(value);
+
+  const toggle = (ev) => {
+    ev.stopPropagation();
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const popH = 240; // 對應 maxHeight
+      const flipUp = r.bottom + popH + 8 > window.innerHeight;
+      setCoords({
+        left: r.left,
+        top: flipUp ? Math.max(8, r.top - popH - 4) : r.bottom + 4,
+      });
+    }
+    setOpen((o) => !o);
+  };
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <button
+        ref={btnRef}
         type="button"
-        onClick={(ev) => {
-          ev.stopPropagation();
-          setOpen((o) => !o);
-        }}
+        onClick={toggle}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -733,14 +785,13 @@ const TimePicker = ({ value, onChange }) => {
         {display}
         <i className="ph ph-caret-down" style={{ fontSize: 10, marginLeft: 1, opacity: 0.7 }}></i>
       </button>
-      {open && (
+      {open && coords && (
         <div
           style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            marginTop: 4,
-            zIndex: 20,
+            position: "fixed",
+            top: coords.top,
+            left: coords.left,
+            zIndex: 1000,
             background: "var(--surface)",
             border: "1px solid var(--border)",
             borderRadius: 7,
@@ -2411,6 +2462,17 @@ export function CalendarPage({ defaultView = "week", showWeekend = true, eventSt
   }); // 'day' | 'week' | 'month'
   const [anchor, setAnchor] = useState(new Date(TODAY));
 
+  // 手機寬度偵測：標題在窄寬度下要改為固定文字，否則 Day 模式日期太長會把 segmented control 擠到下一行
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 640,
+  );
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   // tweak 改動「預設檢視」時跟著切
   useEffect(() => {
     setView(defaultView);
@@ -2483,8 +2545,9 @@ export function CalendarPage({ defaultView = "week", showWeekend = true, eventSt
     setHovered(null);
   };
 
-  // 標題列範圍文字
+  // 標題列範圍文字 — 手機固定顯示「行事曆」避免擠掉 segmented control
   const rangeLabel = (() => {
+    if (isMobile) return "行事曆";
     if (view === "day") {
       return `${anchor.getFullYear()} 年 ${anchor.getMonth() + 1} 月 ${anchor.getDate()} 日 ・ 週${WEEK_LABELS_ZH[(anchor.getDay() + 6) % 7]}`;
     } else if (view === "week") {

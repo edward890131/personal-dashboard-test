@@ -152,7 +152,7 @@ function App() {
             <FinanceCard chartMode={t.chartMode} />
             <SpendCard />
 
-            <TodoCard />
+            <TodoCard onSeeAll={() => navigate("todo")} />
             <CalendarCard />
 
             <GoalsCard />
