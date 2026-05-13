@@ -28,6 +28,16 @@
         "$type": "color",
         "$value": "rgba(14, 79, 231, 0.08)",
         "$description": "Primary 8% alpha — chart-area light（freeze 自 blue/600 8% alpha）"
+      },
+      "600-a00": {
+        "$type": "color",
+        "$value": "rgba(14, 79, 231, 0)",
+        "$description": "Primary 0% alpha — 漸層起點 / 完全透明的 primary"
+      },
+      "600-a30": {
+        "$type": "color",
+        "$value": "rgba(14, 79, 231, 0.3)",
+        "$description": "Primary 30% alpha — focus ring / selection 強調"
       }
     },
 
@@ -43,10 +53,25 @@
         "$value": "#7AA8F5",
         "$description": "Dark primary-ink（mix primary 60% + white）"
       },
+      "pale": {
+        "$type": "color",
+        "$value": "#0F1E40",
+        "$description": "Dark 中比 brand-soft 更深的襯底（freeze 自 brand-pale dark）"
+      },
       "ink-a20": {
         "$type": "color",
         "$value": "rgba(122, 168, 245, 0.2)",
         "$description": "Dark ink 20% alpha — chart-area dark（freeze 自 ink 20% alpha）"
+      },
+      "ink-a40": {
+        "$type": "color",
+        "$value": "rgba(122, 168, 245, 0.4)",
+        "$description": "Dark ink 40% alpha — dark mode 互動強調"
+      },
+      "ink-a00": {
+        "$type": "color",
+        "$value": "rgba(122, 168, 245, 0)",
+        "$description": "Dark ink 0% alpha — 漸層起點 / 完全透明的 dark ink"
       }
     },
 

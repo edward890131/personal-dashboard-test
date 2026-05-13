@@ -1,6 +1,6 @@
 # Figma ↔ Code Token Alignment Report
 
-> 版本：v0.2（2026-05-11）  
+> 版本：v0.3（2026-05-13）  
 > Figma file：[Personal-Dashboard](https://www.figma.com/design/3n0ftsxOG20Hl214ii5vFL/Personal-Dashboard) · 工作帳號  
 > Code 對比基準：`tokens/primitives.json` + `semantics.json` + `device.json`  
 > 工具：`npm run figma:diff` → `reports/drift-*.md`
@@ -9,25 +9,31 @@
 
 ## TL;DR
 
-**🎯 179/179 tokens 完全對齊，0 drift。Phase 1 完成。**
+**🎯 193/193 tokens 完全對齊，0 drift。**
 
 | 對齊維度                                                | 狀態                                                              |
 | ------------------------------------------------------- | ----------------------------------------------------------------- |
 | 命名規範（`color/blue/600` 這種 slash path）            | ✅ 100% 對齊                                                      |
-| Primitives（111 variables）                             | ✅ 100% 對齊                                                      |
-| Theme · Light / Dark mode（54 variables）               | ✅ 100% 對齊                                                      |
-| Device · Desktop / Tablet / Mobile mode（14 variables） | ✅ 100% 對齊（v0.2 拆出 device.json 後）                          |
-| CSS variables（`src/styles.css`）                       | ✅ 補齊 20 個新 token 對應的 vars                                 |
+| Primitives（117 variables）                             | ✅ 100% 對齊                                                      |
+| Theme · Light / Dark mode（62 variables）               | ✅ 100% 對齊                                                      |
+| Device · Desktop / Tablet / Mobile mode（14 variables） | ✅ 100% 對齊                                                      |
+| CSS variables（`src/styles.css`）                       | ✅ 對齊                                                           |
 | Component 對應                                          | ✅ 用 `figma-mapping.md` 取代正式 Code Connect（Pro tier 沒權限） |
 | 自動化 drift 監測                                       | ✅ `npm run figma:diff`                                           |
 
-**v0.1 → v0.2 主要動作：**
+**v0.2 → v0.3 主要動作（2026-05-13）：**
 
-1. 補 20 個 Figma-only token 進 `tokens/{primitives,semantics}.json`
-2. 拆出 `tokens/device.json`（3 mode RWD）
-3. 補 `src/styles.css` 對應 CSS variables
-4. 補 `src/design-system.jsx` 對應 swatches
-5. 寫 `figma-mapping.md` 取代 Code Connect
+1. 補 6 個 Figma 新增的 primitive 進 `tokens/primitives.json`：
+   - `color/blue/700`（#0935AD，brand deep）
+   - `color/blue-dark/pale`（#0F1E40，dark 模式 brand-pale 襯底）
+   - `color/blue/600-a00`、`color/blue/600-a30`（漸層 / focus ring 用 alpha 變體）
+   - `color/blue-dark/ink-a40`、`color/blue-dark/ink-a00`（dark 漸層 alpha 變體）
+2. 補 8 個 Figma 新增的 theme token 進 `tokens/semantics.json`（light + dark）：
+   - `bg/brand-deep`、`bg/brand-pale`、`text/brand-deep`、`text/brand-pale`、`icon/brand-deep`、`icon/brand-pale`
+   - `bg/chart-area-start`、`bg/chart-area-end`（圖表面積漸層起終點）
+3. 把 dark mode 的 `bg/brand-pale` 和 `text/brand-pale` 從 hard-code hex 改 alias 到 `{color.blue-dark.pale}`，符合「semantic 一律 reference primitive」原則
+4. 重新拉 `tokens/figma-snapshot.json`（193 variables，snapshotAt = 2026-05-13）
+5. 更新 `figma-mapping.md` Sidebar 條目 → 對應 Component Set `358:1122`（Density variant: Default / Compact）
 
 ---
 

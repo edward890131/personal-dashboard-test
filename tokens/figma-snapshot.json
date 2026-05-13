@@ -3,11 +3,10 @@
     "$description": "Figma file 'Personal-Dashboard' 的 Variables 快照。AI 透過 Figma MCP use_figma 拉取，作為 drift 工具的輸入與 audit log。值的格式：COLOR 用 hex（含 alpha 為 8 位）、VARIABLE_ALIAS 用 '→ name' 表示引用、FLOAT 為數值。",
     "fileKey": "3n0ftsxOG20Hl214ii5vFL",
     "fileName": "Personal-Dashboard",
-    "snapshotAt": "2026-05-11",
+    "snapshotAt": "2026-05-13",
     "totalCollections": 3,
-    "totalVariables": 179
+    "totalVariables": 193
   },
-
   "collections": [
     {
       "name": "Primitives",
@@ -17,361 +16,879 @@
         {
           "name": "color/blue/50",
           "type": "COLOR",
-          "values": { "Value": "#eef4ff" },
+          "values": {
+            "Value": "#eef4ff"
+          },
           "description": "最淺底色（預留）"
         },
         {
           "name": "color/blue/100",
           "type": "COLOR",
-          "values": { "Value": "#baddff" },
+          "values": {
+            "Value": "#baddff"
+          },
           "description": "Brand soft（light primary-soft）"
         },
         {
           "name": "color/blue/200",
           "type": "COLOR",
-          "values": { "Value": "#8dc2ff" },
+          "values": {
+            "Value": "#8dc2ff"
+          },
           "description": "預留"
         },
         {
           "name": "color/blue/400",
           "type": "COLOR",
-          "values": { "Value": "#4a82ff" },
+          "values": {
+            "Value": "#4a82ff"
+          },
           "description": "預留"
         },
         {
           "name": "color/blue/600",
           "type": "COLOR",
-          "values": { "Value": "#0e4fe7" },
+          "values": {
+            "Value": "#0e4fe7"
+          },
           "description": "Brand default（primary）"
         },
         {
           "name": "color/blue/900",
           "type": "COLOR",
-          "values": { "Value": "#122559" },
+          "values": {
+            "Value": "#122559"
+          },
           "description": "Brand ink（light primary-ink）"
         },
         {
           "name": "color/blue-dark/soft",
           "type": "COLOR",
-          "values": { "Value": "#1a2b5c" },
+          "values": {
+            "Value": "#1a2b5c"
+          },
           "description": "Dark primary-soft（mix primary 22% + bg）"
         },
         {
           "name": "color/blue-dark/ink",
           "type": "COLOR",
-          "values": { "Value": "#7aa8f5" },
+          "values": {
+            "Value": "#7aa8f5"
+          },
           "description": "Dark primary-ink（mix primary 60% + white）"
         },
-        { "name": "color/neutral/0", "type": "COLOR", "values": { "Value": "#ffffff" } },
-        { "name": "color/neutral/25", "type": "COLOR", "values": { "Value": "#fafbfc" } },
-        { "name": "color/neutral/50", "type": "COLOR", "values": { "Value": "#f6f7f9" } },
-        { "name": "color/neutral/75", "type": "COLOR", "values": { "Value": "#f4f5f7" } },
-        { "name": "color/neutral/100", "type": "COLOR", "values": { "Value": "#eef0f3" } },
-        { "name": "color/neutral/200", "type": "COLOR", "values": { "Value": "#e7e9ee" } },
-        { "name": "color/neutral/300", "type": "COLOR", "values": { "Value": "#d5d9e0" } },
-        { "name": "color/neutral/400", "type": "COLOR", "values": { "Value": "#c9cdd4" } },
-        { "name": "color/neutral/500", "type": "COLOR", "values": { "Value": "#9aa1ac" } },
-        { "name": "color/neutral/600", "type": "COLOR", "values": { "Value": "#6b7280" } },
-        { "name": "color/neutral/800", "type": "COLOR", "values": { "Value": "#2a3142" } },
-        { "name": "color/neutral/950", "type": "COLOR", "values": { "Value": "#0b1220" } },
-        { "name": "color/neutral-dark/50", "type": "COLOR", "values": { "Value": "#eceef2" } },
-        { "name": "color/neutral-dark/100", "type": "COLOR", "values": { "Value": "#c9ced7" } },
-        { "name": "color/neutral-dark/200", "type": "COLOR", "values": { "Value": "#8a92a0" } },
-        { "name": "color/neutral-dark/300", "type": "COLOR", "values": { "Value": "#6a727e" } },
-        { "name": "color/neutral-dark/400", "type": "COLOR", "values": { "Value": "#3a414d" } },
-        { "name": "color/neutral-dark/500", "type": "COLOR", "values": { "Value": "#2a323f" } },
-        { "name": "color/neutral-dark/600", "type": "COLOR", "values": { "Value": "#1e242e" } },
-        { "name": "color/neutral-dark/700", "type": "COLOR", "values": { "Value": "#181d25" } },
-        { "name": "color/neutral-dark/800", "type": "COLOR", "values": { "Value": "#161b23" } },
-        { "name": "color/neutral-dark/850", "type": "COLOR", "values": { "Value": "#11151c" } },
-        { "name": "color/neutral-dark/900", "type": "COLOR", "values": { "Value": "#0e1218" } },
-        { "name": "color/neutral-dark/950", "type": "COLOR", "values": { "Value": "#0a0d12" } },
+        {
+          "name": "color/neutral/0",
+          "type": "COLOR",
+          "values": {
+            "Value": "#ffffff"
+          }
+        },
+        {
+          "name": "color/neutral/25",
+          "type": "COLOR",
+          "values": {
+            "Value": "#fafbfc"
+          }
+        },
+        {
+          "name": "color/neutral/50",
+          "type": "COLOR",
+          "values": {
+            "Value": "#f6f7f9"
+          }
+        },
+        {
+          "name": "color/neutral/75",
+          "type": "COLOR",
+          "values": {
+            "Value": "#f4f5f7"
+          }
+        },
+        {
+          "name": "color/neutral/100",
+          "type": "COLOR",
+          "values": {
+            "Value": "#eef0f3"
+          }
+        },
+        {
+          "name": "color/neutral/200",
+          "type": "COLOR",
+          "values": {
+            "Value": "#e7e9ee"
+          }
+        },
+        {
+          "name": "color/neutral/300",
+          "type": "COLOR",
+          "values": {
+            "Value": "#d5d9e0"
+          }
+        },
+        {
+          "name": "color/neutral/400",
+          "type": "COLOR",
+          "values": {
+            "Value": "#c9cdd4"
+          }
+        },
+        {
+          "name": "color/neutral/500",
+          "type": "COLOR",
+          "values": {
+            "Value": "#9aa1ac"
+          }
+        },
+        {
+          "name": "color/neutral/600",
+          "type": "COLOR",
+          "values": {
+            "Value": "#6b7280"
+          }
+        },
+        {
+          "name": "color/neutral/800",
+          "type": "COLOR",
+          "values": {
+            "Value": "#2a3142"
+          }
+        },
+        {
+          "name": "color/neutral/950",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0b1220"
+          }
+        },
+        {
+          "name": "color/neutral-dark/50",
+          "type": "COLOR",
+          "values": {
+            "Value": "#eceef2"
+          }
+        },
+        {
+          "name": "color/neutral-dark/100",
+          "type": "COLOR",
+          "values": {
+            "Value": "#c9ced7"
+          }
+        },
+        {
+          "name": "color/neutral-dark/200",
+          "type": "COLOR",
+          "values": {
+            "Value": "#8a92a0"
+          }
+        },
+        {
+          "name": "color/neutral-dark/300",
+          "type": "COLOR",
+          "values": {
+            "Value": "#6a727e"
+          }
+        },
+        {
+          "name": "color/neutral-dark/400",
+          "type": "COLOR",
+          "values": {
+            "Value": "#3a414d"
+          }
+        },
+        {
+          "name": "color/neutral-dark/500",
+          "type": "COLOR",
+          "values": {
+            "Value": "#2a323f"
+          }
+        },
+        {
+          "name": "color/neutral-dark/600",
+          "type": "COLOR",
+          "values": {
+            "Value": "#1e242e"
+          }
+        },
+        {
+          "name": "color/neutral-dark/700",
+          "type": "COLOR",
+          "values": {
+            "Value": "#181d25"
+          }
+        },
+        {
+          "name": "color/neutral-dark/800",
+          "type": "COLOR",
+          "values": {
+            "Value": "#161b23"
+          }
+        },
+        {
+          "name": "color/neutral-dark/850",
+          "type": "COLOR",
+          "values": {
+            "Value": "#11151c"
+          }
+        },
+        {
+          "name": "color/neutral-dark/900",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0e1218"
+          }
+        },
+        {
+          "name": "color/neutral-dark/950",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0a0d12"
+          }
+        },
         {
           "name": "color/green/500",
           "type": "COLOR",
-          "values": { "Value": "#28ad5e" },
+          "values": {
+            "Value": "#28ad5e"
+          },
           "description": "Status positive（OKLCH 0.66 0.16 152）"
         },
         {
           "name": "color/red/500",
           "type": "COLOR",
-          "values": { "Value": "#e64343" },
+          "values": {
+            "Value": "#e64343"
+          },
           "description": "Status negative（OKLCH 0.62 0.20 25）"
         },
         {
           "name": "color/orange/500",
           "type": "COLOR",
-          "values": { "Value": "#e38f00" },
+          "values": {
+            "Value": "#e38f00"
+          },
           "description": "Status warning（OKLCH 0.72 0.16 70）"
         },
-        { "name": "color/white", "type": "COLOR", "values": { "Value": "#ffffff" } },
-        { "name": "color/black", "type": "COLOR", "values": { "Value": "#000000" } },
-        { "name": "color/blue/600-a8", "type": "COLOR", "values": { "Value": "#0e4fe714" } },
-        { "name": "color/blue-dark/ink-a20", "type": "COLOR", "values": { "Value": "#7aa8f533" } },
-
-        { "name": "spacing/0", "type": "FLOAT", "values": { "Value": 0 } },
-        { "name": "spacing/2", "type": "FLOAT", "values": { "Value": 2 } },
-        { "name": "spacing/4", "type": "FLOAT", "values": { "Value": 4 } },
-        { "name": "spacing/6", "type": "FLOAT", "values": { "Value": 6 } },
-        { "name": "spacing/8", "type": "FLOAT", "values": { "Value": 8 } },
-        { "name": "spacing/10", "type": "FLOAT", "values": { "Value": 10 } },
-        { "name": "spacing/12", "type": "FLOAT", "values": { "Value": 12 } },
-        { "name": "spacing/14", "type": "FLOAT", "values": { "Value": 14 } },
-        { "name": "spacing/16", "type": "FLOAT", "values": { "Value": 16 } },
-        { "name": "spacing/18", "type": "FLOAT", "values": { "Value": 18 } },
-        { "name": "spacing/22", "type": "FLOAT", "values": { "Value": 22 } },
-        { "name": "spacing/24", "type": "FLOAT", "values": { "Value": 24 } },
-        { "name": "spacing/28", "type": "FLOAT", "values": { "Value": 28 } },
-        { "name": "spacing/40", "type": "FLOAT", "values": { "Value": 40 } },
-        { "name": "spacing/60", "type": "FLOAT", "values": { "Value": 60 } },
-
-        { "name": "radius/none", "type": "FLOAT", "values": { "Value": 0 } },
-        { "name": "radius/xs", "type": "FLOAT", "values": { "Value": 2 } },
-        { "name": "radius/sm", "type": "FLOAT", "values": { "Value": 4 } },
-        { "name": "radius/md", "type": "FLOAT", "values": { "Value": 5 } },
-        { "name": "radius/lg", "type": "FLOAT", "values": { "Value": 6 } },
-        { "name": "radius/lg-2", "type": "FLOAT", "values": { "Value": 7 } },
+        {
+          "name": "color/white",
+          "type": "COLOR",
+          "values": {
+            "Value": "#ffffff"
+          }
+        },
+        {
+          "name": "color/black",
+          "type": "COLOR",
+          "values": {
+            "Value": "#000000"
+          }
+        },
+        {
+          "name": "spacing/0",
+          "type": "FLOAT",
+          "values": {
+            "Value": 0
+          }
+        },
+        {
+          "name": "spacing/2",
+          "type": "FLOAT",
+          "values": {
+            "Value": 2
+          }
+        },
+        {
+          "name": "spacing/4",
+          "type": "FLOAT",
+          "values": {
+            "Value": 4
+          }
+        },
+        {
+          "name": "spacing/6",
+          "type": "FLOAT",
+          "values": {
+            "Value": 6
+          }
+        },
+        {
+          "name": "spacing/8",
+          "type": "FLOAT",
+          "values": {
+            "Value": 8
+          }
+        },
+        {
+          "name": "spacing/10",
+          "type": "FLOAT",
+          "values": {
+            "Value": 10
+          }
+        },
+        {
+          "name": "spacing/12",
+          "type": "FLOAT",
+          "values": {
+            "Value": 12
+          }
+        },
+        {
+          "name": "spacing/14",
+          "type": "FLOAT",
+          "values": {
+            "Value": 14
+          }
+        },
+        {
+          "name": "spacing/16",
+          "type": "FLOAT",
+          "values": {
+            "Value": 16
+          }
+        },
+        {
+          "name": "spacing/18",
+          "type": "FLOAT",
+          "values": {
+            "Value": 18
+          }
+        },
+        {
+          "name": "spacing/22",
+          "type": "FLOAT",
+          "values": {
+            "Value": 22
+          }
+        },
+        {
+          "name": "spacing/24",
+          "type": "FLOAT",
+          "values": {
+            "Value": 24
+          }
+        },
+        {
+          "name": "spacing/28",
+          "type": "FLOAT",
+          "values": {
+            "Value": 28
+          }
+        },
+        {
+          "name": "spacing/40",
+          "type": "FLOAT",
+          "values": {
+            "Value": 40
+          }
+        },
+        {
+          "name": "spacing/60",
+          "type": "FLOAT",
+          "values": {
+            "Value": 60
+          }
+        },
+        {
+          "name": "radius/none",
+          "type": "FLOAT",
+          "values": {
+            "Value": 0
+          }
+        },
+        {
+          "name": "radius/xs",
+          "type": "FLOAT",
+          "values": {
+            "Value": 2
+          }
+        },
+        {
+          "name": "radius/sm",
+          "type": "FLOAT",
+          "values": {
+            "Value": 4
+          }
+        },
+        {
+          "name": "radius/md",
+          "type": "FLOAT",
+          "values": {
+            "Value": 5
+          }
+        },
+        {
+          "name": "radius/lg",
+          "type": "FLOAT",
+          "values": {
+            "Value": 6
+          }
+        },
+        {
+          "name": "radius/lg-2",
+          "type": "FLOAT",
+          "values": {
+            "Value": 7
+          }
+        },
         {
           "name": "radius/xl",
           "type": "FLOAT",
-          "values": { "Value": 8 },
+          "values": {
+            "Value": 8
+          },
           "description": "Card / Button 預設"
         },
         {
           "name": "radius/2xl",
           "type": "FLOAT",
-          "values": { "Value": 14 },
+          "values": {
+            "Value": 14
+          },
           "description": "Tweaks panel"
         },
         {
           "name": "radius/full",
           "type": "FLOAT",
-          "values": { "Value": 999 },
+          "values": {
+            "Value": 999
+          },
           "description": "Pill / badge"
         },
-
-        { "name": "fontSize/2xs", "type": "FLOAT", "values": { "Value": 10 } },
-        { "name": "fontSize/xs", "type": "FLOAT", "values": { "Value": 10.5 } },
-        { "name": "fontSize/sm", "type": "FLOAT", "values": { "Value": 11.5 } },
-        { "name": "fontSize/md", "type": "FLOAT", "values": { "Value": 13 } },
+        {
+          "name": "fontSize/2xs",
+          "type": "FLOAT",
+          "values": {
+            "Value": 10
+          }
+        },
+        {
+          "name": "fontSize/xs",
+          "type": "FLOAT",
+          "values": {
+            "Value": 10.5
+          }
+        },
+        {
+          "name": "fontSize/sm",
+          "type": "FLOAT",
+          "values": {
+            "Value": 11.5
+          }
+        },
+        {
+          "name": "fontSize/md",
+          "type": "FLOAT",
+          "values": {
+            "Value": 13
+          }
+        },
         {
           "name": "fontSize/base",
           "type": "FLOAT",
-          "values": { "Value": 14 },
+          "values": {
+            "Value": 14
+          },
           "description": "預設 body"
         },
-        { "name": "fontSize/lg", "type": "FLOAT", "values": { "Value": 18 } },
-        { "name": "fontSize/xl", "type": "FLOAT", "values": { "Value": 22 } },
-        { "name": "fontSize/2xl", "type": "FLOAT", "values": { "Value": 24 } },
-        { "name": "fontSize/3xl", "type": "FLOAT", "values": { "Value": 28 } },
-
-        { "name": "fontWeight/regular", "type": "FLOAT", "values": { "Value": 400 } },
+        {
+          "name": "fontSize/lg",
+          "type": "FLOAT",
+          "values": {
+            "Value": 18
+          }
+        },
+        {
+          "name": "fontSize/xl",
+          "type": "FLOAT",
+          "values": {
+            "Value": 22
+          }
+        },
+        {
+          "name": "fontSize/2xl",
+          "type": "FLOAT",
+          "values": {
+            "Value": 24
+          }
+        },
+        {
+          "name": "fontSize/3xl",
+          "type": "FLOAT",
+          "values": {
+            "Value": 28
+          }
+        },
+        {
+          "name": "fontWeight/regular",
+          "type": "FLOAT",
+          "values": {
+            "Value": 400
+          }
+        },
         {
           "name": "fontWeight/book",
           "type": "FLOAT",
-          "values": { "Value": 450 },
+          "values": {
+            "Value": 450
+          },
           "description": "Inter 沒原生 450 — Figma 端 fallback 到 Medium(500)"
         },
-        { "name": "fontWeight/medium", "type": "FLOAT", "values": { "Value": 500 } },
+        {
+          "name": "fontWeight/medium",
+          "type": "FLOAT",
+          "values": {
+            "Value": 500
+          }
+        },
         {
           "name": "fontWeight/book-bold",
           "type": "FLOAT",
-          "values": { "Value": 550 },
+          "values": {
+            "Value": 550
+          },
           "description": "Inter 沒原生 550 — Figma 端 fallback 到 Semi Bold(600)"
         },
-        { "name": "fontWeight/semibold", "type": "FLOAT", "values": { "Value": 600 } },
-
+        {
+          "name": "fontWeight/semibold",
+          "type": "FLOAT",
+          "values": {
+            "Value": 600
+          }
+        },
         {
           "name": "lineHeight/tight",
           "type": "FLOAT",
-          "values": { "Value": 1.1 },
+          "values": {
+            "Value": 1.1
+          },
           "description": "大數字"
         },
         {
           "name": "lineHeight/snug",
           "type": "FLOAT",
-          "values": { "Value": 1.15 },
+          "values": {
+            "Value": 1.15
+          },
           "description": "Hero h1"
         },
         {
           "name": "lineHeight/normal",
           "type": "FLOAT",
-          "values": { "Value": 1.2 },
+          "values": {
+            "Value": 1.2
+          },
           "description": "標題"
         },
         {
           "name": "lineHeight/relaxed",
           "type": "FLOAT",
-          "values": { "Value": 1.3 },
+          "values": {
+            "Value": 1.3
+          },
           "description": "Todo title"
         },
         {
           "name": "lineHeight/loose",
           "type": "FLOAT",
-          "values": { "Value": 1.5 },
+          "values": {
+            "Value": 1.5
+          },
           "description": "預設 body"
         },
-
         {
           "name": "letterSpacing/tightest",
           "type": "FLOAT",
-          "values": { "Value": -2.5 },
+          "values": {
+            "Value": -2.5
+          },
           "description": "Hero h1、card num（≈ -0.025em）"
         },
         {
           "name": "letterSpacing/tighter",
           "type": "FLOAT",
-          "values": { "Value": -2 },
+          "values": {
+            "Value": -2
+          },
           "description": "KPI num（≈ -0.02em）"
         },
         {
           "name": "letterSpacing/tight",
           "type": "FLOAT",
-          "values": { "Value": -1 },
+          "values": {
+            "Value": -1
+          },
           "description": "Section h2（≈ -0.01em）"
         },
         {
           "name": "letterSpacing/snug",
           "type": "FLOAT",
-          "values": { "Value": -0.5 },
+          "values": {
+            "Value": -0.5
+          },
           "description": "預設 body（≈ -0.005em）"
         },
-        { "name": "letterSpacing/normal", "type": "FLOAT", "values": { "Value": 0 } },
+        {
+          "name": "letterSpacing/normal",
+          "type": "FLOAT",
+          "values": {
+            "Value": 0
+          }
+        },
         {
           "name": "letterSpacing/wide",
           "type": "FLOAT",
-          "values": { "Value": 2 },
+          "values": {
+            "Value": 2
+          },
           "description": "Kbd（≈ 0.02em）"
         },
         {
           "name": "letterSpacing/wider",
           "type": "FLOAT",
-          "values": { "Value": 4 },
+          "values": {
+            "Value": 4
+          },
           "description": "Cal day-of-week（≈ 0.04em）"
         },
         {
           "name": "letterSpacing/widest",
           "type": "FLOAT",
-          "values": { "Value": 8 },
+          "values": {
+            "Value": 8
+          },
           "description": "Section eyebrow uppercase（≈ 0.08em）"
         },
-
-        { "name": "borderWidth/0", "type": "FLOAT", "values": { "Value": 0 } },
+        {
+          "name": "borderWidth/0",
+          "type": "FLOAT",
+          "values": {
+            "Value": 0
+          }
+        },
         {
           "name": "borderWidth/hairline",
           "type": "FLOAT",
-          "values": { "Value": 0.5 },
+          "values": {
+            "Value": 0.5
+          },
           "description": "Tweaks panel inner border"
         },
         {
           "name": "borderWidth/thin",
           "type": "FLOAT",
-          "values": { "Value": 1 },
+          "values": {
+            "Value": 1
+          },
           "description": "預設 border"
         },
         {
           "name": "borderWidth/thick",
           "type": "FLOAT",
-          "values": { "Value": 2 },
+          "values": {
+            "Value": 2
+          },
           "description": "Focus ring"
         },
-
-        { "name": "opacity/0", "type": "FLOAT", "values": { "Value": 0 } },
+        {
+          "name": "opacity/0",
+          "type": "FLOAT",
+          "values": {
+            "Value": 0
+          }
+        },
         {
           "name": "opacity/14",
           "type": "FLOAT",
-          "values": { "Value": 0.14 },
+          "values": {
+            "Value": 0.14
+          },
           "description": "Status badge background"
         },
         {
           "name": "opacity/15",
           "type": "FLOAT",
-          "values": { "Value": 0.15 },
+          "values": {
+            "Value": 0.15
+          },
           "description": "Scrollbar thumb"
         },
         {
           "name": "opacity/25",
           "type": "FLOAT",
-          "values": { "Value": 0.25 },
+          "values": {
+            "Value": 0.25
+          },
           "description": "Scrollbar thumb hover"
         },
         {
           "name": "opacity/35",
           "type": "FLOAT",
-          "values": { "Value": 0.35 },
+          "values": {
+            "Value": 0.35
+          },
           "description": "Dark selection"
         },
         {
           "name": "opacity/40",
           "type": "FLOAT",
-          "values": { "Value": 0.4 },
+          "values": {
+            "Value": 0.4
+          },
           "description": "Light focus ring / scrim"
         },
         {
           "name": "opacity/50",
           "type": "FLOAT",
-          "values": { "Value": 0.5 },
+          "values": {
+            "Value": 0.5
+          },
           "description": "Dark focus ring"
         },
         {
           "name": "opacity/60",
           "type": "FLOAT",
-          "values": { "Value": 0.6 },
+          "values": {
+            "Value": 0.6
+          },
           "description": "Modal overlay"
         },
         {
           "name": "opacity/75",
           "type": "FLOAT",
-          "values": { "Value": 0.75 },
+          "values": {
+            "Value": 0.75
+          },
           "description": "Dark modal overlay"
         },
-        { "name": "opacity/100", "type": "FLOAT", "values": { "Value": 1 } },
-
+        {
+          "name": "opacity/100",
+          "type": "FLOAT",
+          "values": {
+            "Value": 1
+          }
+        },
+        {
+          "name": "color/blue/600-a8",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0e4fe714"
+          },
+          "description": "Primary 8% alpha — chart-area light"
+        },
+        {
+          "name": "color/blue-dark/ink-a20",
+          "type": "COLOR",
+          "values": {
+            "Value": "#7aa8f533"
+          },
+          "description": "Dark ink 20% alpha — chart-area dark"
+        },
         {
           "name": "iconSize/xs",
           "type": "FLOAT",
-          "scopes": ["WIDTH_HEIGHT"],
-          "values": { "Value": 12 }
+          "values": {
+            "Value": 12
+          },
+          "scopes": ["WIDTH_HEIGHT"]
         },
         {
           "name": "iconSize/sm",
           "type": "FLOAT",
-          "scopes": ["WIDTH_HEIGHT"],
-          "values": { "Value": 14 }
+          "values": {
+            "Value": 14
+          },
+          "scopes": ["WIDTH_HEIGHT"]
         },
         {
           "name": "iconSize/md",
           "type": "FLOAT",
-          "scopes": ["WIDTH_HEIGHT"],
-          "values": { "Value": 16 }
+          "values": {
+            "Value": 16
+          },
+          "scopes": ["WIDTH_HEIGHT"]
         },
         {
           "name": "iconSize/lg",
           "type": "FLOAT",
-          "scopes": ["WIDTH_HEIGHT"],
-          "values": { "Value": 17 }
+          "values": {
+            "Value": 17
+          },
+          "scopes": ["WIDTH_HEIGHT"]
         },
         {
           "name": "iconSize/xl",
           "type": "FLOAT",
-          "scopes": ["WIDTH_HEIGHT"],
-          "values": { "Value": 18 }
+          "values": {
+            "Value": 18
+          },
+          "scopes": ["WIDTH_HEIGHT"]
         },
         {
           "name": "iconSize/2xl",
           "type": "FLOAT",
-          "scopes": ["WIDTH_HEIGHT"],
-          "values": { "Value": 20 }
+          "values": {
+            "Value": 20
+          },
+          "scopes": ["WIDTH_HEIGHT"]
         },
         {
           "name": "iconSize/3xl",
           "type": "FLOAT",
-          "scopes": ["WIDTH_HEIGHT"],
-          "values": { "Value": 24 }
+          "values": {
+            "Value": 24
+          },
+          "scopes": ["WIDTH_HEIGHT"]
+        },
+        {
+          "name": "color/blue/700",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0935ad"
+          },
+          "description": "Brand deep（比 brand 深一階）"
+        },
+        {
+          "name": "color/blue-dark/pale",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0f1e40"
+          },
+          "description": "Dark brand-pale 襯底"
+        },
+        {
+          "name": "color/blue/600-a00",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0e4fe700"
+          },
+          "description": "Primary 0% alpha — 漸層起點"
+        },
+        {
+          "name": "color/blue/600-a30",
+          "type": "COLOR",
+          "values": {
+            "Value": "#0e4fe74d"
+          },
+          "description": "Primary 30% alpha"
+        },
+        {
+          "name": "color/blue-dark/ink-a40",
+          "type": "COLOR",
+          "values": {
+            "Value": "#7aa8f566"
+          },
+          "description": "Dark ink 40% alpha"
+        },
+        {
+          "name": "color/blue-dark/ink-a00",
+          "type": "COLOR",
+          "values": {
+            "Value": "#7aa8f500"
+          },
+          "description": "Dark ink 0% alpha — 漸層起點"
         }
       ]
     },
-
     {
       "name": "Theme",
       "modes": ["Light", "Dark"],
@@ -380,462 +897,707 @@
         {
           "name": "bg/page",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/50", "Dark": "→ color/neutral-dark/950" }
+          "values": {
+            "Light": "→ color/neutral/50",
+            "Dark": "→ color/neutral-dark/950"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "bg/surface",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/0", "Dark": "→ color/neutral-dark/850" }
+          "values": {
+            "Light": "→ color/neutral/0",
+            "Dark": "→ color/neutral-dark/850"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "bg/secondary",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/25", "Dark": "→ color/neutral-dark/900" }
+          "values": {
+            "Light": "→ color/neutral/25",
+            "Dark": "→ color/neutral-dark/900"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "bg/hover",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/75", "Dark": "→ color/neutral-dark/800" }
+          "values": {
+            "Light": "→ color/neutral/75",
+            "Dark": "→ color/neutral-dark/800"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "bg/brand",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/blue/600", "Dark": "→ color/blue/600" }
+          "values": {
+            "Light": "→ color/blue/600",
+            "Dark": "→ color/blue/600"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "bg/brand-soft",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/blue/100", "Dark": "→ color/blue-dark/soft" }
+          "values": {
+            "Light": "→ color/blue/100",
+            "Dark": "→ color/blue-dark/soft"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
-        {
-          "name": "bg/chart-area",
-          "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/blue/600-a8", "Dark": "→ color/blue-dark/ink-a20" }
-        },
-        {
-          "name": "bg/inverse",
-          "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/950", "Dark": "→ color/neutral-dark/50" }
-        },
-
         {
           "name": "text/primary",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/neutral/950", "Dark": "→ color/neutral-dark/50" }
+          "values": {
+            "Light": "→ color/neutral/950",
+            "Dark": "→ color/neutral-dark/50"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/secondary",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/neutral/800", "Dark": "→ color/neutral-dark/100" }
+          "values": {
+            "Light": "→ color/neutral/800",
+            "Dark": "→ color/neutral-dark/100"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/muted",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/neutral/600", "Dark": "→ color/neutral-dark/200" }
+          "values": {
+            "Light": "→ color/neutral/600",
+            "Dark": "→ color/neutral-dark/200"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/faint",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/neutral/400", "Dark": "→ color/neutral-dark/400" }
+          "values": {
+            "Light": "→ color/neutral/400",
+            "Dark": "→ color/neutral-dark/400"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/brand",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/blue/900", "Dark": "→ color/blue-dark/ink" }
+          "values": {
+            "Light": "→ color/blue/900",
+            "Dark": "→ color/blue-dark/ink"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/on-brand",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/white", "Dark": "→ color/white" }
+          "values": {
+            "Light": "→ color/white",
+            "Dark": "→ color/white"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/positive",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/green/500", "Dark": "→ color/green/500" }
+          "values": {
+            "Light": "→ color/green/500",
+            "Dark": "→ color/green/500"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/negative",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/red/500", "Dark": "→ color/red/500" }
+          "values": {
+            "Light": "→ color/red/500",
+            "Dark": "→ color/red/500"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/warning",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/orange/500", "Dark": "→ color/orange/500" }
+          "values": {
+            "Light": "→ color/orange/500",
+            "Dark": "→ color/orange/500"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "text/link",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/blue/600", "Dark": "→ color/blue/600" }
+          "values": {
+            "Light": "→ color/blue/600",
+            "Dark": "→ color/blue/600"
+          },
+          "scopes": ["TEXT_FILL"]
         },
-        {
-          "name": "text/on-inverse",
-          "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/white", "Dark": "→ color/neutral/950" }
-        },
-
         {
           "name": "border/default",
           "type": "COLOR",
-          "scopes": ["STROKE_COLOR"],
-          "values": { "Light": "→ color/neutral/200", "Dark": "→ color/neutral-dark/600" }
+          "values": {
+            "Light": "→ color/neutral/200",
+            "Dark": "→ color/neutral-dark/600"
+          },
+          "scopes": ["STROKE_COLOR"]
         },
         {
           "name": "border/strong",
           "type": "COLOR",
-          "scopes": ["STROKE_COLOR"],
-          "values": { "Light": "→ color/neutral/300", "Dark": "→ color/neutral-dark/500" }
+          "values": {
+            "Light": "→ color/neutral/300",
+            "Dark": "→ color/neutral-dark/500"
+          },
+          "scopes": ["STROKE_COLOR"]
         },
         {
           "name": "border/divider",
           "type": "COLOR",
-          "scopes": ["STROKE_COLOR"],
-          "values": { "Light": "→ color/neutral/100", "Dark": "→ color/neutral-dark/700" }
+          "values": {
+            "Light": "→ color/neutral/100",
+            "Dark": "→ color/neutral-dark/700"
+          },
+          "scopes": ["STROKE_COLOR"]
         },
         {
           "name": "border/focus",
           "type": "COLOR",
-          "scopes": ["STROKE_COLOR"],
-          "values": { "Light": "→ color/blue/600", "Dark": "→ color/blue/600" }
+          "values": {
+            "Light": "→ color/blue/600",
+            "Dark": "→ color/blue/600"
+          },
+          "scopes": ["STROKE_COLOR"]
         },
-
         {
           "name": "badge/positive",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/green/500", "Dark": "→ color/green/500" }
+          "values": {
+            "Light": "→ color/green/500",
+            "Dark": "→ color/green/500"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "badge/positive-bg",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#28ad5e24", "Dark": "#28ad5e24" }
+          "values": {
+            "Light": "#28ad5e24",
+            "Dark": "#28ad5e24"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "badge/negative",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/red/500", "Dark": "→ color/red/500" }
+          "values": {
+            "Light": "→ color/red/500",
+            "Dark": "→ color/red/500"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "badge/negative-bg",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#e6434324", "Dark": "#e6434324" }
+          "values": {
+            "Light": "#e6434324",
+            "Dark": "#e6434324"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "badge/warning",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/orange/500", "Dark": "→ color/orange/500" }
+          "values": {
+            "Light": "→ color/orange/500",
+            "Dark": "→ color/orange/500"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "badge/warning-bg",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#e38f0024", "Dark": "#e38f0024" }
+          "values": {
+            "Light": "#e38f0024",
+            "Dark": "#e38f0024"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "badge/brand",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/blue/900", "Dark": "→ color/blue-dark/ink" }
+          "values": {
+            "Light": "→ color/blue/900",
+            "Dark": "→ color/blue-dark/ink"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "badge/brand-bg",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/blue/100", "Dark": "→ color/blue-dark/soft" }
+          "values": {
+            "Light": "→ color/blue/100",
+            "Dark": "→ color/blue-dark/soft"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "badge/neutral",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/neutral/600", "Dark": "→ color/neutral-dark/200" }
+          "values": {
+            "Light": "→ color/neutral/600",
+            "Dark": "→ color/neutral-dark/200"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "badge/neutral-bg",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/75", "Dark": "→ color/neutral-dark/800" }
+          "values": {
+            "Light": "→ color/neutral/75",
+            "Dark": "→ color/neutral-dark/800"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
-
         {
           "name": "heatmap/l0",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/100", "Dark": "→ color/neutral-dark/700" }
+          "values": {
+            "Light": "→ color/neutral/100",
+            "Dark": "→ color/neutral-dark/700"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "heatmap/l1",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#c1d3f5", "Dark": "#192948" }
+          "values": {
+            "Light": "#c1d3f5",
+            "Dark": "#192948"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "heatmap/l2",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#95b5f4", "Dark": "#19346d" }
+          "values": {
+            "Light": "#95b5f4",
+            "Dark": "#19346d"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "heatmap/l3",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#5e8ef0", "Dark": "#17409e" }
+          "values": {
+            "Light": "#5e8ef0",
+            "Dark": "#17409e"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "heatmap/l4",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/blue/600", "Dark": "→ color/blue/600" }
+          "values": {
+            "Light": "→ color/blue/600",
+            "Dark": "→ color/blue/600"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
-
         {
           "name": "state/disabled-bg",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/neutral/25", "Dark": "→ color/neutral-dark/900" }
+          "values": {
+            "Light": "→ color/neutral/25",
+            "Dark": "→ color/neutral-dark/900"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "state/disabled-text",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL"],
-          "values": { "Light": "→ color/neutral/500", "Dark": "→ color/neutral-dark/300" }
+          "values": {
+            "Light": "→ color/neutral/500",
+            "Dark": "→ color/neutral-dark/300"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "state/disabled-border",
           "type": "COLOR",
-          "scopes": ["STROKE_COLOR"],
-          "values": { "Light": "→ color/neutral/200", "Dark": "→ color/neutral-dark/600" }
+          "values": {
+            "Light": "→ color/neutral/200",
+            "Dark": "→ color/neutral-dark/600"
+          },
+          "scopes": ["STROKE_COLOR"]
         },
         {
           "name": "state/scrim",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#0a0d1266", "Dark": "#00000099" }
+          "values": {
+            "Light": "#0a0d1266",
+            "Dark": "#00000099"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "state/modal-overlay",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#0a0d1299", "Dark": "#000000bf" }
+          "values": {
+            "Light": "#0a0d1299",
+            "Dark": "#000000bf"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "state/selection",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "→ color/blue/100", "Dark": "#0e4fe759" }
+          "values": {
+            "Light": "→ color/blue/100",
+            "Dark": "#0e4fe759"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "state/scrollbar-thumb",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#00000026", "Dark": "#ffffff26" }
+          "values": {
+            "Light": "#00000026",
+            "Dark": "#ffffff26"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
         {
           "name": "state/scrollbar-hover",
           "type": "COLOR",
-          "scopes": ["FRAME_FILL", "SHAPE_FILL"],
-          "values": { "Light": "#00000040", "Dark": "#ffffff40" }
+          "values": {
+            "Light": "#00000040",
+            "Dark": "#ffffff40"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         },
-
+        {
+          "name": "bg/chart-area",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/blue/600-a8",
+            "Dark": "→ color/blue-dark/ink-a20"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
+        },
         {
           "name": "icon/primary",
           "type": "COLOR",
-          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ text/primary", "Dark": "→ text/primary" }
-        },
-        {
-          "name": "icon/secondary",
-          "type": "COLOR",
-          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ text/secondary", "Dark": "→ text/secondary" }
+          "values": {
+            "Light": "→ text/primary",
+            "Dark": "→ text/primary"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
         },
         {
           "name": "icon/muted",
           "type": "COLOR",
-          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ text/muted", "Dark": "→ text/muted" }
+          "values": {
+            "Light": "→ text/muted",
+            "Dark": "→ text/muted"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
         },
         {
           "name": "icon/brand",
           "type": "COLOR",
-          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ text/brand", "Dark": "→ text/brand" }
+          "values": {
+            "Light": "→ text/brand",
+            "Dark": "→ text/brand"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
         },
         {
           "name": "icon/on-brand",
           "type": "COLOR",
-          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ text/on-brand", "Dark": "→ text/on-brand" }
+          "values": {
+            "Light": "→ text/on-brand",
+            "Dark": "→ text/on-brand"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
         },
         {
           "name": "icon/positive",
           "type": "COLOR",
-          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ text/positive", "Dark": "→ text/positive" }
+          "values": {
+            "Light": "→ text/positive",
+            "Dark": "→ text/positive"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
         },
         {
           "name": "icon/negative",
           "type": "COLOR",
-          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ text/negative", "Dark": "→ text/negative" }
+          "values": {
+            "Light": "→ text/negative",
+            "Dark": "→ text/negative"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
+        },
+        {
+          "name": "bg/inverse",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/neutral/950",
+            "Dark": "→ color/neutral-dark/50"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
+        },
+        {
+          "name": "text/on-inverse",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/white",
+            "Dark": "→ color/neutral/950"
+          },
+          "scopes": ["TEXT_FILL"]
         },
         {
           "name": "icon/on-inverse",
           "type": "COLOR",
-          "scopes": ["TEXT_FILL", "STROKE_COLOR"],
-          "values": { "Light": "→ color/white", "Dark": "→ color/neutral/950" }
+          "values": {
+            "Light": "→ color/white",
+            "Dark": "→ color/neutral/950"
+          },
+          "scopes": ["TEXT_FILL", "STROKE_COLOR"]
+        },
+        {
+          "name": "icon/secondary",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ text/secondary",
+            "Dark": "→ text/secondary"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
+        },
+        {
+          "name": "bg/brand-deep",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/blue/700",
+            "Dark": "→ color/blue/400"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
+        },
+        {
+          "name": "bg/brand-pale",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/blue/50",
+            "Dark": "→ color/blue-dark/pale"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
+        },
+        {
+          "name": "text/brand-deep",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/blue/700",
+            "Dark": "→ color/blue/400"
+          },
+          "scopes": ["TEXT_FILL"]
+        },
+        {
+          "name": "text/brand-pale",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/blue/50",
+            "Dark": "→ color/blue-dark/pale"
+          },
+          "scopes": ["TEXT_FILL"]
+        },
+        {
+          "name": "icon/brand-deep",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ text/brand-deep",
+            "Dark": "→ text/brand-deep"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
+        },
+        {
+          "name": "icon/brand-pale",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ text/brand-pale",
+            "Dark": "→ text/brand-pale"
+          },
+          "scopes": ["SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"]
+        },
+        {
+          "name": "bg/chart-area-start",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/blue/600-a30",
+            "Dark": "→ color/blue-dark/ink-a40"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
+        },
+        {
+          "name": "bg/chart-area-end",
+          "type": "COLOR",
+          "values": {
+            "Light": "→ color/blue/600-a00",
+            "Dark": "→ color/blue-dark/ink-a00"
+          },
+          "scopes": ["FRAME_FILL", "SHAPE_FILL"]
         }
       ]
     },
-
     {
       "name": "Device",
       "modes": ["Desktop", "Tablet", "Mobile"],
       "defaultMode": "Desktop",
-      "$note": "三個 mode 目前值都相同（從 alias 看 Tablet/Mobile = Desktop）。RWD 結構已預留，但實際差異化未做。",
       "variables": [
         {
           "name": "space/page",
           "type": "FLOAT",
-          "scopes": ["GAP"],
           "values": {
             "Desktop": "→ spacing/28",
             "Tablet": "→ spacing/28",
             "Mobile": "→ spacing/28"
-          }
+          },
+          "scopes": ["GAP"]
         },
         {
           "name": "space/section",
           "type": "FLOAT",
-          "scopes": ["GAP"],
           "values": {
             "Desktop": "→ spacing/28",
             "Tablet": "→ spacing/28",
             "Mobile": "→ spacing/28"
-          }
+          },
+          "scopes": ["GAP"]
         },
         {
           "name": "space/card",
           "type": "FLOAT",
-          "scopes": ["GAP"],
           "values": {
             "Desktop": "→ spacing/18",
             "Tablet": "→ spacing/18",
             "Mobile": "→ spacing/18"
-          }
+          },
+          "scopes": ["GAP"]
         },
         {
           "name": "space/card-gap",
           "type": "FLOAT",
-          "scopes": ["GAP"],
           "values": {
             "Desktop": "→ spacing/14",
             "Tablet": "→ spacing/14",
             "Mobile": "→ spacing/14"
-          }
+          },
+          "scopes": ["GAP"]
         },
         {
           "name": "space/grid",
           "type": "FLOAT",
-          "scopes": ["GAP"],
           "values": {
             "Desktop": "→ spacing/16",
             "Tablet": "→ spacing/16",
             "Mobile": "→ spacing/16"
-          }
+          },
+          "scopes": ["GAP"]
         },
         {
           "name": "space/inline-sm",
           "type": "FLOAT",
-          "scopes": ["GAP"],
-          "values": { "Desktop": "→ spacing/4", "Tablet": "→ spacing/4", "Mobile": "→ spacing/4" }
+          "values": {
+            "Desktop": "→ spacing/4",
+            "Tablet": "→ spacing/4",
+            "Mobile": "→ spacing/4"
+          },
+          "scopes": ["GAP"]
         },
         {
           "name": "space/inline-md",
           "type": "FLOAT",
-          "scopes": ["GAP"],
-          "values": { "Desktop": "→ spacing/8", "Tablet": "→ spacing/8", "Mobile": "→ spacing/8" }
+          "values": {
+            "Desktop": "→ spacing/8",
+            "Tablet": "→ spacing/8",
+            "Mobile": "→ spacing/8"
+          },
+          "scopes": ["GAP"]
         },
         {
           "name": "space/inline-lg",
           "type": "FLOAT",
-          "scopes": ["GAP"],
           "values": {
             "Desktop": "→ spacing/10",
             "Tablet": "→ spacing/10",
             "Mobile": "→ spacing/10"
-          }
+          },
+          "scopes": ["GAP"]
         },
-
         {
           "name": "corner/button",
           "type": "FLOAT",
-          "scopes": ["CORNER_RADIUS"],
-          "values": { "Desktop": "→ radius/xl", "Tablet": "→ radius/xl", "Mobile": "→ radius/xl" }
+          "values": {
+            "Desktop": "→ radius/xl",
+            "Tablet": "→ radius/xl",
+            "Mobile": "→ radius/xl"
+          },
+          "scopes": ["CORNER_RADIUS"]
         },
         {
           "name": "corner/card",
           "type": "FLOAT",
-          "scopes": ["CORNER_RADIUS"],
-          "values": { "Desktop": "→ radius/xl", "Tablet": "→ radius/xl", "Mobile": "→ radius/xl" }
+          "values": {
+            "Desktop": "→ radius/xl",
+            "Tablet": "→ radius/xl",
+            "Mobile": "→ radius/xl"
+          },
+          "scopes": ["CORNER_RADIUS"]
         },
         {
           "name": "corner/chip",
           "type": "FLOAT",
-          "scopes": ["CORNER_RADIUS"],
-          "values": { "Desktop": "→ radius/lg", "Tablet": "→ radius/lg", "Mobile": "→ radius/lg" }
+          "values": {
+            "Desktop": "→ radius/lg",
+            "Tablet": "→ radius/lg",
+            "Mobile": "→ radius/lg"
+          },
+          "scopes": ["CORNER_RADIUS"]
         },
         {
           "name": "corner/input",
           "type": "FLOAT",
-          "scopes": ["CORNER_RADIUS"],
           "values": {
             "Desktop": "→ radius/lg-2",
             "Tablet": "→ radius/lg-2",
             "Mobile": "→ radius/lg-2"
-          }
+          },
+          "scopes": ["CORNER_RADIUS"]
         },
         {
           "name": "corner/badge",
           "type": "FLOAT",
-          "scopes": ["CORNER_RADIUS"],
           "values": {
             "Desktop": "→ radius/full",
             "Tablet": "→ radius/full",
             "Mobile": "→ radius/full"
-          }
+          },
+          "scopes": ["CORNER_RADIUS"]
         },
         {
           "name": "corner/popover",
           "type": "FLOAT",
-          "scopes": ["CORNER_RADIUS"],
           "values": {
             "Desktop": "→ radius/2xl",
             "Tablet": "→ radius/2xl",
             "Mobile": "→ radius/2xl"
-          }
+          },
+          "scopes": ["CORNER_RADIUS"]
         }
       ]
     }

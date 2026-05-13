@@ -43,6 +43,16 @@
         "$value": "{color.blue.600-a8}",
         "$description": "圖表面積底色（Brand 8% alpha）"
       },
+      "chart-area-start": {
+        "$type": "color",
+        "$value": "{color.blue.600-a30}",
+        "$description": "圖表面積漸層起點（最濃，靠線端）"
+      },
+      "chart-area-end": {
+        "$type": "color",
+        "$value": "{color.blue.600-a00}",
+        "$description": "圖表面積漸層終點（完全透明，靠底端）"
+      },
       "inverse": {
         "$type": "color",
         "$value": "{color.neutral.950}",
@@ -274,13 +284,23 @@
       },
       "brand-pale": {
         "$type": "color",
-        "$value": "#0F1E40",
-        "$description": "Dark 中比 brand-soft 更深的襯底（freeze）"
+        "$value": "{color.blue-dark.pale}",
+        "$description": "Dark 中比 brand-soft 更深的襯底"
       },
       "chart-area": {
         "$type": "color",
         "$value": "{color.blue-dark.ink-a20}",
         "$description": "圖表面積底色（Dark ink 20% alpha）"
+      },
+      "chart-area-start": {
+        "$type": "color",
+        "$value": "{color.blue-dark.ink-a40}",
+        "$description": "圖表面積漸層起點 Dark（最濃）"
+      },
+      "chart-area-end": {
+        "$type": "color",
+        "$value": "{color.blue-dark.ink-a00}",
+        "$description": "圖表面積漸層終點 Dark（完全透明）"
       },
       "inverse": {
         "$type": "color",
@@ -306,8 +326,8 @@
       },
       "brand-pale": {
         "$type": "color",
-        "$value": "#0F1E40",
-        "$description": "Dark 中極深的 brand 文字色（freeze）"
+        "$value": "{color.blue-dark.pale}",
+        "$description": "Dark 中極深的 brand 文字色"
       },
       "on-brand": { "$type": "color", "$value": "{color.white}" },
       "positive": {
