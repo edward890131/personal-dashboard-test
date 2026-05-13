@@ -1,5 +1,5 @@
 // components.jsx — 儀表板的 bento 卡片元件
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { CountUp, ValueChart, PieDonut, Sparkline } from "./charts.jsx";
 // TodoRow 共用元件（首頁 TodoCard 跟 calendar TodoColumn 都用同一個 row 元件，避免兩處維護）
 import { TodoRow } from "./calendar-page.jsx";
@@ -105,8 +105,38 @@ function Sidebar({
 
 /* ---------------- Topbar ---------------- */
 function Topbar({ onMenu }) {
+  // 小網 scroll 隱藏邏輯：下滑藏、上滑顯、到頂強制顯
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    const THRESHOLD = 4; // 抖動容忍值，小於這個距離不切換狀態
+    const TOP_EDGE = 8; // 接近頂端時強制顯示
+
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y < TOP_EDGE) {
+          setHidden(false);
+        } else if (y > lastY.current + THRESHOLD) {
+          setHidden(true); // 下滑
+        } else if (y < lastY.current - THRESHOLD) {
+          setHidden(false); // 上滑
+        }
+        lastY.current = y;
+        ticking.current = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div className="topbar">
+    <div className={`topbar ${hidden ? "is-hidden" : ""}`}>
       <button className="icon-btn menu-btn" onClick={onMenu} aria-label="menu">
         <i className="ph ph-list"></i>
       </button>
