@@ -1335,7 +1335,21 @@ input, textarea, select { font: inherit; color: inherit; }
   .menu-btn { display: grid; }
 
   /* Topbar: search collapses to icon */
-  .topbar { gap: 8px; margin-bottom: 14px; }
+  /* 小網下：sticky 固定頂部，下滑隱藏、上滑顯示（hidden class 由 JS 控制） */
+  .topbar {
+    gap: 8px;
+    margin-bottom: 14px;
+    position: sticky;
+    top: 0;
+    /* 比 sidebar(30) 和 scrim(25) 低，drawer 打開時不會穿透糊到 sidebar */
+    z-index: 20;
+    padding: 8px 0;
+    /* 純色背景，跟頁面底色一致 */
+    background: var(--bg);
+    transition: transform .25s ease;
+    will-change: transform;
+  }
+  .topbar.is-hidden { transform: translateY(-110%); }
   .topbar .search { display: none; }
   .topbar > div[style] { flex: 0 1 auto; }
 
