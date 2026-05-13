@@ -623,7 +623,7 @@ function TagMappingDemo() {
     { id: "life", label: "生活", token: "positive 系" },
     { id: "health", label: "健康", token: "warning 系" },
     { id: "finance", label: "理財", token: "neutral 系（surface-2 底）" },
-    { id: "learn", label: "學習", token: "primary 系 · chart-area 底（同 work）" },
+    { id: "study", label: "學習", token: "violet 系 · chart-area-violet 底（8% alpha）" },
     { id: "travel", label: "旅遊", token: "warning 系（同 health）" },
     { id: "default", label: "未分類", token: "neutral 系（surface-hover + divider 邊）" },
   ];
