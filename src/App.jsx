@@ -22,17 +22,22 @@ import {
   TweakRadio,
 } from "./tweaks-panel.jsx";
 import { DesignSystemPage } from "./design-system.jsx";
+import { CalendarPage } from "./calendar-page.jsx";
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
   dark: false,
   font: "Inter",
   chartMode: "area",
+  // Calendar page tweaks
+  calendarView: "week", // 'day' | 'week' | 'month'
+  showWeekend: true,
+  eventStyle: "soft", // 'soft' | 'bar' | 'solid'
 }; /*EDITMODE-END*/
 
 // 路徑 ↔ active 對照（只有非 dashboard 的頁面要列出來）
 // 加新路由時：在這裡多一行，並在 main 區塊加對應的 render 分支即可。
-const PATH_TO_ACTIVE = { "/design-system": "designSystem" };
-const ACTIVE_TO_PATH = { designSystem: "/design-system" };
+const PATH_TO_ACTIVE = { "/design-system": "designSystem", "/todo": "todo" };
+const ACTIVE_TO_PATH = { designSystem: "/design-system", todo: "/todo" };
 
 function pathToActive(path) {
   return PATH_TO_ACTIVE[path] || "dashboard";
@@ -42,6 +47,13 @@ function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [active, setActive] = useState(() => pathToActive(window.location.pathname));
   const [mobileOpen, setMobileOpen] = useState(false);
+  // 側邊欄收合狀態（桌面手動切換，tablet/mobile 由 CSS 各自處理）
+  const [collapsed, setCollapsed] = useState(
+    () => localStorage.getItem("sidebar-collapsed") === "1",
+  );
+  useEffect(() => {
+    localStorage.setItem("sidebar-collapsed", collapsed ? "1" : "0");
+  }, [collapsed]);
 
   // 監聽瀏覽器上一頁 / 下一頁，把 pathname 同步回 active state
   useEffect(() => {
@@ -72,7 +84,7 @@ function App() {
   }, [t.font]);
 
   return (
-    <div className="app">
+    <div className={`app ${collapsed ? "is-collapsed" : ""}`}>
       <Sidebar
         active={active}
         setActive={navigate}
@@ -80,6 +92,8 @@ function App() {
         setTheme={(m) => setTweak("dark", m === "dark")}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
       />
       <div className={`scrim ${mobileOpen ? "on" : ""}`} onClick={() => setMobileOpen(false)}></div>
 
@@ -147,6 +161,12 @@ function App() {
           </div>
         ) : active === "designSystem" ? (
           <DesignSystemPage chartMode={t.chartMode} />
+        ) : active === "todo" ? (
+          <CalendarPage
+            defaultView={t.calendarView}
+            showWeekend={t.showWeekend}
+            eventStyle={t.eventStyle}
+          />
         ) : (
           <Placeholder name={active} />
         )}
@@ -168,6 +188,36 @@ function App() {
             options={["line", "area", "bar"]}
             onChange={(v) => setTweak("chartMode", v)}
           />
+          {active === "todo" && (
+            <>
+              <TweakSection label="行事曆" />
+              <TweakRadio
+                label="預設檢視"
+                value={t.calendarView}
+                options={[
+                  { value: "day", label: "Day" },
+                  { value: "week", label: "Week" },
+                  { value: "month", label: "Month" },
+                ]}
+                onChange={(v) => setTweak("calendarView", v)}
+              />
+              <TweakToggle
+                label="顯示週末"
+                value={t.showWeekend}
+                onChange={(v) => setTweak("showWeekend", v)}
+              />
+              <TweakRadio
+                label="行程牌卡風格"
+                value={t.eventStyle}
+                options={[
+                  { value: "soft", label: "柔粉彩" },
+                  { value: "bar", label: "左色條" },
+                  { value: "solid", label: "飽和填色" },
+                ]}
+                onChange={(v) => setTweak("eventStyle", v)}
+              />
+            </>
+          )}
         </TweaksPanel>
       </main>
     </div>

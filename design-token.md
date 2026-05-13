@@ -257,15 +257,13 @@ text/heading/lg
 
 ### 2.3 Font Weight
 
-| Token                   | Value | 用途                                |
-| ----------------------- | ----- | ----------------------------------- |
-| `font/weight/regular`   | `400` | Body                                |
-| `font/weight/book`      | `450` | Sidebar nav、todo title             |
-| `font/weight/medium`    | `500` | Meta、label                         |
-| `font/weight/book-bold` | `550` | Card title、active nav、btn-primary |
-| `font/weight/semibold`  | `600` | All numbers, hero h1, section h2    |
+| Token                  | Value | 用途                                                              |
+| ---------------------- | ----- | ----------------------------------------------------------------- |
+| `font/weight/regular`  | `400` | Body                                                              |
+| `font/weight/medium`   | `500` | Meta、label、Sidebar nav、todo title                              |
+| `font/weight/semibold` | `600` | Card title、active nav、btn-primary、numbers、hero h1、section h2 |
 
-> ⚠️ Inter 沒有原生 450 / 550 權重 — Inter Variable Font 才支援連續權重。確保 Figma 用的是 **Inter Variable**，不是 static instances。
+> ⚠️ **為什麼只有 3 階 weight**：Figma 對 Variable Font 只取標準 9 階（100/200/.../900），無法跑任意 weight 數值（如 450、550）。為了讓 Figma 與 codebase 1:1 對齊，原本規劃的 `book (450)` 與 `book-bold (550)` 已併入 `medium (500)` 與 `semibold (600)`，兩邊統一使用 Inter static weights。
 
 ### 2.4 Line Height
 
@@ -300,9 +298,9 @@ text/heading/lg
 | `text/display/md` | sans   | 28   | 600    | 1.1  | -0.025em | Card num（finance、kpi 大版）                                                |
 | `text/heading/lg` | sans   | 22   | 600    | 1.1  | -0.02em  | Secondary num                                                                |
 | `text/heading/md` | sans   | 18   | 600    | 1.2  | -0.01em  | Section h2、ds h2                                                            |
-| `text/heading/sm` | sans   | 13   | 550    | 1.2  | -0.005em | Card title                                                                   |
+| `text/heading/sm` | sans   | 13   | 600    | 1.2  | -0.005em | Card title                                                                   |
 | `text/body/base`  | sans   | 14   | 400    | 1.5  | -0.005em | **Body 預設**                                                                |
-| `text/body/sm`    | sans   | 14   | 450    | 1.3  | -0.005em | Todo title、sidebar nav、search input、btn-primary、hero p（13.5 → 14 統一） |
+| `text/body/sm`    | sans   | 14   | 500    | 1.3  | -0.005em | Todo title、sidebar nav、search input、btn-primary、hero p（13.5 → 14 統一） |
 | `text/label/md`   | sans   | 12   | 500    | 1.2  | 0        | KPI label                                                                    |
 | `text/label/sm`   | sans   | 11.5 | 500    | 1.2  | 0        | Meta                                                                         |
 | `text/eyebrow`    | sans   | 10   | 600    | 1.2  | 0.08em   | Section eyebrow（uppercase）                                                 |
@@ -310,9 +308,24 @@ text/heading/lg
 | `text/code`       | mono   | 11.5 | 400    | 1.4  | 0        | Kbd、code                                                                    |
 | `text/num/lg`     | sans   | 28   | 600    | 1.1  | -0.025em | Card 主數字（含 `font-variant-numeric: tabular-nums`）                       |
 | `text/num/md`     | sans   | 24   | 600    | 1.1  | -0.02em  | KPI 數字                                                                     |
-| `text/num/sm`     | sans   | 22   | 600    | 1.1  | -0.02em  | Donut 中心、mood avg                                                         |
+
+> Donut 中心、mood avg 22 / 600 / 1.1 / -0.02em 的樣式 alias 到 `text/heading/lg`（規格相同，避免重複定義）。
 
 > 數字相關的 styles 都要**強制 tabular-nums**（OpenType `tnum`），確保金額對齊。Figma Text Style 裡用 OpenType 設定打開 `tnum`。
+
+### 2.7 中文字處理策略
+
+> Codebase 透過 `font-family` fallback chain 處理中文：`Inter → ... → PingFang TC → Noto Sans TC`。瀏覽器會 **per-character fallback** — 英文字用 Inter、中文字自動 fallback 到 PingFang TC（macOS）或 Noto Sans TC（其他 OS），同一個 class 通吃中英混排，**codebase 端不需要切換 style**。
+
+> **Figma 端：不建 `text/zh/*` 對應 styles**。理由：
+>
+> - Figma 一個 text node 只能掛一個 family，無法複製 browser 的 per-character fallback 行為。
+> - 維護兩套鏡像 styles（en + zh）成本高，每次調整 size/lh/ls 都要改兩份。
+> - Dayboard 以英文 UI 為主，中文內容為偶發（用戶輸入、tag 名稱等），不值得為 Figma 預覽精準度建整套對應 styles。
+>
+> **代價**：Figma 設計稿內的中文字會交給 Figma 內建 fallback 渲染，視覺不可控（可能是 Noto Sans TC、PingFang TC 或其他系統字體）。設計師審查中文版面時，**以實機瀏覽器渲染為準**，不以 Figma 預覽為準。
+>
+> **未來如需要**：若 Dayboard 出現大量中文內容、或需要為中文做 typography 微調（例如 line-height 加大、字距調整），再回頭建 `text/zh/*` styles。當前以英文 styles 為單一事實來源。
 
 ---
 
@@ -592,11 +605,14 @@ v0.1 起草時列出的 6 項待確認，全部已拍板。本節作為決策歷
 
 ## 變更紀錄
 
-| 日期       | 版本   | 變更                                                                                                                                                                                                          |
-| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-05-09 | v0.1   | 初版 design tokens；對應 Figma Variables JSON 格式架構                                                                                                                                                        |
-| 2026-05-10 | v0.1.1 | 新增 `color/status/positive-bg`、`negative-bg`、`warning-bg`（rgba 14% alpha），統一 `.tag.life` 從 12% 改為 14%                                                                                              |
-| 2026-05-10 | v0.2   | 字級 13.5 → 14 統一；字重 450/550 保留；新增 mood heatmap 5 階凍結 hex（§1.3）；新增 7 類 tag mapping（§1.4）；新增 interaction/state tokens 共 10 個（§1.5）；status 色 hex 從 OKLCH approx 改為 Chrome 實算 |
+| 日期       | 版本   | 變更                                                                                                                                                                                                                                                                                         |
+| ---------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-05-09 | v0.1   | 初版 design tokens；對應 Figma Variables JSON 格式架構                                                                                                                                                                                                                                       |
+| 2026-05-10 | v0.1.1 | 新增 `color/status/positive-bg`、`negative-bg`、`warning-bg`（rgba 14% alpha），統一 `.tag.life` 從 12% 改為 14%                                                                                                                                                                             |
+| 2026-05-10 | v0.2   | 字級 13.5 → 14 統一；字重 450/550 保留；新增 mood heatmap 5 階凍結 hex（§1.3）；新增 7 類 tag mapping（§1.4）；新增 interaction/state tokens 共 10 個（§1.5）；status 色 hex 從 OKLCH approx 改為 Chrome 實算                                                                                |
+| 2026-05-12 | v0.2.1 | 移除 `text/num/sm`（§2.6）對齊 Figma：原規格 22/600/1.1/-0.02em 與 `text/heading/lg` 完全相同，donut center 與 mood avg 改 alias 到 `text/heading/lg`，避免重複定義                                                                                                                          |
+| 2026-05-12 | v0.2.2 | Weight 450 / 550 拍掉：Figma 對 Variable Font 只取標準 9 階，無法跑任意 weight。§2.3 移除 `font/weight/book` 與 `font/weight/book-bold`；§2.6 `text/body/sm` 改 500、`text/heading/sm` 改 600；`styles.css` 同步換完 9 處                                                                    |
+| 2026-05-12 | v0.3   | 同步 Figma 把 💎 Components page 14 個誤用 Inter Bold 32px 的 section title 改為 Semi Bold；§2.7 確立「Figma 端不建 `text/zh/*` 對應 styles」策略，中文字交由 codebase 的 `font-family` fallback chain 處理（per-character browser fallback），Figma 端中文預覽不可控但 token 一致性不受影響 |
 
 ---
 

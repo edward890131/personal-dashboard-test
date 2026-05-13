@@ -979,7 +979,7 @@ const DS_STYLE = `
 }
 .ds-swatch-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .ds-swatch-label {
-  font-size: 12px; font-weight: 550; color: var(--ink-2);
+  font-size: 12px; font-weight: 600; color: var(--ink-2);
 }
 .ds-swatch-meta code { word-break: break-all; }
 
