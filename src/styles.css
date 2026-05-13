@@ -173,6 +173,13 @@
 .cal-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 .cal-scroll::-webkit-scrollbar-track { background: transparent; }
 
+/* 月模式 +N 更多 按鈕 hover */
+.month-more-btn:hover { background: var(--surface-hover); color: var(--ink-2); }
+.month-more-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
 /* =============== Calendar page RWD =============== */
 /* < 1024px (平板)：todo + calendar 改 vertical stack，各佔全寬，event title 才有空間 */
 @media (max-width: 1023px) {
@@ -1341,7 +1348,7 @@ input, textarea, select { font: inherit; color: inherit; }
     margin-bottom: 14px;
     position: sticky;
     top: 0;
-    /* 比 sidebar(30) 和 scrim(25) 低，drawer 打開時不會穿透糊到 sidebar */
+    /* 比 sidebar(30) 和 scrim(25) 低，drawer 打開時不會穿透 blur 糊到 sidebar */
     z-index: 20;
     padding: 8px 0;
     /* 純色背景，跟頁面底色一致 */
