@@ -2156,6 +2156,9 @@ const DayHeader = ({ days }) => (
       display: "flex",
       borderBottom: "1px solid var(--border)",
       background: "var(--surface)",
+      // 補上下方 cal-scroll 的 scrollbar 寬度，避免 header 跟 body 的 day 欄寬度錯開
+      paddingRight: 10,
+      boxSizing: "border-box",
     }}
   >
     <div style={{ width: HOUR_COL_W, flexShrink: 0 }}></div>
@@ -2260,7 +2263,295 @@ const DayView = ({
   );
 };
 
-const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick }) => {
+// 月模式裡一顆 event chip（cell 跟 day-list popover 共用）
+// variant: 'cell' 單行截斷；'list' 不截斷、padding 略大
+const MonthEventChip = ({ ev, variant = "cell", onHover, onUnhover, onClick }) => {
+  const cat = CAT_BY_ID[ev.cat];
+  const isList = variant === "list";
+  const padding = isList ? "5px 8px" : "2px 6px";
+  const fontSize = isList ? 11.5 : 10.5;
+  const lineHeight = 1.25;
+  return (
+    <div
+      onPointerEnter={(e) => {
+        e.stopPropagation();
+        onHover && onHover(ev, e.currentTarget);
+      }}
+      onPointerLeave={() => onUnhover && onUnhover(false)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick && onClick(ev, e.currentTarget);
+      }}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        padding,
+        borderRadius: 4,
+        background: cat.bg,
+        color: cat.ink,
+        font: `500 ${fontSize}px/${lineHeight} var(--font-sans)`,
+        overflow: "hidden",
+        whiteSpace: isList ? "normal" : "nowrap",
+        textOverflow: isList ? "clip" : "ellipsis",
+        cursor: "pointer",
+      }}
+    >
+      <span
+        style={{
+          width: 5,
+          height: 5,
+          borderRadius: 999,
+          background: cat.dot,
+          flexShrink: 0,
+        }}
+      ></span>
+      <span style={{ fontVariantNumeric: "tabular-nums", color: cat.ink, opacity: 0.7 }}>
+        {fmtTime(ev.start)}
+      </span>
+      <span style={{ overflow: "hidden", textOverflow: isList ? "clip" : "ellipsis", flex: 1 }}>
+        {ev.title}
+      </span>
+    </div>
+  );
+};
+
+// 月模式點 +N 更多後跳出的當日清單 popover
+const DayEventsPopover = ({
+  date,
+  anchor,
+  events,
+  onEventClick,
+  onEventHover,
+  onEventUnhover,
+  onAddEvent,
+  onClose,
+}) => {
+  const ref = useRef(null);
+  const [pos, setPos] = useState({ left: 0, top: 0 });
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 640,
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile || !anchor) return;
+    const r = anchor.getBoundingClientRect();
+    const card = ref.current;
+    const w = card?.offsetWidth || 280;
+    const h = card?.offsetHeight || 280;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // 優先在 cell 右側展開；不夠就放左側；再不行就壓在 cell 上方
+    let left = r.right + 8;
+    if (left + w > vw - 8) left = r.left - w - 8;
+    if (left < 8) left = Math.max(8, Math.min(r.left, vw - w - 8));
+    let top = r.top;
+    if (top + h > vh - 8) top = Math.max(8, vh - h - 8);
+    setPos({ left, top });
+  }, [anchor, isMobile, events.length]);
+
+  // Esc 關閉
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const dow = WEEK_LABELS_ZH[(date.getDay() + 6) % 7];
+  const isToday = sameDay(date, TODAY);
+
+  const card = (
+    <div
+      ref={ref}
+      onClick={(e) => e.stopPropagation()}
+      onMouseEnter={(e) => e.stopPropagation()}
+      style={{
+        width: isMobile ? "calc(100vw - 32px)" : 296,
+        maxWidth: 320,
+        maxHeight: isMobile ? "70vh" : "min(440px, 70vh)",
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        borderRadius: 10,
+        boxShadow: "var(--shadow-popover)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      {/* Header：日期 + 關閉 */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "12px 14px 10px",
+          borderBottom: "1px solid var(--divider)",
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              font: "650 14px/1.3 var(--font-sans)",
+              color: "var(--ink)",
+              letterSpacing: "-0.01em",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span
+              style={{
+                display: "inline-grid",
+                placeItems: "center",
+                minWidth: 22,
+                height: 22,
+                padding: "0 6px",
+                borderRadius: 999,
+                background: isToday ? "var(--primary)" : "transparent",
+                color: isToday ? "#fff" : "var(--ink)",
+                font: "650 12px/1 var(--font-sans)",
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {date.getDate()}
+            </span>
+            {date.getMonth() + 1} 月 ・ 週{dow}
+          </div>
+          <div
+            style={{
+              font: "500 11px/1.2 var(--font-sans)",
+              color: "var(--muted)",
+              marginTop: 4,
+            }}
+          >
+            共 {events.length} 個行程
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          title="關閉"
+          style={{
+            width: 22,
+            height: 22,
+            padding: 0,
+            border: 0,
+            background: "transparent",
+            borderRadius: 5,
+            color: "var(--muted)",
+            cursor: "pointer",
+            display: "grid",
+            placeItems: "center",
+          }}
+        >
+          <i className="ph ph-x" style={{ fontSize: 12 }}></i>
+        </button>
+      </div>
+
+      {/* 行程清單（可捲動） */}
+      <div
+        style={{
+          flex: 1,
+          overflow: "auto",
+          padding: 10,
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+        }}
+      >
+        {events.map((ev) => (
+          <MonthEventChip
+            key={ev.id}
+            ev={ev}
+            variant="list"
+            onHover={onEventHover}
+            onUnhover={onEventUnhover}
+            onClick={onEventClick}
+          />
+        ))}
+        {events.length === 0 && (
+          <div
+            style={{
+              padding: "16px 8px",
+              textAlign: "center",
+              font: "500 11.5px/1.4 var(--font-sans)",
+              color: "var(--muted)",
+            }}
+          >
+            這天沒有行程
+          </div>
+        )}
+      </div>
+
+      {/* Footer：新增行程 */}
+      <div
+        style={{
+          padding: "8px 10px 10px",
+          borderTop: "1px solid var(--divider)",
+        }}
+      >
+        <button
+          onClick={() => onAddEvent(date)}
+          style={{
+            width: "100%",
+            height: 30,
+            border: "1px dashed var(--border)",
+            background: "var(--surface)",
+            color: "var(--ink-2)",
+            borderRadius: 6,
+            cursor: "pointer",
+            font: "500 12px/1 var(--font-sans)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+          }}
+        >
+          <i className="ph ph-plus" style={{ fontSize: 12 }}></i> 新增行程
+        </button>
+      </div>
+    </div>
+  );
+
+  // Mobile：scrim + 置中（跟 EventPopover 一致的手機 UX）
+  if (isMobile) {
+    return (
+      <div
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "var(--scrim)",
+          display: "grid",
+          placeItems: "center",
+          zIndex: 80,
+          padding: 16,
+        }}
+      >
+        {card}
+      </div>
+    );
+  }
+
+  // Desktop：fixed 位置（含外層 scrim 透明 layer 用來偵測「點外面」）
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: "fixed", inset: 0, zIndex: 75, background: "transparent" }}
+    >
+      <div style={{ position: "fixed", left: pos.left, top: pos.top }}>{card}</div>
+    </div>
+  );
+};
+
+const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick, onMoreClick }) => {
   const first = startOfMonth(anchor);
   const gridStart = startOfWeek(first);
   const cells = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
@@ -2281,6 +2572,9 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick })
           display: "grid",
           gridTemplateColumns: "repeat(7,1fr)",
           borderBottom: "1px solid var(--border)",
+          // 補上 cal-scroll 內 scrollbar 寬度，讓 header 7 column 與下方 grid 線完全對齊
+          paddingRight: 10,
+          boxSizing: "border-box",
         }}
       >
         {WEEK_LABELS_EN.map((l, i) => (
@@ -2292,6 +2586,7 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick })
               color: i >= 5 ? "var(--neg)" : "var(--muted)",
               letterSpacing: "0.06em",
               borderRight: i < 6 ? "1px solid var(--divider)" : "0",
+              textAlign: "center",
             }}
           >
             {l}
@@ -2303,7 +2598,7 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick })
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(7,1fr)",
-            gridAutoRows: "minmax(108px, 1fr)",
+            gridAutoRows: "minmax(140px, 1fr)",
             height: "100%",
           }}
         >
@@ -2313,7 +2608,9 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick })
               .sort((a, b) => a.start - b.start);
             const isToday = sameDay(d, TODAY);
             const dow = (d.getDay() + 6) % 7;
-            const more = Math.max(0, dayEvents.length - 3);
+            // chip 高度維持固定，row 加高後正好能塞 4 個；5 個以上才用 +N 更多
+            const visibleCount = 4;
+            const more = Math.max(0, dayEvents.length - visibleCount);
             return (
               <div
                 key={i}
@@ -2335,7 +2632,7 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick })
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "flex-end",
+                    justifyContent: "center",
                     padding: "2px 4px",
                   }}
                 >
@@ -2356,64 +2653,38 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick })
                     {d.getDate()}
                   </span>
                 </div>
-                {dayEvents.slice(0, 3).map((ev) => {
-                  const cat = CAT_BY_ID[ev.cat];
-                  return (
-                    <div
-                      key={ev.id}
-                      onPointerEnter={(e) => {
-                        e.stopPropagation();
-                        onHover && onHover(ev, e.currentTarget);
-                      }}
-                      onPointerLeave={() => onUnhover && onUnhover(false)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onClick && onClick(ev, e.currentTarget);
-                      }}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 5,
-                        padding: "2px 6px",
-                        borderRadius: 4,
-                        background: cat.bg,
-                        color: cat.ink,
-                        font: "500 10.5px/1.2 var(--font-sans)",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 5,
-                          height: 5,
-                          borderRadius: 999,
-                          background: cat.dot,
-                          flexShrink: 0,
-                        }}
-                      ></span>
-                      <span
-                        style={{ fontVariantNumeric: "tabular-nums", color: cat.ink, opacity: 0.7 }}
-                      >
-                        {fmtTime(ev.start)}
-                      </span>
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {ev.title}
-                      </span>
-                    </div>
-                  );
-                })}
+                {dayEvents.slice(0, visibleCount).map((ev) => (
+                  <MonthEventChip
+                    key={ev.id}
+                    ev={ev}
+                    variant="cell"
+                    onHover={onHover}
+                    onUnhover={onUnhover}
+                    onClick={onClick}
+                  />
+                ))}
                 {more > 0 && (
-                  <div
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoreClick && onMoreClick(d, e.currentTarget, dayEvents);
+                    }}
+                    className="month-more-btn"
                     style={{
-                      padding: "2px 6px",
+                      padding: "3px 6px",
+                      margin: 0,
                       font: "500 10px/1 var(--font-sans)",
                       color: "var(--muted)",
+                      background: "transparent",
+                      border: 0,
+                      borderRadius: 4,
+                      cursor: "pointer",
+                      textAlign: "left",
                     }}
                   >
                     +{more} 更多
-                  </div>
+                  </button>
                 )}
               </div>
             );
@@ -2460,6 +2731,10 @@ export function CalendarPage({ defaultView = "week", showWeekend = true, eventSt
 
   // Modal：{ mode: 'create'|'edit', event }
   const [modal, setModal] = useState(null);
+
+  // 月模式「該日全部行程」popover：{ date, anchor }
+  const [dayList, setDayList] = useState(null);
+  const closeDayList = () => setDayList(null);
 
   const onEventHover = (event, el) => {
     clearTimeout(hoverTimer.current);
@@ -2755,10 +3030,39 @@ export function CalendarPage({ defaultView = "week", showWeekend = true, eventSt
               onHover={onEventHover}
               onUnhover={onEventUnhover}
               onClick={onEventClick}
+              onMoreClick={(date, el) => {
+                closePopover();
+                setDayList({ date, anchor: el });
+              }}
             />
           )}
         </section>
       </div>
+
+      {/* 月模式：當日全部行程 popover（點 +N 更多 觸發） */}
+      {dayList && (
+        <DayEventsPopover
+          date={dayList.date}
+          anchor={dayList.anchor}
+          events={events
+            .filter((e) => sameDay(e.date, dayList.date))
+            .sort((a, b) => a.start - b.start)}
+          onEventClick={(ev) => {
+            // 點清單裡的行程：關掉清單、開啟既有 event detail popover
+            // anchor 改用月格內 +N 按鈕（el 是 day list 內部的 chip，關閉後會被 unmount，定位會跑掉）
+            const stableAnchor = dayList.anchor;
+            closeDayList();
+            onEventClick(ev, stableAnchor);
+          }}
+          onEventHover={onEventHover}
+          onEventUnhover={onEventUnhover}
+          onAddEvent={(d) => {
+            closeDayList();
+            onSlotClick(d, 9);
+          }}
+          onClose={closeDayList}
+        />
+      )}
 
       {/* Hover popover（鎖在 fixed） */}
       {hovered && (
