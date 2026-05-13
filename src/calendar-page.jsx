@@ -101,24 +101,23 @@ const fmt12Lower = (h) => {
   return `${h12}:${String(mm).padStart(2, "0")} ${ap}`;
 };
 
-// Calendar 分類 → 首頁 .tag class（沿用 design system 既有 7 種 tag 樣式）
-// study 沒有專屬 tag，沿用 .tag.learn（同為學習語意，視覺一致）
+// Calendar 分類 → 首頁 .tag class（沿用 design system 既有 tag 樣式）
 // personal 沒有專屬 tag，沿用 .tag.default
 const TAG_CLASS_BY_CAT = {
   work: "work",
   health: "health",
   life: "life",
-  study: "learn",
+  study: "study",
   personal: "default",
 };
 
 // Todo 用的分類色（對齊上面 .tag class 對應的 design system token）
-// 跟 calendar event 色塊用的 --cat-*-* 是兩套：tag 走 semantic 色 (primary/warn/pos)、event 走 categorical 色
+// 跟 calendar event 色塊用的 --cat-*-* 是兩套：tag 走 semantic 色 (primary/violet/warn/pos)、event 走 categorical 色
 const TAG_COLOR_BY_CAT = {
   work: { bg: "var(--bg-chart-area)", ink: "var(--primary)" },
   health: { bg: "var(--warn-bg)", ink: "var(--warn)" },
   life: { bg: "var(--pos-bg)", ink: "var(--pos)" },
-  study: { bg: "var(--bg-chart-area)", ink: "var(--primary)" },
+  study: { bg: "var(--bg-chart-area-violet)", ink: "var(--violet)" },
   personal: { bg: "var(--surface-hover)", ink: "var(--muted)" },
 };
 
@@ -1428,12 +1427,12 @@ const EventPopover = ({ event, anchor, onEdit, onDelete, onClose }) => {
 };
 
 const inputStyle = {
-  height: 34,
+  height: 30,
   padding: "0 10px",
   background: "var(--surface)",
   border: "1px solid var(--border)",
   borderRadius: 7,
-  font: "450 12.5px/1 var(--font-sans)",
+  font: "400 12.5px/1 var(--font-sans)",
   color: "var(--ink)",
   outline: "none",
   width: "100%",
@@ -1518,8 +1517,8 @@ const EventModal = ({ initial, onSave, onClose, onDelete }) => {
           maxWidth: "calc(100vw - 32px)",
           maxHeight: "calc(100vh - 32px)",
           background: "var(--surface)",
-          borderRadius: 12,
-          boxShadow: "0 24px 60px -12px rgba(0,0,0,0.32)",
+          borderRadius: 14,
+          boxShadow: "0 12px 40px 0 rgba(0,0,0,0.18)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -1538,7 +1537,7 @@ const EventModal = ({ initial, onSave, onClose, onDelete }) => {
           <span
             style={{
               flex: 1,
-              font: "650 14px/1 var(--font-sans)",
+              font: "600 14px/1 var(--font-sans)",
               color: "var(--ink)",
               letterSpacing: "-0.005em",
             }}
@@ -1696,41 +1695,18 @@ const EventModal = ({ initial, onSave, onClose, onDelete }) => {
           {isEdit && (
             <button
               onClick={() => onDelete(ev0)}
-              style={{
-                height: 32,
-                padding: "0 12px",
-                border: "1px solid var(--border)",
-                background: "var(--surface)",
-                color: "var(--neg)",
-                borderRadius: 7,
-                cursor: "pointer",
-                font: "500 12px/1 var(--font-sans)",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-              }}
+              className="btn-secondary btn-sm"
+              style={{ color: "var(--neg)" }}
             >
-              <i className="ph ph-trash" style={{ fontSize: 12 }}></i> 刪除
+              <i className="ph ph-trash"></i> 刪除
             </button>
           )}
           <div style={{ flex: 1 }}></div>
-          <button
-            onClick={onClose}
-            style={{
-              height: 32,
-              padding: "0 14px",
-              border: "1px solid var(--border)",
-              background: "var(--surface)",
-              color: "var(--ink-2)",
-              borderRadius: 7,
-              cursor: "pointer",
-              font: "500 12px/1 var(--font-sans)",
-            }}
-          >
+          <button onClick={onClose} className="btn-secondary btn-sm">
             取消
           </button>
-          <button onClick={save} className="btn-primary" style={{ height: 32 }}>
-            <i className="ph ph-check" style={{ fontSize: 13 }}></i>
+          <button onClick={save} className="btn-primary btn-sm">
+            <i className="ph ph-check"></i>
             {isEdit ? "儲存" : "建立行程"}
           </button>
         </div>

@@ -27,6 +27,9 @@
   --pos: #28AD5E;
   --neg: #E64343;
   --warn: #E38F00;
+  /* study 用紫色，跟 work 的藍色區分 */
+  --violet: #7A5AE0;
+  --violet-deep: #5436B8;   /* 比 violet 深一階，hover/active 強調 */
   /* Status 半透明背景（14% alpha），給 .delta / .tag 用 */
   --pos-bg: rgba(40, 173, 94, 0.14);
   --neg-bg: rgba(230, 67, 67, 0.14);
@@ -71,6 +74,7 @@
 
   /* === Chart 面積底色（Brand 半透明）=== */
   --bg-chart-area: rgba(14, 79, 231, 0.08); /* primary 8% alpha */
+  --bg-chart-area-violet: rgba(122, 90, 224, 0.08); /* violet 8% alpha — study 用 */
 
   /* === Icon 尺寸（給 .ph SVG icon 用）=== */
   --icon-size-xs: 12px;
@@ -94,13 +98,13 @@
 
   /* === Calendar 分類色（5 類 × bg/ink/dot/border） ===
      對齊首頁 .tag class 的 semantic token，全站 tag / 行事曆 / popover / modal 用同一套色：
-     work / study → primary 藍、health → warn 橘、life → pos 綠、personal → muted 灰
+     work → primary 藍、study → violet 紫、health → warn 橘、life → pos 綠、personal → muted 灰
      被指向的 token 自己跟 theme 切換，所以 dark 區塊不用 override --cat-*。 */
-  --cat-work-bg: var(--bg-chart-area);     --cat-work-ink: var(--primary);     --cat-work-dot: var(--primary);     --cat-work-border: rgba(14, 79, 231, 0.28);
-  --cat-health-bg: var(--warn-bg);         --cat-health-ink: var(--warn);      --cat-health-dot: var(--warn);      --cat-health-border: rgba(227, 143, 0, 0.28);
-  --cat-life-bg: var(--pos-bg);            --cat-life-ink: var(--pos);         --cat-life-dot: var(--pos);         --cat-life-border: rgba(40, 173, 94, 0.28);
-  --cat-study-bg: var(--bg-chart-area);    --cat-study-ink: var(--primary);    --cat-study-dot: var(--primary);    --cat-study-border: rgba(14, 79, 231, 0.28);
-  --cat-personal-bg: var(--surface-hover); --cat-personal-ink: var(--muted);   --cat-personal-dot: var(--muted);   --cat-personal-border: var(--divider);
+  --cat-work-bg: var(--bg-chart-area);          --cat-work-ink: var(--primary);     --cat-work-dot: var(--primary);     --cat-work-border: rgba(14, 79, 231, 0.28);
+  --cat-health-bg: var(--warn-bg);              --cat-health-ink: var(--warn);      --cat-health-dot: var(--warn);      --cat-health-border: rgba(227, 143, 0, 0.28);
+  --cat-life-bg: var(--pos-bg);                 --cat-life-ink: var(--pos);         --cat-life-dot: var(--pos);         --cat-life-border: rgba(40, 173, 94, 0.28);
+  --cat-study-bg: var(--bg-chart-area-violet);  --cat-study-ink: var(--violet);     --cat-study-dot: var(--violet);     --cat-study-border: rgba(122, 90, 224, 0.28);
+  --cat-personal-bg: var(--surface-hover);      --cat-personal-ink: var(--muted);   --cat-personal-dot: var(--muted);   --cat-personal-border: var(--divider);
 }
 
 [data-theme="dark"] {
@@ -109,6 +113,9 @@
   --primary-soft: color-mix(in oklch, var(--primary) 22%, var(--bg));
   --primary-pale: #0F1E40;   /* dark 中比 brand-soft 更深的襯底 */
   --primary-ink: color-mix(in oklch, var(--primary) 60%, #ffffff);
+
+  /* violet 的 dark 對應：深紫底上換成較亮的紫色文字（與 primary-deep 同模式） */
+  --violet-deep: #A78BFA;    /* dark 中比 violet 亮一階 */
 
   --bg: #0A0D12;
   --surface: #11151C;
@@ -132,6 +139,7 @@
 
   /* === Dark 模式 chart 底色 === */
   --bg-chart-area: rgba(122, 168, 245, 0.2); /* dark ink 20% alpha */
+  --bg-chart-area-violet: rgba(200, 181, 250, 0.2); /* violet ink 20% alpha — study 用 */
 
   --shadow-card: 0 1px 0 rgba(255,255,255,0.02);
   --shadow-hover: 0 8px 24px -8px rgba(0,0,0,0.5), 0 2px 4px -2px rgba(0,0,0,0.35);
@@ -143,17 +151,17 @@
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.24);
 
   /* --cat-* 在 :root 用 var(--bg-chart-area)/var(--warn-bg)/var(--pos-bg) 等，
-     這些 token 自己跟主題切換。但 work/study 的 ink 在 dark 下 primary 在淡藍底
-     對比不夠，覆寫成 --primary-deep（dark 中比 brand 亮一階） */
+     這些 token 自己跟主題切換。但 work/study 的 ink 在 dark 下純色在淡彩底
+     對比不夠，分別覆寫成 --primary-deep / --violet-deep（dark 中比 base 亮一階） */
   --cat-work-ink: var(--primary-deep);
   --cat-work-dot: var(--primary-deep);
-  --cat-study-ink: var(--primary-deep);
-  --cat-study-dot: var(--primary-deep);
+  --cat-study-ink: var(--violet-deep);
+  --cat-study-dot: var(--violet-deep);
 }
 
-/* Tag dark mode 對比修正：.tag.work / .tag.learn 改用較亮的 primary-deep */
-[data-theme="dark"] .tag.work,
-[data-theme="dark"] .tag.learn { color: var(--primary-deep); }
+/* Tag dark mode 對比修正：work / study 在暗底淡彩上對比不夠，換成亮版 */
+[data-theme="dark"] .tag.work { color: var(--primary-deep); }
+[data-theme="dark"] .tag.study { color: var(--violet-deep); }
 
 /* =============== Calendar scrollbar（給 .cal-scroll 用） =============== */
 .cal-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -820,7 +828,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .tag.life    { color: var(--pos);     background: var(--pos-bg); }
 .tag.health  { color: var(--warn);    background: var(--warn-bg); }
 .tag.finance { color: var(--ink-2);   background: var(--surface-2); }
-.tag.learn   { color: var(--primary); background: var(--bg-chart-area); }
+.tag.study   { color: var(--violet);  background: var(--bg-chart-area-violet); }
 .tag.travel  { color: var(--warn);    background: var(--warn-bg); }
 .tag.default { color: var(--muted);   background: var(--surface-hover); border-color: var(--divider); }
 .todo .time { font-variant-numeric: tabular-nums; }
