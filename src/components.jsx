@@ -224,7 +224,7 @@ const seedTodos = [
   { id: 6, title: "與媽媽通電話", cat: "life", time: 20, done: false },
 ];
 
-function TodoCard() {
+function TodoCard({ onSeeAll }) {
   const [todos, setTodos] = useState(seedTodos);
   const [draft, setDraft] = useState("");
   const done = todos.filter((t) => t.done).length;
@@ -248,7 +248,7 @@ function TodoCard() {
         <div className="card-title">
           <i className="ph ph-check-square"></i>今日待辦
         </div>
-        <button className="card-act">
+        <button className="card-act" onClick={onSeeAll}>
           <i className="ph ph-arrow-up-right"></i>查看全部
         </button>
       </div>
