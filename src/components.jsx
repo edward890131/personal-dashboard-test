@@ -136,7 +136,7 @@ function Topbar({ onMenu }) {
   }, []);
 
   return (
-    <div className={`topbar${hidden ? "is-hidden" : ""}`}>
+    <div className={`topbar ${hidden ? "is-hidden" : ""}`}>
       <button className="icon-btn menu-btn" onClick={onMenu} aria-label="menu">
         <i className="ph ph-list"></i>
       </button>
