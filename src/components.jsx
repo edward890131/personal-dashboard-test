@@ -1,9 +1,20 @@
 // components.jsx — 儀表板的 bento 卡片元件
 import { useState, useMemo } from "react";
 import { CountUp, ValueChart, PieDonut, Sparkline } from "./charts.jsx";
+// TodoRow 共用元件（首頁 TodoCard 跟 calendar TodoColumn 都用同一個 row 元件，避免兩處維護）
+import { TodoRow } from "./calendar-page.jsx";
 
 /* ---------------- Sidebar ---------------- */
-function Sidebar({ active, setActive, theme, setTheme, mobileOpen, setMobileOpen }) {
+function Sidebar({
+  active,
+  setActive,
+  theme,
+  setTheme,
+  mobileOpen,
+  setMobileOpen,
+  collapsed,
+  setCollapsed,
+}) {
   const items = [
     { id: "dashboard", label: "儀表板", icon: "ph-squares-four", badge: null },
     { id: "todo", label: "待辦行事曆", icon: "ph-check-square", badge: "8" },
@@ -27,6 +38,16 @@ function Sidebar({ active, setActive, theme, setTheme, mobileOpen, setMobileOpen
           <div className="brand-name">Dayboard</div>
           <div className="brand-sub">Yuu&apos;s workspace</div>
         </div>
+        {/* 桌面用的收合切換鈕；tablet/mobile 用 CSS 隱藏 */}
+        <button
+          type="button"
+          className="sidebar-collapse-btn"
+          aria-label={collapsed ? "展開側邊欄" : "收合側邊欄"}
+          aria-pressed={collapsed}
+          onClick={() => setCollapsed((v) => !v)}
+        >
+          <i className={`ph ${collapsed ? "ph-caret-double-right" : "ph-caret-double-left"}`}></i>
+        </button>
       </div>
 
       <div className="nav-section">主要功能</div>
@@ -193,15 +214,15 @@ function Kpi({ icon, label, value, prefix, suffix, delta, deltaPos = true, spark
 }
 
 /* ---------------- Today's todos ---------------- */
+// 資料結構對齊 calendar SEED_TODOS：{ id, title, cat, time(數字), done }
 const seedTodos = [
-  { id: 1, title: "Sprint 規劃會議準備", time: "10:00 a.m", tag: "work", done: true },
-  { id: 2, title: "回覆設計部 PR 修改", time: "11:30 a.m", tag: "work", done: true },
-  { id: 3, title: "健身房・腿部訓練", time: "6:00 p.m", tag: "health", done: false },
-  { id: 4, title: "看《設計心理學》第 5 章", time: "9:00 p.m", tag: "life", done: false },
-  { id: 5, title: "整理本週開銷", time: "10:00 p.m", tag: "life", done: false },
-  { id: 6, title: "與媽媽通電話", time: "8:00 p.m", tag: "life", done: false },
+  { id: 1, title: "Sprint 規劃會議準備", cat: "work", time: 10, done: true },
+  { id: 2, title: "回覆設計部 PR 修改", cat: "work", time: 11.5, done: true },
+  { id: 3, title: "健身房・腿部訓練", cat: "health", time: 18, done: false },
+  { id: 4, title: "看《設計心理學》第 5 章", cat: "life", time: 21, done: false },
+  { id: 5, title: "整理本週開銷", cat: "life", time: 22, done: false },
+  { id: 6, title: "與媽媽通電話", cat: "life", time: 20, done: false },
 ];
-const tagLabel = { work: "工作", health: "健康", life: "生活" };
 
 function TodoCard() {
   const [todos, setTodos] = useState(seedTodos);
@@ -209,12 +230,15 @@ function TodoCard() {
   const done = todos.filter((t) => t.done).length;
   const rate = Math.round((done / todos.length) * 100);
 
-  const toggle = (id) => setTodos(todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  const toggle = (todo) =>
+    setTodos((ts) => ts.map((t) => (t.id === todo.id ? { ...t, done: !t.done } : t)));
+  const edit = (todo) => setTodos((ts) => ts.map((t) => (t.id === todo.id ? todo : t)));
+  const remove = (todo) => setTodos((ts) => ts.filter((t) => t.id !== todo.id));
   const submit = (e) => {
     e.preventDefault();
     const v = draft.trim();
     if (!v) return;
-    setTodos([...todos, { id: Date.now(), title: v, time: "今日", tag: "life", done: false }]);
+    setTodos([...todos, { id: Date.now(), title: v, cat: "life", time: null, done: false }]);
     setDraft("");
   };
 
@@ -246,21 +270,7 @@ function TodoCard() {
 
       <div className="todo-list" style={{ flex: 1, overflow: "auto" }}>
         {todos.map((t) => (
-          <div key={t.id} className={`todo ${t.done ? "done" : ""}`} onClick={() => toggle(t.id)}>
-            <span className={`checkbox ${t.done ? "checked" : ""}`}>
-              <i className="ph-bold ph-check"></i>
-            </span>
-            <div className="body">
-              <div className="title">{t.title}</div>
-              <div className="meta">
-                <span className="time">
-                  <i className="ph ph-clock" style={{ fontSize: 11, marginRight: 2 }}></i>
-                  {t.time}
-                </span>
-                <span className={`tag ${t.tag}`}>{tagLabel[t.tag]}</span>
-              </div>
-            </div>
-          </div>
+          <TodoRow key={t.id} todo={t} onToggle={toggle} onEdit={edit} onDelete={remove} />
         ))}
       </div>
 

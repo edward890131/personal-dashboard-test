@@ -80,6 +80,27 @@
   --icon-size-xl: 18px;
   --icon-size-2xl: 20px;
   --icon-size-3xl: 24px;
+
+  /* === Calendar page aliases（給 src/calendar-page.jsx 用，對齊 claude design 下載檔命名） === */
+  --canvas: var(--bg);
+  --font-sans: var(--ff-sans);
+  --font-mono: var(--ff-mono);
+  --corner-card: 10px;
+  --shadow-popover: 0 8px 24px -8px rgba(15, 23, 42, 0.18), 0 2px 6px -2px rgba(15, 23, 42, 0.06);
+  --scrim: rgba(11, 18, 32, 0.45);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --scrollbar-thumb: rgba(11, 18, 32, 0.18);
+  --scrollbar-thumb-hover: rgba(11, 18, 32, 0.32);
+
+  /* === Calendar 分類色（5 類 × bg/ink/dot/border） ===
+     對齊首頁 .tag class 的 semantic token，全站 tag / 行事曆 / popover / modal 用同一套色：
+     work / study → primary 藍、health → warn 橘、life → pos 綠、personal → muted 灰
+     被指向的 token 自己跟 theme 切換，所以 dark 區塊不用 override --cat-*。 */
+  --cat-work-bg: var(--bg-chart-area);     --cat-work-ink: var(--primary);     --cat-work-dot: var(--primary);     --cat-work-border: rgba(14, 79, 231, 0.28);
+  --cat-health-bg: var(--warn-bg);         --cat-health-ink: var(--warn);      --cat-health-dot: var(--warn);      --cat-health-border: rgba(227, 143, 0, 0.28);
+  --cat-life-bg: var(--pos-bg);            --cat-life-ink: var(--pos);         --cat-life-dot: var(--pos);         --cat-life-border: rgba(40, 173, 94, 0.28);
+  --cat-study-bg: var(--bg-chart-area);    --cat-study-ink: var(--primary);    --cat-study-dot: var(--primary);    --cat-study-border: rgba(14, 79, 231, 0.28);
+  --cat-personal-bg: var(--surface-hover); --cat-personal-ink: var(--muted);   --cat-personal-dot: var(--muted);   --cat-personal-border: var(--divider);
 }
 
 [data-theme="dark"] {
@@ -114,6 +135,56 @@
 
   --shadow-card: 0 1px 0 rgba(255,255,255,0.02);
   --shadow-hover: 0 8px 24px -8px rgba(0,0,0,0.5), 0 2px 4px -2px rgba(0,0,0,0.35);
+
+  /* Calendar page aliases — dark overrides（其他別名沿用 light 定義，會跟著 var 換主題） */
+  --shadow-popover: 0 12px 32px -8px rgba(0, 0, 0, 0.55), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+  --scrim: rgba(0, 0, 0, 0.55);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.24);
+
+  /* --cat-* 在 :root 用 var(--bg-chart-area)/var(--warn-bg)/var(--pos-bg) 等，
+     這些 token 自己跟主題切換。但 work/study 的 ink 在 dark 下 primary 在淡藍底
+     對比不夠，覆寫成 --primary-deep（dark 中比 brand 亮一階） */
+  --cat-work-ink: var(--primary-deep);
+  --cat-work-dot: var(--primary-deep);
+  --cat-study-ink: var(--primary-deep);
+  --cat-study-dot: var(--primary-deep);
+}
+
+/* Tag dark mode 對比修正：.tag.work / .tag.learn 改用較亮的 primary-deep */
+[data-theme="dark"] .tag.work,
+[data-theme="dark"] .tag.learn { color: var(--primary-deep); }
+
+/* =============== Calendar scrollbar（給 .cal-scroll 用） =============== */
+.cal-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.cal-scroll::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--canvas);
+}
+.cal-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+.cal-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* =============== Calendar page RWD =============== */
+/* < 1024px (平板)：todo + calendar 改 vertical stack，各佔全寬，event title 才有空間 */
+@media (max-width: 1023px) {
+  .calendar-page-layout {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .calendar-page-layout > .calendar-todo-column {
+    flex: none !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 60vh;
+  }
+  .calendar-page-layout > .calendar-grid-section {
+    flex: none !important;
+    width: 100% !important;
+    height: 70vh !important;
+    min-height: 540px;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -138,6 +209,7 @@ input, textarea, select { font: inherit; color: inherit; }
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr;
   min-height: 100vh;
+  transition: grid-template-columns .2s ease;
 }
 .main {
   padding: var(--pad);
@@ -199,6 +271,23 @@ input, textarea, select { font: inherit; color: inherit; }
   line-height: 1.1;
   margin-top: 2px;
 }
+/* 桌面用的 sidebar 收合切換鈕；tablet/mobile 用 CSS 隱藏 */
+.sidebar-collapse-btn {
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+  flex-shrink: 0;
+}
+.sidebar-collapse-btn:hover { background: var(--surface-hover); color: var(--ink-2); }
+.sidebar-collapse-btn i { font-size: 14px; }
 .nav-section {
   font-size: 10px;
   font-weight: 600;
@@ -216,7 +305,7 @@ input, textarea, select { font: inherit; color: inherit; }
   color: var(--ink-2);
   cursor: pointer;
   font-size: 14px;
-  font-weight: 450;
+  font-weight: 500;
   transition: background .15s ease, color .15s ease;
   position: relative;
   border: 1px solid transparent;
@@ -227,7 +316,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .nav-item.active {
   background: var(--primary-pale);
   color: var(--primary-deep);
-  font-weight: 550;
+  font-weight: 600;
 }
 .nav-item.active i { color: var(--primary-deep); }
 /* nav-item 內的 .badge 預設用 subtle 樣式，active 時翻回 primary */
@@ -308,7 +397,7 @@ input, textarea, select { font: inherit; color: inherit; }
   flex-shrink: 0;
   letter-spacing: -0.02em;
 }
-.user-name { font-size: 13px; font-weight: 550; line-height: 1.1; }
+.user-name { font-size: 13px; font-weight: 600; line-height: 1.1; }
 .user-mail { font-size: 11px; color: var(--muted); line-height: 1.1; margin-top: 2px; }
 
 /* =============== Topbar =============== */
@@ -454,7 +543,7 @@ input, textarea, select { font: inherit; color: inherit; }
   border-radius: var(--r-card);
   cursor: pointer;
   font-size: 14px;
-  font-weight: 550;
+  font-weight: 600;
   border: 0;
   transition: transform .12s ease, background .15s, border-color .15s, box-shadow .15s;
 }
@@ -531,7 +620,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .card-title {
   display: flex; align-items: center; gap: 8px;
   font-size: 13px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--ink-2);
   letter-spacing: -0.005em;
 }
@@ -564,7 +653,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .delta {
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 11.5px;
-  font-weight: 550;
+  font-weight: 600;
   padding: 2px 7px;
   border-radius: var(--r-pill);
   font-variant-numeric: tabular-nums;
@@ -640,19 +729,23 @@ input, textarea, select { font: inherit; color: inherit; }
 .todo-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin: -4px -8px;
+  gap: 6px;
 }
 .todo {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  padding: 9px 8px;
-  border-radius: 6px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
   cursor: pointer;
-  transition: background .15s;
+  transition: border-color 120ms var(--ease-out), background 120ms var(--ease-out);
 }
-.todo:hover { background: var(--surface-hover); }
+.todo:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
 /* Checkbox primitive — Unchecked / Checked / Disabled (對齊 Figma Checkbox) */
 .checkbox {
   width: 18px; height: 18px;
@@ -686,7 +779,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .todo .title {
   font-size: 14px;
   color: var(--ink);
-  font-weight: 450;
+  font-weight: 500;
   line-height: 1.3;
   position: relative;
   display: inline-block;
@@ -1064,7 +1157,7 @@ input, textarea, select { font: inherit; color: inherit; }
   display: grid; place-items: center;
 }
 .quick-btn .ico i { font-size: 16px; }
-.quick-btn .lbl { font-size: 12.5px; font-weight: 550; color: var(--ink); }
+.quick-btn .lbl { font-size: 12.5px; font-weight: 600; color: var(--ink); }
 .quick-btn .sub { font-size: 11px; color: var(--muted); margin-top: -4px; }
 
 /* Animations */
@@ -1129,9 +1222,40 @@ input, textarea, select { font: inherit; color: inherit; }
   .hero-meta { flex-wrap: wrap; }
 }
 
+/* ───── Desktop ≥1024：手動收合（.app.is-collapsed） ───── */
+@media (min-width: 1024px) {
+  .app.is-collapsed { --sidebar-w: 64px; }
+
+  /* Sidebar collapses to icon rail（沿用 Tablet 同一套規則） */
+  .app.is-collapsed .nav-item .lbl,
+  .app.is-collapsed .brand .brand-mark,
+  .app.is-collapsed .brand .brand-text,
+  .app.is-collapsed .user-row .user-text,
+  .app.is-collapsed .nav-section,
+  .app.is-collapsed .sidebar-foot .user-mail,
+  .app.is-collapsed .nav-item .badge { display: none; }
+  .app.is-collapsed .nav-item { justify-content: center; padding: 9px 8px; }
+  .app.is-collapsed .brand { justify-content: center; padding: 6px 0 18px; }
+  .app.is-collapsed .user-row { justify-content: center; padding: 6px 0; }
+  .app.is-collapsed .theme-toggle { padding: 2px; height: 60px; flex-direction: column; }
+  .app.is-collapsed .theme-toggle button { width: 100%; height: 26px; }
+  .app.is-collapsed .theme-toggle .knob {
+    width: calc(100% - 6px);
+    height: calc(50% - 3px);
+    top: 3px; bottom: auto; left: 3px;
+  }
+  .app.is-collapsed .theme-toggle.dark .knob { transform: translateY(100%); }
+
+  /* 收合時 toggle 鈕變獨佔一列、置中（margin-left:auto 蓋掉） */
+  .app.is-collapsed .sidebar-collapse-btn { margin-left: 0; }
+}
+
 /* ───── Tablet 768–1023 ───── */
 @media (max-width: 1023px) {
   :root { --sidebar-w: 64px; --pad: 22px; }
+
+  /* tablet/mobile 不顯示桌面用的收合鈕 */
+  .sidebar-collapse-btn { display: none; }
 
   /* Sidebar collapses to icon rail */
   .nav-item .lbl,
