@@ -2156,8 +2156,8 @@ const DayHeader = ({ days }) => (
       display: "flex",
       borderBottom: "1px solid var(--border)",
       background: "var(--surface)",
-      // 補上下方 cal-scroll 的 scrollbar 寬度，避免 header 跟 body 的 day 欄寬度錯開
-      paddingRight: 10,
+      // 補上下方 cal-scroll 的 scrollbar 寬度，避免 header 跟 body 的 day 欄寬度錯開（overlay scrollbar 會是 0）
+      paddingRight: "var(--cal-scrollbar-w, 10px)",
       boxSizing: "border-box",
     }}
   >
@@ -2572,8 +2572,8 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick, o
           display: "grid",
           gridTemplateColumns: "repeat(7,1fr)",
           borderBottom: "1px solid var(--border)",
-          // 補上 cal-scroll 內 scrollbar 寬度，讓 header 7 column 與下方 grid 線完全對齊
-          paddingRight: 10,
+          // 補上 cal-scroll 內 scrollbar 寬度，讓 header 7 column 與下方 grid 線完全對齊（overlay scrollbar 會是 0）
+          paddingRight: "var(--cal-scrollbar-w, 10px)",
           boxSizing: "border-box",
         }}
       >
@@ -2724,6 +2724,19 @@ export function CalendarPage({ defaultView = "week", showWeekend = true, eventSt
   useEffect(() => {
     setView(defaultView);
   }, [defaultView]);
+
+  // 量測 .cal-scroll 實際 scrollbar 寬度，避免 iOS overlay scrollbar 環境下 header 右側多出留白
+  useLayoutEffect(() => {
+    if (typeof document === "undefined") return;
+    const probe = document.createElement("div");
+    probe.className = "cal-scroll";
+    probe.style.cssText =
+      "position:absolute;top:-9999px;left:-9999px;width:100px;height:100px;overflow:scroll;";
+    document.body.appendChild(probe);
+    const w = probe.offsetWidth - probe.clientWidth;
+    document.documentElement.style.setProperty("--cal-scrollbar-w", `${w}px`);
+    document.body.removeChild(probe);
+  }, []);
 
   // Popover：{ event, anchor, locked }
   const [hovered, setHovered] = useState(null);
