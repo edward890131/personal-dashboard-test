@@ -2157,7 +2157,8 @@ const DayHeader = ({ days }) => (
       borderBottom: "1px solid var(--border)",
       background: "var(--surface)",
       // 補上下方 cal-scroll 的 scrollbar 寬度，避免 header 跟 body 的 day 欄寬度錯開
-      paddingRight: 10,
+      // 桌面實量 10px、iOS/Android overlay 為 0px，由 CalendarPage 的 useEffect 動態寫入
+      paddingRight: "var(--cal-scrollbar-w, 0px)",
       boxSizing: "border-box",
     }}
   >
@@ -2573,7 +2574,8 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick, o
           gridTemplateColumns: "repeat(7,1fr)",
           borderBottom: "1px solid var(--border)",
           // 補上 cal-scroll 內 scrollbar 寬度，讓 header 7 column 與下方 grid 線完全對齊
-          paddingRight: 10,
+          // 桌面實量 10px、iOS/Android overlay 為 0px，由 CalendarPage 的 useEffect 動態寫入
+          paddingRight: "var(--cal-scrollbar-w, 0px)",
           boxSizing: "border-box",
         }}
       >
@@ -2718,6 +2720,26 @@ export function CalendarPage({ defaultView = "week", showWeekend = true, eventSt
     const onResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // 量測 .cal-scroll 的實際 scrollbar 寬度，寫進 CSS 變數 --cal-scrollbar-w
+  // Why: 桌面 ::-webkit-scrollbar 佔 10px，iOS/Android 用 overlay scrollbar 佔 0px，
+  // header 不能寫死 paddingRight 否則手機上會跟 grid 錯開
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const measure = () => {
+      const probe = document.createElement("div");
+      probe.className = "cal-scroll";
+      probe.style.cssText =
+        "position:absolute;top:-9999px;left:-9999px;width:100px;height:100px;overflow:scroll;visibility:hidden;pointer-events:none;";
+      document.body.appendChild(probe);
+      const w = probe.offsetWidth - probe.clientWidth;
+      document.body.removeChild(probe);
+      document.documentElement.style.setProperty("--cal-scrollbar-w", `${w}px`);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, []);
 
   // tweak 改動「預設檢視」時跟著切
