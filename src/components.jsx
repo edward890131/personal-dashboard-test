@@ -217,7 +217,34 @@ function Hero() {
 }
 
 /* ---------------- KPI mini cards ---------------- */
-function Kpi({ icon, label, value, prefix, suffix, delta, deltaPos = true, spark, decimals }) {
+// 基礎 KPI 卡片：僅顯示 icon / label / 數字 / delta，無趨勢圖
+function Kpi({ icon, label, value, prefix, suffix, delta, deltaPos = true, decimals }) {
+  return (
+    <div className="card kpi">
+      <div className="row">
+        <div className="kpi-icon">
+          <i className={`ph ${icon}`}></i>
+        </div>
+        {delta != null && (
+          <span className={`delta ${deltaPos ? "pos" : "neg"}`}>
+            <i className={`ph ${deltaPos ? "ph-arrow-up-right" : "ph-arrow-down-right"}`}></i>
+            {delta}
+          </span>
+        )}
+      </div>
+      <div>
+        <div className="kpi-lbl">{label}</div>
+        <div className="num">
+          {prefix && <span className="currency">{prefix}</span>}
+          <CountUp to={value} suffix={suffix || ""} decimals={decimals || 0} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 帶趨勢圖的 KPI 卡片：在基礎版本下方附加 Sparkline
+function KpiTrend({ icon, label, value, prefix, suffix, delta, deltaPos = true, spark, decimals }) {
   return (
     <div className="card kpi">
       <div className="row">
@@ -741,6 +768,7 @@ export {
   Topbar,
   Hero,
   Kpi,
+  KpiTrend,
   TodoCard,
   FinanceCard,
   CalendarCard,

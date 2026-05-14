@@ -429,7 +429,7 @@ function CardDemo() {
             最常用的容器。hover 會微微浮起並加深邊線、加深陰影。
           </div>
         </div>
-        {/* KPI 卡片 */}
+        {/* KPI 卡片 — 基礎版（無趨勢圖） */}
         <div className="card kpi">
           <div className="row">
             <div className="kpi-icon">
@@ -440,7 +440,24 @@ function CardDemo() {
             </span>
           </div>
           <div>
-            <div className="kpi-lbl">KPI 範例</div>
+            <div className="kpi-lbl">KPI 範例（無趨勢圖）</div>
+            <div className="num">
+              <CountUp to={42} suffix="%" />
+            </div>
+          </div>
+        </div>
+        {/* KPI 卡片 — 趨勢版 */}
+        <div className="card kpi">
+          <div className="row">
+            <div className="kpi-icon">
+              <i className="ph ph-target"></i>
+            </div>
+            <span className="delta pos">
+              <i className="ph ph-arrow-up-right"></i>+8%
+            </span>
+          </div>
+          <div>
+            <div className="kpi-lbl">KPI 範例（趨勢版）</div>
             <div className="num">
               <CountUp to={42} suffix="%" />
             </div>
@@ -450,7 +467,10 @@ function CardDemo() {
       </div>
       <div className="ds-note">
         <code className="ds-mono">.card</code> 是基底；加 <code className="ds-mono">.kpi</code> 進入
-        KPI 變體（含 .row / .kpi-icon / .kpi-lbl / .num / Sparkline）
+        KPI 變體（含 .row / .kpi-icon / .kpi-lbl / .num）。元件層分兩種：
+        <code className="ds-mono">Kpi</code> 為無趨勢圖基礎版，
+        <code className="ds-mono">KpiTrend</code> 額外附加{" "}
+        <code className="ds-mono">Sparkline</code>。
       </div>
     </DSCard>
   );
