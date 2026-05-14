@@ -112,7 +112,6 @@ function App() {
                 suffix="%"
                 delta="+12%"
                 deltaPos={true}
-                spark={[3, 4, 5, 4, 6, 7, 8, 7, 9, 10]}
               />
             </div>
             <div className="s-3">
@@ -123,7 +122,6 @@ function App() {
                 prefix="NT$"
                 delta="+8.3%"
                 deltaPos={true}
-                spark={[20, 22, 21, 24, 26, 28, 30, 32, 34, 36]}
               />
             </div>
             <div className="s-3">
@@ -134,7 +132,6 @@ function App() {
                 suffix="%"
                 delta="+4%"
                 deltaPos={true}
-                spark={[20, 30, 28, 40, 42, 46, 50, 54, 56, 58]}
               />
             </div>
             <div className="s-3">
@@ -145,7 +142,6 @@ function App() {
                 suffix=" 天"
                 delta="紀錄新高"
                 deltaPos={true}
-                spark={[4, 6, 8, 10, 12, 16, 18, 20, 24, 27]}
               />
             </div>
 
