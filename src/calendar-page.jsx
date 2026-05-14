@@ -1361,25 +1361,6 @@ const EventPopover = ({ event, anchor, onEdit, onDelete, onClose }) => {
         }}
       >
         <button
-          onClick={() => onEdit(event)}
-          style={{
-            flex: 1,
-            height: 30,
-            border: "1px solid var(--border)",
-            background: "var(--surface)",
-            color: "var(--ink-2)",
-            borderRadius: 6,
-            cursor: "pointer",
-            font: "500 12px/1 var(--font-sans)",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-          }}
-        >
-          <i className="ph ph-pencil-simple" style={{ fontSize: 12 }}></i> 編輯
-        </button>
-        <button
           onClick={() => onDelete(event)}
           style={{
             flex: 1,
@@ -1397,6 +1378,25 @@ const EventPopover = ({ event, anchor, onEdit, onDelete, onClose }) => {
           }}
         >
           <i className="ph ph-trash" style={{ fontSize: 12 }}></i> 刪除
+        </button>
+        <button
+          onClick={() => onEdit(event)}
+          style={{
+            flex: 1,
+            height: 30,
+            border: "none",
+            background: "var(--bg-inverse)",
+            color: "var(--text-on-inverse)",
+            borderRadius: 6,
+            cursor: "pointer",
+            font: "500 12px/1 var(--font-sans)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+          }}
+        >
+          <i className="ph ph-pencil-simple" style={{ fontSize: 12 }}></i> 編輯
         </button>
       </div>
     </div>
