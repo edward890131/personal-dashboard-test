@@ -105,6 +105,28 @@
   --cat-life-bg: var(--pos-bg);                 --cat-life-ink: var(--pos);         --cat-life-dot: var(--pos);         --cat-life-border: rgba(40, 173, 94, 0.28);
   --cat-study-bg: var(--bg-chart-area-violet);  --cat-study-ink: var(--violet);     --cat-study-dot: var(--violet);     --cat-study-border: rgba(122, 90, 224, 0.28);
   --cat-personal-bg: var(--surface-hover);      --cat-personal-ink: var(--muted);   --cat-personal-dot: var(--muted);   --cat-personal-border: var(--divider);
+
+  /* === 理財類別色（finance category ramps）===
+     對應 src/finance-categories.js 的 13 支出 + 4 收入類別；列表色塊 / 甜甜圈扇形 /
+     圖例圓點 / 彈窗標籤全部引用同一個 token，確保同類別配色一致（PRD 4.2 / 第 9 節）。
+     淡底與邊框由 JS 端用 color-mix 從這些實色衍生，自動跟主題切換。 */
+  --fin-food: #E38F00;          /* 食物 · warning */
+  --fin-drink: #D9A100;         /* 飲品 · amber */
+  --fin-clothing: #E0529A;      /* 服飾 · pink */
+  --fin-beauty: #F2675A;        /* 美妝 · coral */
+  --fin-health: #28AD5E;        /* 健康 · green */
+  --fin-transport: #0E4FE7;     /* 交通 · blue */
+  --fin-entertainment: #7A5AE0; /* 娛樂 · purple */
+  --fin-study: #12A594;         /* 學習 · teal */
+  --fin-home: #5B6472;          /* 居家 · gray-dark */
+  --fin-electronics: #1E3A8A;   /* 電子 · blue-dark */
+  --fin-investment: #1A7F4B;    /* 投資（支出）· green-dark */
+  --fin-insurance: #0E6E63;     /* 保險 · teal-dark */
+  --fin-other: #9AA1AC;         /* 其他 · gray */
+  --fin-salary: #28AD5E;        /* 薪資 · success */
+  --fin-sidejob: #12A594;       /* 副業 · teal */
+  --fin-bonus: #D9A100;         /* 獎金 · amber */
+  --fin-income-investment: #34C77B; /* 投資（收入）· green */
 }
 
 [data-theme="dark"] {
@@ -157,6 +179,12 @@
   --cat-work-dot: var(--primary-deep);
   --cat-study-ink: var(--violet-deep);
   --cat-study-dot: var(--violet-deep);
+
+  /* 理財類別色：深色模式把偏暗的幾個 hue 提亮，確保扇形 / 圓點在暗底可辨識 */
+  --fin-home: #8A93A2;
+  --fin-electronics: #5B8DEF;
+  --fin-investment: #3FBF77;
+  --fin-insurance: #2BA89A;
 }
 
 /* Tag dark mode 對比修正：work / study 在暗底淡彩上對比不夠，換成亮版 */
@@ -1432,3 +1460,252 @@ input, textarea, select { font: inherit; color: inherit; }
   /* Tweaks panel narrower */
   .twk-panel { width: calc(100vw - 24px); right: 12px; bottom: 12px; }
 }
+
+/* ======================================================================
+   理財規劃頁面（finance）— 版面、共用彈窗 / Toast / 表單 / 類別標籤
+   盡量複用既有 token 與 class（.card / .btn-* / .fin-stat / .tab-row / .delta / .bar）
+   ====================================================================== */
+
+/* ---- 頁面版面 ---- */
+.fin-page { display: flex; flex-direction: column; gap: 18px; }
+.fin-page-head { display: flex; align-items: baseline; gap: 10px; }
+.fin-page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+.fin-page-month { font-size: 13px; color: var(--muted); }
+.fin-page-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr; /* 左 財務分析 / 右 帳目+儲蓄（PRD 2.1） */
+  gap: 14px;
+  align-items: stretch; /* 兩欄等高 */
+}
+.fin-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.fin-col-right { min-width: 0; }
+.fin-col-right-inner { display: flex; flex-direction: column; gap: 14px; }
+/* 桌機：右欄高度綁定左卡。把右欄內容絕對定位抽離正常流，這樣它不會去撐高
+   grid 列；列高改由左卡（較高者）決定，右欄填滿後兩張卡各分一半，列表超出時卡內捲動。 */
+@media (min-width: 961px) {
+  .fin-col-right { position: relative; }
+  .fin-col-right-inner { position: absolute; inset: 0; }
+  .fin-col-right-inner > .card { flex: 1; min-height: 0; } /* 兩張卡平分 = 左卡的一半 */
+  .fin-col-right-inner > .card .txn-list { flex: 1; min-height: 0; overflow-y: auto; }
+  .fin-col-right-inner > .card .fin-empty { flex: 1; } /* 空狀態垂直置中於半卡 */
+}
+/* ≤960px：兩欄降為單欄堆疊，順序 財務分析 → 帳目 → 儲蓄（PRD 2.1 / 第 8 節） */
+@media (max-width: 960px) {
+  .fin-page-grid { grid-template-columns: 1fr; }
+}
+.fin-placeholder { color: var(--muted); font-size: 12.5px; padding: 24px 0; text-align: center; }
+
+/* ---- icon-btn 停用態（月份切換到當月時，未來箭頭不可點）---- */
+.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.icon-btn:disabled:hover { background: transparent; border-color: var(--border); }
+
+/* ---- 共用 Modal ---- */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: var(--scrim);
+  display: grid; place-items: center;
+  z-index: 200;
+  padding: 16px;
+  animation: fade-in 0.15s ease;
+}
+.modal {
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-popover);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: pop-in 0.16s var(--ease-out);
+}
+.modal-h {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--divider);
+}
+.modal-title { flex: 1; font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+.modal-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
+.modal-foot {
+  display: flex; gap: 10px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid var(--divider);
+}
+.confirm-msg { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin: 0; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+/* ---- Toast（左下角堆疊）---- */
+.toast-wrap {
+  position: fixed; left: 20px; bottom: 20px;
+  display: flex; flex-direction: column-reverse; gap: 8px;
+  z-index: 300;
+}
+.toast {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow-popover);
+  font-size: 13px; color: var(--ink);
+  animation: toast-in 0.22s var(--ease-out);
+}
+.toast i { font-size: 17px; }
+.toast.success i { color: var(--pos); }
+.toast.error i { color: var(--neg); }
+.toast.info i { color: var(--primary); }
+@keyframes toast-in { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+
+/* ---- 表單欄位 ---- */
+.fin-field { display: flex; flex-direction: column; gap: 6px; }
+.fin-field > .lbl { font-size: 11.5px; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
+.fin-field > .err { font-size: 11px; color: var(--neg); }
+.fin-input {
+  height: 40px;
+  padding: 0 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  font: 400 14px/1 var(--ff-sans);
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.fin-input::placeholder { color: var(--muted-2); }
+.fin-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14, 79, 231, 0.15); }
+.fin-input.invalid { border-color: var(--neg); }
+.fin-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ---- 類型切換（segmented：支出 / 收入）---- */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.seg button {
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.seg button:hover { background: var(--surface-hover); }
+.seg button.on {
+  background: var(--primary-pale);
+  border-color: var(--primary);
+  color: var(--primary-deep);
+}
+
+/* ---- 類別標籤（彩色，單選，可換行）---- */
+.cat-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.cat-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 12.5px; font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cat-tag:hover { background: var(--surface-hover); }
+.cat-tag.on { font-weight: 600; }
+.cat-tag .emoji { font-size: 14px; line-height: 1; }
+
+/* ---- 危險按鈕（刪除）---- */
+.btn-danger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 44px; padding: 0 16px;
+  border-radius: var(--r-card);
+  cursor: pointer;
+  font-size: 14px; font-weight: 600;
+  background: var(--surface);
+  color: var(--neg);
+  border: 1px solid color-mix(in oklch, var(--neg) 45%, transparent);
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-danger:hover { background: var(--neg-bg); }
+.btn-danger i { font-size: 16px; }
+.btn-danger.btn-icon { width: 44px; padding: 0; }
+
+/* ---- 財務分析子區（收支趨勢 / 支出分類）---- */
+.fin-sub { display: flex; flex-direction: column; gap: 10px; }
+.fin-sub + .fin-sub { margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--divider); }
+.fin-sub-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.fin-sub-t { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+.month-nav { display: inline-flex; align-items: center; gap: 6px; }
+.month-nav .lbl { font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; min-width: 96px; text-align: center; }
+.chart-empty { height: 170px; display: grid; place-items: center; color: var(--muted); font-size: 12.5px; }
+
+/* 支出分類：甜甜圈（大）+ 圖例 左右並排 */
+.fin-donut-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+/* 甜甜圈中央：本月支出（NTD）標籤 + 大金額 */
+.fin-donut-row .donut-center { gap: 4px; }
+.fin-donut-row .donut-center .l { font-size: 14px; }
+.fin-donut-row .donut-center .v { font-size: 30px; font-weight: 700; }
+.fin-legend { display: flex; flex-direction: column; gap: 15px; flex: 1; min-width: 150px; }
+.fin-legend .row { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.fin-legend .sq { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.fin-legend .nm { flex: 1; color: var(--ink-2); display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
+.fin-legend .nm > span:first-child { font-size: 16px; line-height: 1; } /* emoji 略大於文字 */
+.fin-legend .pct { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; }
+
+/* ---- 帳目 / 存入 列表 ---- */
+.txn-list { display: flex; flex-direction: column; gap: 2px; }
+.txn-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 6px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.txn-row:hover { background: var(--surface-hover); }
+.txn-ico {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: grid; place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.txn-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.txn-name { font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txn-sub { font-size: 11.5px; color: var(--muted); }
+.txn-amt { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.txn-amt.pos { color: var(--pos); }
+.txn-amt.neg { color: var(--neg); }
+
+/* 存入記錄列（時間 + 金額）*/
+.dep-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 6px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dep-row:hover { background: var(--surface-hover); }
+.dep-when { font-size: 13px; color: var(--ink-2); }
+.dep-amt { font-size: 14px; font-weight: 600; color: var(--pos); font-variant-numeric: tabular-nums; }
+
+/* 載入更多 / 空狀態 */
+.fin-loadmore { align-self: center; margin-top: 6px; }
+.fin-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 30px 16px; text-align: center; }
+.fin-empty i { font-size: 30px; color: var(--muted-2); }
+.fin-empty .t { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+/* ---- 儲蓄目標 進度面板 ---- */
+.save-panel {
+  background: var(--primary-pale);
+  border: 1px solid color-mix(in oklch, var(--primary) 18%, transparent);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.save-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.save-target { font-size: 13px; color: var(--primary-ink); font-weight: 500; }
+.save-target b { font-weight: 700; }
+.save-pct { font-size: 22px; font-weight: 700; color: var(--primary-ink); font-variant-numeric: tabular-nums; }
+.save-panel .bar { background: color-mix(in oklch, var(--primary) 16%, var(--surface)); height: 8px; }
+.save-encourage { font-size: 12px; color: var(--primary-deep); }
+.save-hint { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
