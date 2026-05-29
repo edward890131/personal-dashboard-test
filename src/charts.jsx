@@ -324,13 +324,22 @@ function Donut({ value = 0, size = 130, stroke = 14, label = "完成率" }) {
 }
 
 /* ---------------- Pie (segmented donut for category breakdown) ---------------- */
-function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出" }) {
+function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出", formatValue }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const total = data.reduce((s, d) => s + d.value, 0);
+  // 金額格式化：未傳就用千分位 + $ 前綴
+  const fmt = formatValue || ((v) => `$ ${Math.round(v).toLocaleString("en-US")}`);
+  const wrapRef = useRef(null);
+  const [hover, setHover] = useState(null); // hover 中的區段：{ i, x, y }，座標相對 .donut 容器
+  // 滑鼠在區段上移動 → 換算成相對容器的座標，讓 tooltip 跟著游標
+  const onMove = (i) => (e) => {
+    const rect = wrapRef.current.getBoundingClientRect();
+    setHover({ i, x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
   let acc = 0;
   return (
-    <div className="donut" style={{ width: size, height: size }}>
+    <div className="donut" ref={wrapRef} style={{ width: size, height: size }}>
       <svg viewBox={`0 0 ${size} ${size}`}>
         <circle
           cx={size / 2}
@@ -339,6 +348,7 @@ function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出" }) {
           fill="none"
           stroke="var(--divider)"
           strokeWidth={stroke}
+          style={{ pointerEvents: "none" }}
         />
         {data.map((d, i) => {
           const portion = d.value / total;
@@ -357,11 +367,14 @@ function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出" }) {
               strokeWidth={stroke}
               strokeDasharray={dash}
               strokeDashoffset={offset}
+              onMouseMove={onMove(i)}
+              onMouseLeave={() => setHover(null)}
               style={{
                 transition:
                   "stroke-dasharray 1s cubic-bezier(.4,.05,.2,1), stroke-dashoffset 1s cubic-bezier(.4,.05,.2,1)",
                 transformOrigin: "center",
                 animation: `donut-sweep 1s cubic-bezier(.4,.05,.2,1) ${i * 80}ms backwards`,
+                cursor: "pointer",
               }}
             />
           );
@@ -373,6 +386,15 @@ function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出" }) {
           <CountUp to={total} prefix="$ " />
         </div>
       </div>
+      {hover && data[hover.i] && (
+        <div className="tooltip on" style={{ left: hover.x, top: hover.y }}>
+          {data[hover.i].label && <div className="lbl">{data[hover.i].label}</div>}
+          <div>
+            {Math.round((data[hover.i].value / total) * 100)}%{" · "}
+            {fmt(data[hover.i].value)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

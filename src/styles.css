@@ -110,19 +110,34 @@
      對應 src/finance-categories.js 的 13 支出 + 4 收入類別；列表色塊 / 甜甜圈扇形 /
      圖例圓點 / 彈窗標籤全部引用同一個 token，確保同類別配色一致（PRD 4.2 / 第 9 節）。
      淡底與邊框由 JS 端用 color-mix 從這些實色衍生，自動跟主題切換。 */
-  --fin-food: #E38F00;          /* 食物 · warning */
-  --fin-drink: #D9A100;         /* 飲品 · amber */
-  --fin-clothing: #E0529A;      /* 服飾 · pink */
-  --fin-beauty: #F2675A;        /* 美妝 · coral */
-  --fin-health: #28AD5E;        /* 健康 · green */
-  --fin-transport: #0E4FE7;     /* 交通 · blue */
-  --fin-entertainment: #7A5AE0; /* 娛樂 · purple */
-  --fin-study: #12A594;         /* 學習 · teal */
-  --fin-home: #5B6472;          /* 居家 · gray-dark */
-  --fin-electronics: #1E3A8A;   /* 電子 · blue-dark */
-  --fin-investment: #1A7F4B;    /* 投資（支出）· green-dark */
-  --fin-insurance: #0E6E63;     /* 保險 · teal-dark */
-  --fin-other: #9AA1AC;         /* 其他 · gray */
+  /* 支出分類 13 色：套用 Figma 設計稿（node 872:23455）12 色，左到右對應前 12 類；第 13 類「其他」用中性灰 */
+  --fin-food: #0E4FE7;          /* 食物 · 藍深 */
+  --fin-drink: #41A4FF;         /* 飲品 · 藍中 */
+  --fin-clothing: #B2DBFF;      /* 服飾 · 藍淺 */
+  --fin-beauty: #5436B8;        /* 美妝 · 紫深 */
+  --fin-health: #A8A9FA;        /* 健康 · 紫中 */
+  --fin-transport: #CACBFC;     /* 交通 · 紫淺 */
+  --fin-entertainment: #E38F00; /* 娛樂 · 琥珀 */
+  --fin-study: #FFD81E;         /* 學習 · 黃 */
+  --fin-home: #FFF488;          /* 居家 · 黃淺 */
+  --fin-electronics: #28AD5E;   /* 電子 · 綠深 */
+  --fin-investment: #54D587;    /* 投資（支出）· 綠中 */
+  --fin-insurance: #BEF5D3;     /* 保險 · 綠淺 */
+  --fin-other: #9AA1AC;         /* 其他 · 中性灰 */
+  /* 類別標籤選中態的文字色（深版，對比達 AA；對應各類別淺底）*/
+  --fin-food-ink: #1E469D;
+  --fin-drink-ink: #004D9A;
+  --fin-clothing-ink: #2C516F;
+  --fin-beauty-ink: #4B3999;
+  --fin-health-ink: #464289;
+  --fin-transport-ink: #494871;
+  --fin-entertainment-ink: #7F3500;
+  --fin-study-ink: #674800;
+  --fin-home-ink: #5B4E00;
+  --fin-electronics-ink: #00621C;
+  --fin-investment-ink: #006220;
+  --fin-insurance-ink: #26593D;
+  --fin-other-ink: #474D57;
   --fin-salary: #28AD5E;        /* 薪資 · success */
   --fin-sidejob: #12A594;       /* 副業 · teal */
   --fin-bonus: #D9A100;         /* 獎金 · amber */
@@ -180,11 +195,21 @@
   --cat-study-ink: var(--violet-deep);
   --cat-study-dot: var(--violet-deep);
 
-  /* 理財類別色：深色模式把偏暗的幾個 hue 提亮，確保扇形 / 圓點在暗底可辨識 */
-  --fin-home: #8A93A2;
-  --fin-electronics: #5B8DEF;
-  --fin-investment: #3FBF77;
-  --fin-insurance: #2BA89A;
+  /* 支出分類色：套用設計稿固定調色盤後，深淺色共用同一組（沿用 :root），故此處不再覆寫 */
+  /* 類別標籤文字色：深色模式改用亮版（對比達 AA；對應各類別深色淡底）*/
+  --fin-food-ink: #9ECAFF;
+  --fin-drink-ink: #86D1FF;
+  --fin-clothing-ink: #A7D0F3;
+  --fin-beauty-ink: #C4BDFF;
+  --fin-health-ink: #BFC1FF;
+  --fin-transport-ink: #C4C5F6;
+  --fin-entertainment-ink: #FFBA66;
+  --fin-study-ink: #E5CA5F;
+  --fin-home-ink: #D9CE62;
+  --fin-electronics-ink: #85E3A0;
+  --fin-investment-ink: #82E3A3;
+  --fin-insurance-ink: #A3D9B8;
+  --fin-other-ink: #C4CBD7;
 }
 
 /* Tag dark mode 對比修正：work / study 在暗底淡彩上對比不夠，換成亮版 */
@@ -200,6 +225,19 @@
 }
 .cal-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 .cal-scroll::-webkit-scrollbar-track { background: transparent; }
+/* 帳目總覽 / 儲蓄目標 list、彈窗內容區 捲軸：對齊行事曆 .cal-scroll 樣式（thumb 邊框用 --surface 融入卡片底色）*/
+.txn-list::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar { width: 10px; height: 10px; }
+.txn-list::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--surface);
+}
+.txn-list::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+.txn-list::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track { background: transparent; }
 
 /* 月模式 +N 更多 按鈕 hover */
 .month-more-btn:hover { background: var(--surface-hover); color: var(--ink-2); }
@@ -580,7 +618,7 @@ input, textarea, select { font: inherit; color: inherit; }
 /* Button system — Primary / Secondary × Default / Small × 5 states (對齊 Figma Button) */
 .btn-primary,
 .btn-secondary {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   height: 44px;
   padding: 0 16px;
   border-radius: var(--r-card);
@@ -981,6 +1019,7 @@ input, textarea, select { font: inherit; color: inherit; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center;
   gap: 2px;
+  pointer-events: none; /* 讓 hover 穿透到底下的圓餅圖區段，tooltip 才觸發得到 */
 }
 .donut-center .l { font-size: 11px; color: var(--muted); }
 .donut-center .v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
@@ -1596,6 +1635,17 @@ input, textarea, select { font: inherit; color: inherit; }
   border-color: var(--primary);
   color: var(--primary-deep);
 }
+/* 類型按鈕選中態：支出淺紅、收入淺綠 */
+.seg button.seg-expense.on {
+  background: color-mix(in oklch, var(--neg) 12%, var(--surface));
+  border-color: color-mix(in oklch, var(--neg) 55%, transparent);
+  color: var(--neg);
+}
+.seg button.seg-income.on {
+  background: color-mix(in oklch, var(--pos) 12%, var(--surface));
+  border-color: color-mix(in oklch, var(--pos) 55%, transparent);
+  color: var(--pos);
+}
 
 /* ---- 類別標籤（彩色，單選，可換行）---- */
 .cat-grid { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1632,23 +1682,27 @@ input, textarea, select { font: inherit; color: inherit; }
 
 /* ---- 財務分析子區（收支趨勢 / 支出分類）---- */
 .fin-sub { display: flex; flex-direction: column; gap: 10px; }
-.fin-sub + .fin-sub { margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--divider); }
+.fin-sub + .fin-sub { margin-top: 4px; padding-top: 48px; padding-bottom: 0; border-top: 1px solid var(--divider); }
 .fin-sub-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .fin-sub-t { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+/* 財務分析標題下方間距：讓數值列對齊右側帳目總覽第一筆數值（卡片 gap 14 + 13 = 對齊點）*/
+.fin-analysis > .card-h { margin-bottom: 13px; }
+/* 支出分類標題與圓餅圖間距 64px（fin-sub gap 10 + 54），與 donut↔圖例間距一致 */
+.fin-sub + .fin-sub > .fin-sub-h { margin-bottom: 54px; }
 .month-nav { display: inline-flex; align-items: center; gap: 6px; }
 .month-nav .lbl { font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; min-width: 96px; text-align: center; }
 .chart-empty { height: 170px; display: grid; place-items: center; color: var(--muted); font-size: 12.5px; }
 
 /* 支出分類：甜甜圈（大）+ 圖例 左右並排 */
-.fin-donut-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.fin-donut-row { display: flex; flex-direction: column; align-items: center; gap: 64px; }
 /* 甜甜圈中央：本月支出（NTD）標籤 + 大金額 */
 .fin-donut-row .donut-center { gap: 4px; }
 .fin-donut-row .donut-center .l { font-size: 14px; }
 .fin-donut-row .donut-center .v { font-size: 30px; font-weight: 700; }
-.fin-legend { display: flex; flex-direction: column; gap: 15px; flex: 1; min-width: 150px; }
-.fin-legend .row { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.fin-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 20px; width: 100%; }
+.fin-legend .row { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; }
 .fin-legend .sq { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-.fin-legend .nm { flex: 1; color: var(--ink-2); display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
+.fin-legend .nm { color: var(--ink-2); display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
 .fin-legend .nm > span:first-child { font-size: 16px; line-height: 1; } /* emoji 略大於文字 */
 .fin-legend .pct { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; }
 
@@ -1672,21 +1726,32 @@ input, textarea, select { font: inherit; color: inherit; }
 .txn-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .txn-name { font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .txn-sub { font-size: 11.5px; color: var(--muted); }
-.txn-amt { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.txn-amt { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .txn-amt.pos { color: var(--pos); }
-.txn-amt.neg { color: var(--neg); }
+.txn-amt.neg { color: var(--ink); } /* 支出金額改黑字（原為紅色 --neg）*/
 
 /* 存入記錄列（時間 + 金額）*/
 .dep-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 10px 6px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 6px;            /* 與 .txn-row 一致；icon + gap 自然讓日期對齊項目名稱 */
+  min-height: 58px;            /* 與 .txn-row 同高 */
   border-radius: 9px;
   cursor: pointer;
   transition: background 0.15s;
 }
 .dep-row:hover { background: var(--surface-hover); }
-.dep-when { font-size: 13px; color: var(--ink-2); }
-.dep-amt { font-size: 14px; font-weight: 600; color: var(--pos); font-variant-numeric: tabular-nums; }
+/* 存入記錄圖示：比照 .txn-ico，底色用淺灰（隨主題適配）*/
+.dep-ico {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: grid; place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: color-mix(in oklch, var(--ink) 5%, var(--surface));
+}
+/* 日期文字對齊帳目總覽項目名稱 .txn-name（13.5px / 600 / --ink）*/
+.dep-when { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.dep-amt { font-size: 16px; font-weight: 600; color: var(--pos); font-variant-numeric: tabular-nums; }
 
 /* 載入更多 / 空狀態 */
 .fin-loadmore { align-self: center; margin-top: 6px; }
@@ -1704,8 +1769,15 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .save-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .save-target { font-size: 13px; color: var(--primary-ink); font-weight: 500; }
-.save-target b { font-weight: 700; }
+.save-target b { font-weight: 700; font-size: 22px; letter-spacing: -0.02em; } /* 對齊財務分析 .fin-stat .v 數字大小 */
 .save-pct { font-size: 22px; font-weight: 700; color: var(--primary-ink); font-variant-numeric: tabular-nums; }
 .save-panel .bar { background: color-mix(in oklch, var(--primary) 16%, var(--surface)); height: 8px; }
 .save-encourage { font-size: 12px; color: var(--primary-deep); }
+/* 深色模式：儲蓄進度卡底色改亮一階（原 --primary-pale 太深），目標金額與百分比改白色 */
+[data-theme="dark"] .save-panel {
+  background: color-mix(in oklch, var(--primary) 26%, var(--surface));
+  border-color: color-mix(in oklch, var(--primary) 36%, transparent);
+}
+[data-theme="dark"] .save-target,
+[data-theme="dark"] .save-pct { color: #ffffff; }
 .save-hint { font-size: 12.5px; color: var(--muted); line-height: 1.6; }

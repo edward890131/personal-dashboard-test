@@ -2,7 +2,8 @@
 // 對外輸出：Modal、ToastProvider/useToast、ConfirmProvider/useConfirm、Field、CategoryPicker、fmtMoney
 // 樣式對齊既有設計系統（.icon-btn / .btn-primary / .btn-secondary / var(--scrim) 等）。
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { allCategories, finCatVar, finCatSoft, finCatBorder } from "./finance-categories.js";
+import { createPortal } from "react-dom";
+import { allCategories, finCatSoft, finCatBorder, finCatInk } from "./finance-categories.js";
 
 /* ---------------- 金額千分位格式化 ----------------
    一律先 Math.round 再格式化，避免浮點殘留（對齊 PRD 第 10 節） */
@@ -11,7 +12,10 @@ export function fmtMoney(n) {
 }
 
 /* ---------------- Modal（共用彈窗外殼） ----------------
-   置中 + 半透明遮罩，點遮罩或 Esc 關閉；內容區可捲動，footer 放底部按鈕。 */
+   置中 + 半透明遮罩，點遮罩或 Esc 關閉；內容區可捲動，footer 放底部按鈕。
+   ⚠️ 必須 createPortal 掛到 document.body：彈窗原本長在觸發它的 .card 子樹裡，
+   而 .card:hover 會套 transform，任何祖先一旦有 transform/filter 就會變成 fixed 的
+   定位基準，導致 inset:0 的遮罩被困在卡片內而非置中於整個視窗。掛到 body 即脫離。 */
 export function Modal({ open, onClose, title, children, footer, width = 460 }) {
   useEffect(() => {
     if (!open) return undefined;
@@ -23,7 +27,7 @@ export function Modal({ open, onClose, title, children, footer, width = 460 }) {
   }, [open, onClose]);
 
   if (!open) return null;
-  return (
+  return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal"
@@ -48,7 +52,8 @@ export function Modal({ open, onClose, title, children, footer, width = 460 }) {
         <div className="modal-body">{children}</div>
         {footer && <div className="modal-foot">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -109,12 +114,18 @@ export function ConfirmProvider({ children }) {
         footer={
           state && (
             <>
-              <button type="button" className="btn-secondary" onClick={() => close(false)}>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ flex: 1 }}
+                onClick={() => close(false)}
+              >
                 取消
               </button>
               <button
                 type="button"
                 className={state.danger ? "btn-danger" : "btn-primary"}
+                style={{ flex: 1 }}
                 onClick={() => close(true)}
               >
                 {state.confirmText}
@@ -160,7 +171,7 @@ export function CategoryPicker({ type, value, onChange }) {
                 ? {
                     background: finCatSoft(c),
                     borderColor: finCatBorder(c),
-                    color: finCatVar(c),
+                    color: finCatInk(c),
                   }
                 : undefined
             }

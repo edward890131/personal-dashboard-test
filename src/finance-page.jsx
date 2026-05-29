@@ -1,6 +1,6 @@
 // finance-page.jsx — 理財規劃頁面
 // 版面：左右兩欄（左 財務分析 1.15 / 右 帳目總覽 + 儲蓄目標 1），≤960px 降為單欄堆疊。
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   useFinance,
   periodStats,
@@ -152,10 +152,15 @@ function FinanceAnalysis() {
         {breakdown.total > 0 ? (
           <div className="fin-donut-row">
             <PieDonut
-              data={breakdown.items.map((it) => ({ value: it.value, color: finCatVar(it.cat) }))}
+              data={breakdown.items.map((it) => ({
+                value: it.value,
+                color: finCatVar(it.cat),
+                label: `${it.cat.emoji} ${it.cat.name}`,
+              }))}
               totalLabel="本月支出（NTD）"
-              size={210}
-              stroke={28}
+              size={260}
+              stroke={24}
+              formatValue={(v) => `$ ${fmtMoney(v)}`}
             />
             <div className="fin-legend">
               {breakdown.items.map((it) => (
@@ -349,14 +354,14 @@ function TransactionModal({ open, mode, initial, onClose }) {
         <div className="seg">
           <button
             type="button"
-            className={type === "expense" ? "on" : ""}
+            className={`seg-expense ${type === "expense" ? "on" : ""}`}
             onClick={() => onTypeChange("expense")}
           >
             支出
           </button>
           <button
             type="button"
-            className={type === "income" ? "on" : ""}
+            className={`seg-income ${type === "income" ? "on" : ""}`}
             onClick={() => onTypeChange("income")}
           >
             收入
@@ -377,6 +382,13 @@ function TransactionOverview() {
   const { transactions } = useFinance();
   const [visible, setVisible] = useState(10);
   const [modal, setModal] = useState(null); // { mode, initial } | null
+  const listRef = useRef(null);
+  // 點「載入更多」後自動平滑捲到清單最底，省去手動下滑（visible > 10 代表已按過載入更多）
+  useEffect(() => {
+    if (visible > 10 && listRef.current) {
+      listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    }
+  }, [visible]);
 
   const shown = transactions.slice(0, visible);
   const hasMore = visible < transactions.length;
@@ -389,7 +401,7 @@ function TransactionOverview() {
         </div>
         <button
           type="button"
-          className="btn-secondary btn-sm"
+          className="btn-primary btn-sm"
           onClick={() => setModal({ mode: "create" })}
         >
           <i className="ph ph-plus"></i>新增
@@ -403,7 +415,7 @@ function TransactionOverview() {
         </div>
       ) : (
         <>
-          <div className="txn-list">
+          <div className="txn-list" ref={listRef}>
             {shown.map((t) => (
               <TxnRow key={t.id} txn={t} onClick={() => setModal({ mode: "edit", initial: t })} />
             ))}
@@ -436,6 +448,7 @@ function TransactionOverview() {
 function DepRow({ dep, onClick }) {
   return (
     <div className="dep-row" onClick={onClick}>
+      <div className="dep-ico">💰</div>
       <span className="dep-when">{mdLabel(dep.date)} 存入</span>
       <span className="dep-amt">+{fmtMoney(dep.amount)}</span>
     </div>
@@ -635,6 +648,13 @@ function SavingGoalSection() {
   const [visible, setVisible] = useState(10);
   const [goalModal, setGoalModal] = useState(false);
   const [depModal, setDepModal] = useState(null); // { mode, initial } | null
+  const listRef = useRef(null);
+  // 點「載入更多」後自動平滑捲到清單最底
+  useEffect(() => {
+    if (visible > 10 && listRef.current) {
+      listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    }
+  }, [visible]);
 
   const prog = useMemo(() => savingProgress(deposits, goal), [deposits, goal]);
   const hasGoal = prog.target > 0;
@@ -656,7 +676,7 @@ function SavingGoalSection() {
           </button>
           <button
             type="button"
-            className="btn-secondary btn-sm"
+            className="btn-primary btn-sm"
             onClick={() => setDepModal({ mode: "create" })}
           >
             <i className="ph ph-plus"></i>存入
@@ -705,7 +725,7 @@ function SavingGoalSection() {
         </div>
       ) : (
         <>
-          <div className="txn-list">
+          <div className="txn-list" ref={listRef}>
             {shown.map((d) => (
               <DepRow
                 key={d.id}

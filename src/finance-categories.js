@@ -53,3 +53,6 @@ export const finCatVar = (cat) => `var(${cat.color})`;
 export const finCatSoft = (cat) => `color-mix(in oklch, var(${cat.color}) 16%, var(--surface))`;
 // 邊框：選中標籤外框（比實色淡一點）
 export const finCatBorder = (cat) => `color-mix(in oklch, var(${cat.color}) 55%, transparent)`;
+// 標籤文字：每個類別專屬的可讀文字色（--fin-X-ink），淺色模式為深版、深色模式為亮版，
+// 各自保留色相又確保在淡底上對比達 AA（見 styles.css 的 --fin-*-ink 定義）
+export const finCatInk = (cat) => `var(${cat.color}-ink, var(${cat.color}))`;
