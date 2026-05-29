@@ -1469,6 +1469,14 @@ input, textarea, select { font: inherit; color: inherit; }
   .card-title { font-size: 12.5px; }
   .chart-wrap { height: 130px; }
 
+  /* 收支分類卡：窄螢幕下標題列太擠導致標題/toggle 換行；把月份切換移到下一行整列顯示，
+     並讓標題列占滿整行、支出/收入 toggle 靠右對齊 */
+  .fin-breakdown .card-h { flex-wrap: wrap; row-gap: 10px; }
+  .fin-breakdown .fin-sub-h-l { width: 100%; justify-content: space-between; }
+  .fin-breakdown .card-h .month-nav { width: 100%; justify-content: flex-start; }
+  .fin-breakdown .card-title { white-space: nowrap; }
+  .fin-breakdown .fin-sub-h-l .tab-row button { white-space: nowrap; }
+
   /* Mood pick: shrink labels */
   .mood-btn { padding: 8px 2px; font-size: 10px; }
   .mood-btn .glyph i { font-size: 17px; }
@@ -1526,6 +1534,10 @@ input, textarea, select { font: inherit; color: inherit; }
 /* ≤960px：兩欄降為單欄堆疊，順序 收支趨勢 → 收支分類 → 帳目 → 儲蓄 */
 @media (max-width: 960px) {
   .fin-page-grid { grid-template-columns: 1fr; }
+  /* 單欄時帳目/儲蓄清單最多顯示約 6 筆，超出則卡內捲動（避免列表把整頁撐很長）。
+     6 筆 ≈ 6×58 + 5×2(gap) = 358px */
+  .fin-txn .txn-list,
+  .fin-save .txn-list { max-height: 358px; overflow-y: auto; }
 }
 .fin-placeholder { color: var(--muted); font-size: 12.5px; padding: 24px 0; text-align: center; }
 
