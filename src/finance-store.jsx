@@ -2,7 +2,7 @@
 // 三組資料（帳目 transactions / 存入 deposits / 目標 goal）集中於此，以 localStorage 持久化。
 // 衍生數值（淨餘、佔比、達成率、趨勢）一律用下方純函式即時計算，不另存（對齊 PRD 6.4 / 第 10 節）。
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getCategory, OTHER_EXPENSE } from "./finance-categories.js";
+import { getCategory, OTHER_EXPENSE, EXPENSE_CATEGORIES } from "./finance-categories.js";
 
 const LS_KEY = "dayboard-finance-v1";
 
@@ -285,7 +285,9 @@ export function categoryBreakdown(transactions, year, monthIndex) {
     }
     items = big;
   }
-  items.sort((a, b) => b.value - a.value);
+  // 依分類定義順序排序（食物→其他），不再依金額大小
+  const catOrder = EXPENSE_CATEGORIES.map((c) => c.key);
+  items.sort((a, b) => catOrder.indexOf(a.key) - catOrder.indexOf(b.key));
   return {
     total,
     items: items.map((it) => ({ ...it, pct: total > 0 ? (it.value / total) * 100 : 0 })),
