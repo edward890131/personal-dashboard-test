@@ -1024,26 +1024,17 @@ input, textarea, select { font: inherit; color: inherit; }
 .donut-center .l { font-size: 11px; color: var(--muted); }
 .donut-center .v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 
-/* Spend card 專用 layout：donut 在中央上方，legend 一行水平排在下方（對齊 Figma） */
-.spend-card .spend-donut {
-  display: flex; justify-content: center;
-  padding: 8px 0 4px;
-}
-.spend-card .spend-donut .donut-center .v { font-size: 24px; }
-.spend-card .spend-legend {
-  display: flex; flex-wrap: wrap; gap: 8px 14px;
-  justify-content: center;
-  margin-top: 4px;
-}
-.spend-card .spend-legend .legend-item {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 11.5px;
-}
-.spend-card .spend-legend .legend-dot {
-  width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
-}
-.spend-card .spend-legend .lbl { color: var(--ink-2); font-weight: 500; }
-.spend-card .spend-legend .val { color: var(--muted); font-variant-numeric: tabular-nums; }
+/* 首頁收支分類卡：沿用理財頁 .fin-donut-row / .fin-legend 版型，但壓縮間距與字級以符合精簡的 bento 卡 */
+.spend-card .fin-donut-row { gap: 24px; padding: 8px 0 4px; }
+.spend-card .fin-donut-row .donut-center .v { font-size: 24px; }
+.spend-card .fin-donut-row .donut-center .l { font-size: 12px; }
+.spend-card .fin-legend { gap: 8px 14px; }
+.spend-card .fin-legend .row { font-size: 12px; }
+.spend-card .fin-legend .nm > span:first-child { font-size: 13px; }
+.spend-card .fin-legend .pct { font-size: 12px; }
+
+/* 整張卡可點進子頁的滑鼠提示 */
+.card-clickable { cursor: pointer; }
 
 .legend { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
 .legend-row {
@@ -1512,23 +1503,27 @@ input, textarea, select { font: inherit; color: inherit; }
 .fin-page-month { font-size: 13px; color: var(--muted); }
 .fin-page-grid {
   display: grid;
-  grid-template-columns: 1.15fr 1fr; /* 左 財務分析 / 右 帳目+儲蓄（PRD 2.1） */
+  grid-template-columns: 1.15fr 1fr; /* 左 收支趨勢/分類 / 右 帳目+儲蓄（PRD 2.1） */
   gap: 14px;
   align-items: stretch; /* 兩欄等高 */
 }
 .fin-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .fin-col-right { min-width: 0; }
 .fin-col-right-inner { display: flex; flex-direction: column; gap: 14px; }
-/* 桌機：右欄高度綁定左卡。把右欄內容絕對定位抽離正常流，這樣它不會去撐高
-   grid 列；列高改由左卡（較高者）決定，右欄填滿後兩張卡各分一半，列表超出時卡內捲動。 */
 @media (min-width: 961px) {
+  /* 左欄：上下兩卡等高平分。分類卡（甜甜圈 260 不可縮）的內容高度成為基準列高，
+     趨勢卡的折線圖用 flex 填滿同一列高 → 左欄上下兩卡等高、且隨支出/收入 toggle 自動同步。 */
+  .fin-col-left { display: grid; grid-template-rows: 1fr 1fr; }
+  /* 折線圖 flex 填滿同列高；上方多留白與「本期淨餘」數值列拉開距離 */
+  .fin-trend .chart-wrap { flex: 1; height: auto; min-height: 160px; margin-top: 16px; }
+  /* 右欄：絕對定位把高度綁定左欄、上下平分，列表卡內捲動 → 四張卡接縫對齊。 */
   .fin-col-right { position: relative; }
   .fin-col-right-inner { position: absolute; inset: 0; }
-  .fin-col-right-inner > .card { flex: 1; min-height: 0; } /* 兩張卡平分 = 左卡的一半 */
+  .fin-col-right-inner > .card { flex: 1; min-height: 0; }
   .fin-col-right-inner > .card .txn-list { flex: 1; min-height: 0; overflow-y: auto; }
   .fin-col-right-inner > .card .fin-empty { flex: 1; } /* 空狀態垂直置中於半卡 */
 }
-/* ≤960px：兩欄降為單欄堆疊，順序 財務分析 → 帳目 → 儲蓄（PRD 2.1 / 第 8 節） */
+/* ≤960px：兩欄降為單欄堆疊，順序 收支趨勢 → 收支分類 → 帳目 → 儲蓄 */
 @media (max-width: 960px) {
   .fin-page-grid { grid-template-columns: 1fr; }
 }
@@ -1681,14 +1676,11 @@ input, textarea, select { font: inherit; color: inherit; }
 .btn-danger.btn-icon { width: 44px; padding: 0; }
 
 /* ---- 財務分析子區（收支趨勢 / 支出分類）---- */
-.fin-sub { display: flex; flex-direction: column; gap: 10px; }
-.fin-sub + .fin-sub { margin-top: 4px; padding-top: 48px; padding-bottom: 0; border-top: 1px solid var(--divider); }
-.fin-sub-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.fin-sub-t { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
-/* 財務分析標題下方間距：讓數值列對齊右側帳目總覽第一筆數值（卡片 gap 14 + 13 = 對齊點）*/
-.fin-analysis > .card-h { margin-bottom: 13px; }
-/* 支出分類標題與圓餅圖間距 64px（fin-sub gap 10 + 54），與 donut↔圖例間距一致 */
-.fin-sub + .fin-sub > .fin-sub-h { margin-bottom: 54px; }
+/* 卡片標題左側群組（標題 + 支出／收入 toggle 並排）：收支分類卡與首頁收支分類卡共用 */
+.fin-sub-h-l { display: inline-flex; align-items: center; gap: 10px; }
+/* 收支分類卡：此卡的內容高度決定上下兩列的等高基準，收斂多餘間距避免列被撐太高
+   （甜甜圈大小不變，只收標題↔甜甜圈、甜甜圈↔圖例的間距）*/
+.fin-breakdown .fin-donut-row { gap: 28px; padding-top: 16px; padding-bottom: 4px; }
 .month-nav { display: inline-flex; align-items: center; gap: 6px; }
 .month-nav .lbl { font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; min-width: 96px; text-align: center; }
 .chart-empty { height: 170px; display: grid; place-items: center; color: var(--muted); font-size: 12.5px; }
