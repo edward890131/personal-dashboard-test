@@ -78,9 +78,11 @@ function ValueChart({
   mode = "area",
   formatValue = (v) => v,
   yLabels = false,
+  fill = false, // true：以容器實際高度繪圖（viewBox 高度=像素高度，避免 svg 被垂直拉伸變形）
 }) {
   const wrapRef = useRef(null);
   const [w, setW] = useState(600);
+  const [measuredH, setMeasuredH] = useState(height);
   const [tip, setTip] = useState(null);
   // 每個 ValueChart 用唯一 gradient id，避免多個實例共用造成衝突
   const gradId = `area-grad-${useId().replace(/:/g, "")}`;
@@ -89,10 +91,16 @@ function ValueChart({
 
   useEffect(() => {
     if (!wrapRef.current) return;
-    const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
+    const ro = new ResizeObserver(([e]) => {
+      setW(e.contentRect.width);
+      if (fill) setMeasuredH(e.contentRect.height); // fill 模式才追蹤高度
+    });
     ro.observe(wrapRef.current);
     return () => ro.disconnect();
-  }, []);
+  }, [fill]);
+
+  // 實際繪圖高度：fill 用量測值（隨格高伸縮且不變形），否則用固定 height prop
+  const H = fill ? measuredH : height;
 
   // re-trigger draw when mode changes
   useEffect(() => {
@@ -106,7 +114,7 @@ function ValueChart({
   const padT = 14;
   const padB = 22;
   const innerW = Math.max(40, w - padL - padR);
-  const innerH = height - padT - padB;
+  const innerH = H - padT - padB;
   const max = Math.max(...data.map((d) => d.value), 1);
   // Y 軸從 actual data 最小值起算（對齊 Figma），而非從 0 開始
   const min = Math.min(...data.map((d) => d.value));
@@ -144,7 +152,7 @@ function ValueChart({
     const p = pts[nearest];
     setTip({
       x: p[0] * (rect.width / w),
-      y: p[1] * (rect.height / height),
+      y: p[1] * (rect.height / H),
       label: data[nearest].label,
       value: formatValue(data[nearest].value),
       idx: nearest,
@@ -165,7 +173,7 @@ function ValueChart({
       onMouseMove={onMove}
       onMouseLeave={() => setTip(null)}
     >
-      <svg viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${w} ${H}`} preserveAspectRatio="none">
         <defs>
           {/* 垂直線性漸層：頂端 primary 30% alpha → 底端 0%（對齊 Figma Area Chart） */}
           <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
@@ -195,7 +203,7 @@ function ValueChart({
             if (data.length > 12 && i % Math.ceil(data.length / 8) !== 0) return null;
             const x = padL + (data.length === 1 ? innerW / 2 : (i / (data.length - 1)) * innerW);
             return (
-              <text key={i} x={x} y={height - 6} textAnchor="middle">
+              <text key={i} x={x} y={H - 6} textAnchor="middle">
                 {d.label}
               </text>
             );

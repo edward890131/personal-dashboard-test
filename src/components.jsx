@@ -3,6 +3,10 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { CountUp, ValueChart, PieDonut, Sparkline } from "./charts.jsx";
 // TodoRow 共用元件（首頁 TodoCard 跟 calendar TodoColumn 都用同一個 row 元件，避免兩處維護）
 import { TodoRow } from "./calendar-page.jsx";
+// 首頁收支趨勢／分類卡與理財頁共用同一份資料與計算函式（單一來源，數值必然一致）
+import { useFinance, periodStats, trendData, categoryBreakdown } from "./finance-store.jsx";
+import { finCatVar } from "./finance-categories.js";
+import { fmtMoney } from "./ui.jsx";
 
 /* ---------------- Sidebar ---------------- */
 function Sidebar({
@@ -243,6 +247,23 @@ function Kpi({ icon, label, value, prefix, suffix, delta, deltaPos = true, decim
   );
 }
 
+/* 本月餘額 KPI：用真實理財資料（當月淨餘 + 較上月 %），與收支趨勢卡同源，數值一致 */
+function BalanceKpi() {
+  const { transactions } = useFinance();
+  const stats = useMemo(() => periodStats(transactions, "month"), [transactions]);
+  const pos = stats.delta >= 0;
+  return (
+    <Kpi
+      icon="ph-wallet"
+      label="本月餘額"
+      value={stats.net}
+      prefix="NT$"
+      delta={stats.pct !== null ? `${pos ? "+" : "−"}${Math.abs(stats.pct).toFixed(1)}%` : null}
+      deltaPos={pos}
+    />
+  );
+}
+
 // 帶趨勢圖的 KPI 卡片：在基礎版本下方附加 Sparkline
 function KpiTrend({ icon, label, value, prefix, suffix, delta, deltaPos = true, spark, decimals }) {
   return (
@@ -346,49 +367,28 @@ function TodoCard({ onSeeAll }) {
   );
 }
 
-/* ---------------- Finance trend ---------------- */
-function FinanceCard({ chartMode }) {
+/* ---------------- Finance trend ----------------
+   與理財規劃頁「收支趨勢卡」共用同一份 store 資料與 periodStats / trendData 純函式，
+   兩頁數值必然一致；差異只在首頁多了 CountUp 動畫、整卡可點進理財頁。 */
+function FinanceCard({ chartMode, onOpen }) {
+  const { transactions } = useFinance();
   const [period, setPeriod] = useState("month");
-  const month = [
-    { label: "1", value: 32400 },
-    { label: "5", value: 35100 },
-    { label: "10", value: 33800 },
-    { label: "15", value: 38200 },
-    { label: "20", value: 41600 },
-    { label: "25", value: 39400 },
-    { label: "30", value: 43200 },
-  ];
-  const week = [
-    { label: "一", value: 1240 },
-    { label: "二", value: 980 },
-    { label: "三", value: 2180 },
-    { label: "四", value: 1560 },
-    { label: "五", value: 2640 },
-    { label: "六", value: 3120 },
-    { label: "日", value: 1840 },
-  ];
-  const year = [
-    { label: "Jan", value: 28000 },
-    { label: "Feb", value: 30200 },
-    { label: "Mar", value: 33000 },
-    { label: "Apr", value: 31800 },
-    { label: "May", value: 36500 },
-    { label: "Jun", value: 39200 },
-    { label: "Jul", value: 41000 },
-    { label: "Aug", value: 38600 },
-    { label: "Sep", value: 42100 },
-    { label: "Oct", value: 40500 },
-    { label: "Nov", value: 43800 },
-    { label: "Dec", value: 43200 },
-  ];
-  const data = period === "week" ? week : period === "year" ? year : month;
+  const stats = useMemo(() => periodStats(transactions, period), [transactions, period]);
+  const trend = useMemo(() => trendData(transactions, period), [transactions, period]);
+  const deltaPos = stats.delta >= 0;
+  // 整張卡可點進理財規劃頁；內部的週/月/年切換要 stopPropagation 才不會誤觸導頁
   return (
-    <div className="card s-6">
+    <div
+      className="card s-6 card-clickable"
+      onClick={onOpen}
+      role={onOpen ? "link" : undefined}
+      title={onOpen ? "查看理財規劃" : undefined}
+    >
       <div className="card-h">
         <div className="card-title">
           <i className="ph ph-chart-line-up"></i>本月收支趨勢
         </div>
-        <div className="tab-row">
+        <div className="tab-row" onClick={(e) => e.stopPropagation()}>
           <button className={period === "week" ? "on" : ""} onClick={() => setPeriod("week")}>
             週
           </button>
@@ -406,35 +406,43 @@ function FinanceCard({ chartMode }) {
           <div className="l">本期淨餘（NTD）</div>
           <div className="v">
             <small>$</small>
-            <CountUp to={43200} />
+            <CountUp to={stats.net} />
           </div>
-          <span className="delta pos">
-            <i className="ph ph-trend-up"></i>+8.34%
-          </span>
+          {stats.pct !== null && (
+            <span className={`delta ${deltaPos ? "pos" : "neg"}`}>
+              <i className={`ph ${deltaPos ? "ph-trend-up" : "ph-trend-down"}`}></i>
+              {deltaPos ? "+" : "−"}
+              {Math.abs(stats.pct).toFixed(2)}%
+            </span>
+          )}
         </div>
         <div className="fin-stat">
           <div className="l">收入</div>
           <div className="v" style={{ color: "var(--pos)" }}>
             <small>+</small>
-            <CountUp to={68200} />
+            <CountUp to={stats.income} />
           </div>
         </div>
         <div className="fin-stat">
           <div className="l">支出</div>
           <div className="v" style={{ color: "var(--neg)" }}>
             <small>−</small>
-            <CountUp to={25000} />
+            <CountUp to={stats.expense} />
           </div>
         </div>
       </div>
 
-      <ValueChart
-        data={data}
-        mode={chartMode}
-        formatValue={(v) => `NT$ ${v.toLocaleString()}`}
-        yLabels={true}
-        height={170}
-      />
+      {stats.hasData ? (
+        <ValueChart
+          data={trend}
+          mode={chartMode}
+          formatValue={(v) => `NT$ ${fmtMoney(v)}`}
+          yLabels={true}
+          height={170}
+        />
+      ) : (
+        <div className="chart-empty">這個期間還沒有帳目資料</div>
+      )}
     </div>
   );
 }
@@ -497,43 +505,71 @@ function CalendarCard() {
   );
 }
 
-/* ---------------- Spending donut ---------------- */
-function SpendCard() {
-  const cat = [
-    { lbl: "餐飲", v: 8400, color: "var(--primary)" },
-    { lbl: "交通", v: 3200, color: "color-mix(in oklch, var(--primary) 60%, var(--surface))" },
-    { lbl: "娛樂", v: 5600, color: "color-mix(in oklch, var(--primary) 35%, var(--surface))" },
-    { lbl: "居家", v: 4800, color: "color-mix(in oklch, var(--ink) 70%, var(--surface))" },
-    { lbl: "其他", v: 3000, color: "var(--faint)" },
-  ];
-  const total = cat.reduce((s, c) => s + c.v, 0);
+/* ---------------- Spending donut（對齊理財規劃頁「收支分類」卡：真實資料 + 支出／收入切換） ----------------
+   與理財頁共用 categoryBreakdown 資料、finCatVar 配色、.fin-donut-row / .fin-legend 版型，確保兩頁一致。
+   右上「更多」按鈕點擊進入理財規劃頁。 */
+function SpendCard({ onOpen }) {
+  const { transactions } = useFinance();
+  const now = new Date();
+  const curYear = now.getFullYear();
+  const curMonth = now.getMonth();
+  const [catType, setCatType] = useState("expense"); // expense | income
+  const isIncome = catType === "income";
+  const breakdown = useMemo(
+    () => categoryBreakdown(transactions, curYear, curMonth, catType),
+    [transactions, curYear, curMonth, catType],
+  );
   return (
     <div className="card s-6 spend-card">
       <div className="card-h">
-        <div className="card-title">
-          <i className="ph ph-chart-pie-slice"></i>支出分類
+        <div className="fin-sub-h-l">
+          <div className="card-title">
+            <i className="ph ph-chart-pie-slice"></i>收支分類
+          </div>
+          <div className="tab-row">
+            <button className={!isIncome ? "on" : ""} onClick={() => setCatType("expense")}>
+              支出
+            </button>
+            <button className={isIncome ? "on" : ""} onClick={() => setCatType("income")}>
+              收入
+            </button>
+          </div>
         </div>
-        <button className="icon-btn" aria-label="notifications">
-          <i className="ph ph-bell"></i>
+        <button className="card-act" onClick={onOpen}>
+          <i className="ph ph-arrow-up-right"></i>更多
         </button>
       </div>
-      <div className="spend-donut">
-        <PieDonut
-          data={cat.map((c) => ({ value: c.v, color: c.color }))}
-          totalLabel="本月支出（NTD）"
-          size={200}
-          stroke={24}
-        />
-      </div>
-      <div className="spend-legend">
-        {cat.map((c, i) => (
-          <div key={i} className="legend-item">
-            <span className="legend-dot" style={{ background: c.color }}></span>
-            <span className="lbl">{c.lbl}</span>
-            <span className="val">{Math.round((c.v / total) * 100)}%</span>
+      {breakdown.total > 0 ? (
+        <div className="fin-donut-row">
+          <PieDonut
+            data={breakdown.items.map((it) => ({
+              value: it.value,
+              color: finCatVar(it.cat),
+              label: `${it.cat.emoji} ${it.cat.name}`,
+            }))}
+            totalLabel={isIncome ? "本月收入（NTD）" : "本月支出（NTD）"}
+            size={200}
+            stroke={24}
+            formatValue={(v) => `$ ${fmtMoney(v)}`}
+          />
+          <div className="fin-legend">
+            {breakdown.items.map((it) => (
+              <div className="row" key={it.key}>
+                <span className="sq" style={{ background: finCatVar(it.cat) }}></span>
+                <span className="nm">
+                  <span>{it.cat.emoji}</span>
+                  {it.cat.name}
+                </span>
+                <span className="pct">{Math.round(it.pct)}%</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="chart-empty">
+          {isIncome ? "這個月還沒有收入紀錄" : "這個月還沒有支出紀錄"}
+        </div>
+      )}
     </div>
   );
 }
@@ -768,6 +804,7 @@ export {
   Topbar,
   Hero,
   Kpi,
+  BalanceKpi,
   KpiTrend,
   TodoCard,
   FinanceCard,

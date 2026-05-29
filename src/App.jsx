@@ -5,6 +5,7 @@ import {
   Topbar,
   Hero,
   Kpi,
+  BalanceKpi,
   TodoCard,
   FinanceCard,
   CalendarCard,
@@ -124,14 +125,7 @@ function App() {
                     />
                   </div>
                   <div className="s-3">
-                    <Kpi
-                      icon="ph-wallet"
-                      label="本月餘額"
-                      value={43200}
-                      prefix="NT$"
-                      delta="+8.3%"
-                      deltaPos={true}
-                    />
+                    <BalanceKpi />
                   </div>
                   <div className="s-3">
                     <Kpi
@@ -154,8 +148,8 @@ function App() {
                     />
                   </div>
 
-                  <FinanceCard chartMode={t.chartMode} />
-                  <SpendCard />
+                  <FinanceCard chartMode={t.chartMode} onOpen={() => navigate("finance")} />
+                  <SpendCard onOpen={() => navigate("finance")} />
 
                   <TodoCard onSeeAll={() => navigate("todo")} />
                   <CalendarCard />
@@ -173,7 +167,7 @@ function App() {
                   eventStyle={t.eventStyle}
                 />
               ) : active === "finance" ? (
-                <FinancePage />
+                <FinancePage chartMode={t.chartMode} />
               ) : (
                 <Placeholder name={active} />
               )}

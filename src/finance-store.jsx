@@ -2,7 +2,12 @@
 // 三組資料（帳目 transactions / 存入 deposits / 目標 goal）集中於此，以 localStorage 持久化。
 // 衍生數值（淨餘、佔比、達成率、趨勢）一律用下方純函式即時計算，不另存（對齊 PRD 6.4 / 第 10 節）。
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getCategory, OTHER_EXPENSE, EXPENSE_CATEGORIES } from "./finance-categories.js";
+import {
+  getCategory,
+  OTHER_EXPENSE,
+  EXPENSE_CATEGORIES,
+  INCOME_CATEGORIES,
+} from "./finance-categories.js";
 
 const LS_KEY = "dayboard-finance-v1";
 
@@ -255,23 +260,23 @@ export function trendData(transactions, period, ref = new Date()) {
   }));
 }
 
-// 支出分類佔比（指定年月）；佔比 < 3% 歸併「其他」
-export function categoryBreakdown(transactions, year, monthIndex) {
+// 收支分類佔比（指定年月、type=expense|income）；支出佔比 < 3% 歸併「其他」
+export function categoryBreakdown(transactions, year, monthIndex, type = "expense") {
   const start = new Date(year, monthIndex, 1);
   const end = new Date(year, monthIndex + 1, 0, 23, 59, 59);
-  const exp = transactions.filter((t) => t.type === "expense" && inRange(t, start, end));
-  const total = exp.reduce((s, t) => s + t.amount, 0);
+  const rows = transactions.filter((t) => t.type === type && inRange(t, start, end));
+  const total = rows.reduce((s, t) => s + t.amount, 0);
 
   const map = new Map();
-  exp.forEach((t) => map.set(t.category, (map.get(t.category) || 0) + t.amount));
+  rows.forEach((t) => map.set(t.category, (map.get(t.category) || 0) + t.amount));
   let items = [...map.entries()].map(([key, value]) => ({
     key,
     value,
-    cat: getCategory("expense", key),
+    cat: getCategory(type, key),
   }));
 
-  // 佔比 < 3% 的（「其他」本身除外）歸併進「其他」
-  if (total > 0) {
+  // 佔比 < 3% 的（「其他」本身除外）歸併進「其他」——僅支出有「其他」類別，收入類別少不歸併
+  if (type === "expense" && total > 0) {
     const big = [];
     let otherSum = 0;
     items.forEach((it) => {
@@ -285,8 +290,8 @@ export function categoryBreakdown(transactions, year, monthIndex) {
     }
     items = big;
   }
-  // 依分類定義順序排序（食物→其他），不再依金額大小
-  const catOrder = EXPENSE_CATEGORIES.map((c) => c.key);
+  // 依分類定義順序排序（依 type 取對應清單順序），不再依金額大小
+  const catOrder = (type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => c.key);
   items.sort((a, b) => catOrder.indexOf(a.key) - catOrder.indexOf(b.key));
   return {
     total,

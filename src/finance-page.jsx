@@ -27,59 +27,42 @@ function currentMonthLabel() {
 }
 
 /* ====================================================================
-   區塊一：財務分析（重點數據 + 收支趨勢 + 支出分類）
+   區塊一之一：收支趨勢卡（重點數據列 + 累積淨餘曲線，對齊首頁收支趨勢牌卡）
    ==================================================================== */
-function FinanceAnalysis() {
+function FinanceTrendCard({ chartMode = "area" }) {
   const { transactions } = useFinance();
   const [period, setPeriod] = useState("month"); // week | month | year
 
   const stats = useMemo(() => periodStats(transactions, period), [transactions, period]);
   const trend = useMemo(() => trendData(transactions, period), [transactions, period]);
-
-  // 支出分類的月份（獨立於趨勢顆粒度，預設當月）
-  const today = new Date();
-  const [catRef, setCatRef] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
-  const catYear = catRef.getFullYear();
-  const catMonth = catRef.getMonth();
-  const isCurrentMonth = catYear === today.getFullYear() && catMonth === today.getMonth();
-  const shiftMonth = (delta) =>
-    setCatRef((d) => new Date(d.getFullYear(), d.getMonth() + delta, 1));
-  const breakdown = useMemo(
-    () => categoryBreakdown(transactions, catYear, catMonth),
-    [transactions, catYear, catMonth],
-  );
-
   const deltaPos = stats.delta >= 0;
 
   return (
-    <section className="card fin-analysis">
+    <section className="card fin-trend">
       <div className="card-h">
         <div className="card-title">
-          <i className="ph ph-chart-pie-slice"></i>財務分析
+          <i className="ph ph-chart-line-up"></i>收支趨勢
+        </div>
+        <div className="tab-row">
+          <button className={period === "week" ? "on" : ""} onClick={() => setPeriod("week")}>
+            週
+          </button>
+          <button className={period === "month" ? "on" : ""} onClick={() => setPeriod("month")}>
+            月
+          </button>
+          <button className={period === "year" ? "on" : ""} onClick={() => setPeriod("year")}>
+            年
+          </button>
         </div>
       </div>
 
-      {/* 重點數據列：收入 / 支出 / 較上期（含 % 變化徽章） */}
+      {/* 重點數據列：本期淨餘（含 % 變化徽章）/ 收入 / 支出（對齊首頁） */}
       <div className="fin-row">
         <div className="fin-stat">
-          <div className="l">{stats.incomeLabel}</div>
-          <div className="v" style={{ color: "var(--pos)" }}>
-            <small>+</small>
-            {fmtMoney(stats.income)}
-          </div>
-        </div>
-        <div className="fin-stat">
-          <div className="l">{stats.expenseLabel}</div>
-          <div className="v" style={{ color: "var(--neg)" }}>
-            <small>−</small>
-            {fmtMoney(stats.expense)}
-          </div>
-        </div>
-        <div className="fin-stat">
-          <div className="l">{stats.deltaLabel}</div>
-          <div className="v" style={{ color: deltaPos ? "var(--pos)" : "var(--neg)" }}>
-            <small>{deltaPos ? "+" : "−"}</small>
-            {fmtMoney(Math.abs(stats.delta))}
+          <div className="l">本期淨餘（NTD）</div>
+          <div className="v">
+            <small>$</small>
+            {fmtMoney(stats.net)}
           </div>
           {stats.pct !== null && (
             <span className={`delta ${deltaPos ? "pos" : "neg"}`}>
@@ -89,96 +72,129 @@ function FinanceAnalysis() {
             </span>
           )}
         </div>
+        <div className="fin-stat">
+          <div className="l">收入</div>
+          <div className="v" style={{ color: "var(--pos)" }}>
+            <small>+</small>
+            {fmtMoney(stats.income)}
+          </div>
+        </div>
+        <div className="fin-stat">
+          <div className="l">支出</div>
+          <div className="v" style={{ color: "var(--neg)" }}>
+            <small>−</small>
+            {fmtMoney(stats.expense)}
+          </div>
+        </div>
       </div>
 
-      {/* 收支趨勢：單一累積淨餘曲線（週/月/年切換） */}
-      <div className="fin-sub">
-        <div className="fin-sub-h">
-          <span className="fin-sub-t">收支趨勢</span>
+      {stats.hasData ? (
+        <ValueChart
+          data={trend}
+          mode={chartMode}
+          yLabels={true}
+          height={170}
+          fill
+          formatValue={(v) => `NT$ ${fmtMoney(v)}`}
+        />
+      ) : (
+        <div className="chart-empty">這個期間還沒有帳目資料</div>
+      )}
+    </section>
+  );
+}
+
+/* ====================================================================
+   區塊一之二：收支分類卡（甜甜圈 + 圖例，支出／收入切換、月份切換）
+   ==================================================================== */
+function FinanceBreakdownCard() {
+  const { transactions } = useFinance();
+  const today = new Date();
+  const [catRef, setCatRef] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+  const [catType, setCatType] = useState("expense"); // expense | income
+  const catYear = catRef.getFullYear();
+  const catMonth = catRef.getMonth();
+  const isCurrentMonth = catYear === today.getFullYear() && catMonth === today.getMonth();
+  const shiftMonth = (delta) =>
+    setCatRef((d) => new Date(d.getFullYear(), d.getMonth() + delta, 1));
+  const breakdown = useMemo(
+    () => categoryBreakdown(transactions, catYear, catMonth, catType),
+    [transactions, catYear, catMonth, catType],
+  );
+  const isIncome = catType === "income";
+
+  return (
+    <section className="card fin-breakdown">
+      <div className="card-h">
+        <div className="fin-sub-h-l">
+          <div className="card-title">
+            <i className="ph ph-chart-pie-slice"></i>收支分類
+          </div>
           <div className="tab-row">
-            <button className={period === "week" ? "on" : ""} onClick={() => setPeriod("week")}>
-              週
+            <button className={!isIncome ? "on" : ""} onClick={() => setCatType("expense")}>
+              支出
             </button>
-            <button className={period === "month" ? "on" : ""} onClick={() => setPeriod("month")}>
-              月
-            </button>
-            <button className={period === "year" ? "on" : ""} onClick={() => setPeriod("year")}>
-              年
+            <button className={isIncome ? "on" : ""} onClick={() => setCatType("income")}>
+              收入
             </button>
           </div>
         </div>
-        {stats.hasData ? (
-          <ValueChart
-            data={trend}
-            mode="area"
-            yLabels={true}
-            height={170}
-            formatValue={(v) => `NT$ ${fmtMoney(v)}`}
+        <div className="month-nav">
+          <button
+            type="button"
+            className="icon-btn"
+            style={{ width: 34, height: 34 }}
+            onClick={() => shiftMonth(-1)}
+            aria-label="上個月"
+          >
+            <i className="ph ph-caret-left"></i>
+          </button>
+          <span className="lbl">
+            {catYear} / {catMonth + 1}月
+          </span>
+          <button
+            type="button"
+            className="icon-btn"
+            style={{ width: 34, height: 34 }}
+            onClick={() => shiftMonth(1)}
+            disabled={isCurrentMonth}
+            aria-label="下個月"
+          >
+            <i className="ph ph-caret-right"></i>
+          </button>
+        </div>
+      </div>
+      {breakdown.total > 0 ? (
+        <div className="fin-donut-row">
+          <PieDonut
+            data={breakdown.items.map((it) => ({
+              value: it.value,
+              color: finCatVar(it.cat),
+              label: `${it.cat.emoji} ${it.cat.name}`,
+            }))}
+            totalLabel={isIncome ? "本月收入（NTD）" : "本月支出（NTD）"}
+            size={260}
+            stroke={24}
+            formatValue={(v) => `$ ${fmtMoney(v)}`}
           />
-        ) : (
-          <div className="chart-empty">這個期間還沒有帳目資料</div>
-        )}
-      </div>
-
-      {/* 支出分類：甜甜圈 + 圖例（月份切換，未來月份不可點） */}
-      <div className="fin-sub">
-        <div className="fin-sub-h">
-          <span className="fin-sub-t">支出分類</span>
-          <div className="month-nav">
-            <button
-              type="button"
-              className="icon-btn"
-              style={{ width: 34, height: 34 }}
-              onClick={() => shiftMonth(-1)}
-              aria-label="上個月"
-            >
-              <i className="ph ph-caret-left"></i>
-            </button>
-            <span className="lbl">
-              {catYear} / {catMonth + 1}月
-            </span>
-            <button
-              type="button"
-              className="icon-btn"
-              style={{ width: 34, height: 34 }}
-              onClick={() => shiftMonth(1)}
-              disabled={isCurrentMonth}
-              aria-label="下個月"
-            >
-              <i className="ph ph-caret-right"></i>
-            </button>
+          <div className="fin-legend">
+            {breakdown.items.map((it) => (
+              <div className="row" key={it.key}>
+                <span className="sq" style={{ background: finCatVar(it.cat) }}></span>
+                <span className="nm">
+                  <span>{it.cat.emoji}</span>
+                  {it.cat.name}
+                </span>
+                <span className="pct">{Math.round(it.pct)}%</span>
+              </div>
+            ))}
           </div>
         </div>
-        {breakdown.total > 0 ? (
-          <div className="fin-donut-row">
-            <PieDonut
-              data={breakdown.items.map((it) => ({
-                value: it.value,
-                color: finCatVar(it.cat),
-                label: `${it.cat.emoji} ${it.cat.name}`,
-              }))}
-              totalLabel="本月支出（NTD）"
-              size={260}
-              stroke={24}
-              formatValue={(v) => `$ ${fmtMoney(v)}`}
-            />
-            <div className="fin-legend">
-              {breakdown.items.map((it) => (
-                <div className="row" key={it.key}>
-                  <span className="sq" style={{ background: finCatVar(it.cat) }}></span>
-                  <span className="nm">
-                    <span>{it.cat.emoji}</span>
-                    {it.cat.name}
-                  </span>
-                  <span className="pct">{Math.round(it.pct)}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="chart-empty">這個月還沒有支出紀錄</div>
-        )}
-      </div>
+      ) : (
+        <div className="chart-empty">
+          {isIncome ? "這個月還沒有收入紀錄" : "這個月還沒有支出紀錄"}
+        </div>
+      )}
     </section>
   );
 }
@@ -394,7 +410,7 @@ function TransactionOverview() {
   const hasMore = visible < transactions.length;
 
   return (
-    <section className="card">
+    <section className="card fin-txn">
       <div className="card-h">
         <div className="card-title">
           <i className="ph ph-list-bullets"></i>帳目總覽
@@ -665,7 +681,7 @@ function SavingGoalSection() {
   const hasMore = visible < deposits.length;
 
   return (
-    <section className="card">
+    <section className="card fin-save">
       <div className="card-h">
         <div className="card-title">
           <i className="ph ph-piggy-bank"></i>儲蓄目標
@@ -758,7 +774,7 @@ function SavingGoalSection() {
 }
 
 /* ==================================================================== */
-export function FinancePage() {
+export function FinancePage({ chartMode = "area" }) {
   const fin = useFinance();
   if (!fin) return null;
 
@@ -769,12 +785,14 @@ export function FinancePage() {
         <span className="fin-page-month">{currentMonthLabel()}</span>
       </div>
 
+      {/* 左欄兩卡（趨勢/分類）等高堆疊；右欄用絕對定位把高度綁定左欄、上下平分，
+          兩欄接縫因此對齊。左欄趨勢卡的折線圖會 flex 填滿，與分類卡同高。 */}
       <div className="fin-page-grid">
         <div className="fin-col fin-col-left">
-          <FinanceAnalysis />
+          <FinanceTrendCard chartMode={chartMode} />
+          <FinanceBreakdownCard />
         </div>
         <div className="fin-col-right">
-          {/* inner 在桌機被絕對定位，避免右欄內容撐高 grid 列（高度改由左卡決定） */}
           <div className="fin-col-right-inner">
             <TransactionOverview />
             <SavingGoalSection />
