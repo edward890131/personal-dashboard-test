@@ -118,7 +118,8 @@ for (const key of allKeys) {
 }
 
 // ---- 產出 markdown ----
-const today = new Date().toISOString().slice(0, 10);
+// 台北時間 (UTC+8)：先把 timestamp 加 8 小時再取 UTC 日期，等同 Asia/Taipei 的日曆日
+const today = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
 const reportPath = join(ROOT, `reports/drift-${today}.md`);
 mkdirSync(dirname(reportPath), { recursive: true });
 

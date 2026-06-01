@@ -167,15 +167,19 @@ Code 端 token + component 與 Figma file [`Personal-Dashboard`](https://www.fig
 
 ### 工具速查
 
-| 檔案 / 指令                                 | 用途                                                                                 |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `tokens/{primitives,semantics,device}.json` | 三層 token SoT。改 token 從這裡開始                                                  |
-| `tokens/figma-snapshot.json`                | Figma 端 Variables 快照（audit log），AI 透過 Figma MCP 維護                         |
-| `scripts/token-adapter.mjs`                 | DTCG ↔ Figma 互轉（alias / em↔percent / rgba→hex）                                   |
-| `scripts/check-token-drift.mjs`             | 純 Node diff 腳本                                                                    |
-| `npm run figma:diff`                        | 一鍵跑對齊檢查 → `reports/drift-{date}.md`                                           |
-| `figma-mapping.md`                          | Component 對應字典（11 BentoCard + 26 primitives + 36 icons），取代正式 Code Connect |
-| `figma-token-alignment.md`                  | 對齊狀態總覽（人工維護）                                                             |
+| 檔案 / 指令                                 | 用途                                                               |
+| ------------------------------------------- | ------------------------------------------------------------------ |
+| `tokens/{primitives,semantics,device}.json` | 三層 token SoT。改 token 從這裡開始                                |
+| `tokens/figma-snapshot.json`                | Figma 端 Variables 快照（audit log），AI 透過 Figma MCP 維護       |
+| `scripts/token-adapter.mjs`                 | DTCG ↔ Figma 互轉（alias / em↔percent / rgba→hex）                 |
+| `scripts/check-token-drift.mjs`             | 純 Node diff 腳本                                                  |
+| `npm run figma:diff`                        | 一鍵跑 token 對齊檢查 → `reports/drift-{date}.md`                  |
+| `tokens/component-spec.json`                | Component 端指紋（code 真相，原子元件綁哪些 token）                |
+| `tokens/figma-component-snapshot.json`      | Component 端 Figma 快照（AI 透過 Figma MCP 維護）                  |
+| `scripts/check-component-drift.mjs`         | Component diff 腳本                                                |
+| `npm run figma:diff:components`             | 一鍵跑 component 對齊檢查 → `reports/component-drift-{date}.md`    |
+| `figma-mapping.md`                          | Component 對應字典 + 第 7 節 Drift 偵測機制，取代正式 Code Connect |
+| `figma-token-alignment.md`                  | 對齊狀態總覽（人工維護）                                           |
 
 ### 三層 token 對應 Figma Variables Collection
 
@@ -193,6 +197,13 @@ Code 端 token + component 與 Figma file [`Personal-Dashboard`](https://www.fig
 2. `npm run figma:diff` 看 drift
 3. 補對應 token 到 `tokens/*.json` + `src/styles.css` + `src/design-system.jsx` swatch
 4. 再 `npm run figma:diff` 驗證歸零
+
+**設計師在 Figma 改了 component**：
+
+1. 跟 AI 說「重拉 component snapshot」 → 用 Figma MCP 重新拉綁定寫回 `tokens/figma-component-snapshot.json`（refresh prompt 見 `figma-mapping.md` 第 7 節）
+2. `npm run figma:diff:components` 看 component drift
+3. 對齊 `src/styles.css` → 更新 `tokens/component-spec.json`
+4. 再跑一次驗證歸零
 
 **Figma → Code** 拉設計稿實作：先讀 `figma-mapping.md` 找對應元件，不重新繪製。
 

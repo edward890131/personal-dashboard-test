@@ -190,20 +190,22 @@ text/heading/lg
 
 > Tag 是 component-level token，**不引入新原子色**，而是定義「哪一類 tag 用哪一組 status / brand 色」的 mapping rule。
 
-| Tag class     | 語意             | 文字色                    | 背景色                       |
-| ------------- | ---------------- | ------------------------- | ---------------------------- |
-| `tag/work`    | 工作、職涯、業務 | `{color/primary/ink}`     | `{color/primary/soft}`       |
-| `tag/life`    | 生活、家庭、休閒 | `{color/status/positive}` | `{color/status/positive-bg}` |
-| `tag/health`  | 健康、運動、醫療 | `{color/status/warning}`  | `{color/status/warning-bg}`  |
-| `tag/finance` | 理財、預算、消費 | `{color/text/ink-2}`      | `{color/surface/secondary}`  |
-| `tag/learn`   | 學習、閱讀、課程 | `{color/primary/ink}`     | `{color/primary/soft}`       |
-| `tag/travel`  | 旅遊、外出       | `{color/status/warning}`  | `{color/status/warning-bg}`  |
-| `tag/default` | 未分類           | `{color/text/muted}`      | `{color/surface/hover}`      |
+| Tag class      | 語意             | 文字色                    | 背景色                                |
+| -------------- | ---------------- | ------------------------- | ------------------------------------- |
+| `tag/work`     | 工作、職涯、業務 | `{color/primary/ink}`     | `{color/primary/soft}`                |
+| `tag/life`     | 生活、家庭、休閒 | `{color/status/positive}` | `{color/status/positive-bg}`          |
+| `tag/health`   | 健康、運動、醫療 | `{color/status/warning}`  | `{color/status/warning-bg}`           |
+| `tag/finance`  | 理財、預算、消費 | `{color/text/ink-2}`      | `{color/surface/secondary}`           |
+| `tag/study`    | 學習、閱讀、課程 | `--violet` (#7A5AE0) ⚠️   | `--bg-chart-area-violet`（violet 8%） |
+| `tag/travel`   | 旅遊、外出       | `{color/status/warning}`  | `{color/status/warning-bg}`           |
+| `tag/default`  | 未分類           | `{color/text/muted}`      | `{color/surface/hover}`               |
+| `tag/personal` | 個人、雜項       | `{color/text/muted}`      | `{color/surface/hover}`（同 default） |
 
 **規則**：
 
-- 新增 tag 類別時**必須對應到既有 status / brand 色組**，不為了單一 tag 引入新色（避免色彩擴張）。
-- 同色組可重用（例：`finance` 與 `learn` 都可用 primary 系，用 icon 區隔）。
+- 新增 tag 類別時**優先對應既有 status / brand 色組**，避免色彩擴張。
+- 同色組可重用（例：`health` 與 `travel` 都用 warning 系，用 icon 區隔）。
+- ⚠️ **例外：`study` 引入了 violet 新原子色**（CSS `--violet` / Figma `text/study`、`bg/study-area`），是目前唯一突破「不引入新色」原則的類別；其餘類別仍須沿用既有色組。violet primitive 尚未回補進 §1.1，待補。
 - 上限 6 個 tag 類別同時並存於畫面，否則應改為下拉選單而非 inline tag。
 
 ### 1.5 Interaction / State Tokens
@@ -365,17 +367,17 @@ text/heading/lg
 
 ## 4. 圓角系統
 
-| Token         | Value | 用途                                                            |
-| ------------- | ----- | --------------------------------------------------------------- |
-| `radius/none` | `0`   | —                                                               |
-| `radius/xs`   | `2`   | Bar-rect、heatmap cell、legend dot                              |
-| `radius/sm`   | `4`   | Spark legend swatch、kbd、heatmap cell hover                    |
-| `radius/md`   | `5`   | Theme toggle button                                             |
-| `radius/lg`   | `6`   | Tag、todo check、tab button、quick-btn、tooltip = `radius/chip` |
-| `radius/lg-2` | `7`   | Brand mark、kpi-icon、twk-field                                 |
-| `radius/xl`   | `8`   | **= radius/card**：card / btn-primary / icon-btn / nav-item     |
-| `radius/2xl`  | `14`  | Tweaks panel                                                    |
-| `radius/pill` | `999` | Pill / badge / progress bar                                     |
+| Token         | Value | 用途                                                                                |
+| ------------- | ----- | ----------------------------------------------------------------------------------- |
+| `radius/none` | `0`   | —                                                                                   |
+| `radius/xs`   | `2`   | Bar-rect、heatmap cell、legend dot                                                  |
+| `radius/sm`   | `4`   | Tag、Spark legend swatch、kbd、heatmap cell hover                                   |
+| `radius/md`   | `5`   | Theme toggle button                                                                 |
+| `radius/lg`   | `6`   | todo check、quick-btn、tooltip = `radius/chip`（⚠️ tab button code 實為 4px，待決） |
+| `radius/lg-2` | `7`   | Brand mark、kpi-icon、twk-field                                                     |
+| `radius/xl`   | `8`   | **= radius/card**：card / btn-primary / icon-btn / nav-item                         |
+| `radius/2xl`  | `14`  | Tweaks panel                                                                        |
+| `radius/pill` | `999` | Pill / badge / progress bar                                                         |
 
 ### Aliases（語意化）
 
@@ -613,6 +615,7 @@ v0.1 起草時列出的 6 項待確認，全部已拍板。本節作為決策歷
 | 2026-05-12 | v0.2.1 | 移除 `text/num/sm`（§2.6）對齊 Figma：原規格 22/600/1.1/-0.02em 與 `text/heading/lg` 完全相同，donut center 與 mood avg 改 alias 到 `text/heading/lg`，避免重複定義                                                                                                                          |
 | 2026-05-12 | v0.2.2 | Weight 450 / 550 拍掉：Figma 對 Variable Font 只取標準 9 階，無法跑任意 weight。§2.3 移除 `font/weight/book` 與 `font/weight/book-bold`；§2.6 `text/body/sm` 改 500、`text/heading/sm` 改 600；`styles.css` 同步換完 9 處                                                                    |
 | 2026-05-12 | v0.3   | 同步 Figma 把 💎 Components page 14 個誤用 Inter Bold 32px 的 section title 改為 Semi Bold；§2.7 確立「Figma 端不建 `text/zh/*` 對應 styles」策略，中文字交由 codebase 的 `font-family` fallback chain 處理（per-character browser fallback），Figma 端中文預覽不可控但 token 一致性不受影響 |
+| 2026-06-01 | v0.4   | 對齊 live Figma 修正過時內容：§1.4 tag mapping `learn` → `study`（violet 新原子色，標為例外）+ 補 `personal`，共 8 類；§4 圓角把 Tag 從 `radius/lg` 移到 `radius/sm`（code+Figma 實為 4px）；tab button 標註 code 實為 4px 待決。配合 component drift 機制（figma-mapping.md §7）            |
 
 ---
 

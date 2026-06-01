@@ -646,10 +646,11 @@ function TagMappingDemo() {
     { id: "study", label: "學習", token: "violet 系 · chart-area-violet 底（8% alpha）" },
     { id: "travel", label: "旅遊", token: "warning 系（同 health）" },
     { id: "default", label: "未分類", token: "neutral 系（surface-hover + divider 邊）" },
+    { id: "personal", label: "個人", token: "neutral 系（同 default · muted + surface-hover）" },
   ];
   return (
     <DSCard
-      title="Tag Mapping（7 類）"
+      title="Tag Mapping（8 類）"
       note="新增 tag 類別必須對應到既有 status / brand 色組，不為單一 tag 引入新色"
     >
       <div className="ds-tag-grid">
@@ -674,13 +675,15 @@ function StateDemo() {
       {/* Focus ring 範例 */}
       <div>
         <div className="ds-note" style={{ marginBottom: 6 }}>
-          <code className="ds-mono">:focus-visible</code> · 鍵盤 Tab 進來會自動套用；下方為視覺 mock
+          <code className="ds-mono">:focus-visible</code> · 綁{" "}
+          <code className="ds-mono">var(--focus-ring)</code> · 鍵盤 Tab 進來會自動套用；下方為視覺
+          mock
         </div>
         <button
           className="btn-primary"
           type="button"
           style={{
-            boxShadow: "0 0 0 3px rgba(14, 79, 231, 0.4)",
+            boxShadow: "var(--focus-ring)",
           }}
         >
           Focused button（visual mock）
