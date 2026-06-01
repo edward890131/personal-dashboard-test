@@ -1,5 +1,5 @@
 // charts.jsx — 小型圖表元件，含 hover tooltip 與 draw-in 動畫
-// 對外輸出：CountUp、ValueChart、Donut、PieDonut、Sparkline
+// 對外輸出：CountUp、ValueChart、Donut、PieDonut、CategoryBars、Sparkline
 import { useState, useEffect, useRef, useId } from "react";
 
 /* ---------------- CountUp ---------------- */
@@ -407,6 +407,134 @@ function PieDonut({ data, size = 130, stroke = 18, totalLabel = "支出", format
   );
 }
 
+/* y 軸「以 200 為單位」的整齊刻度：頂端對齊 200 的倍數，step 以 200 為基底，
+   資料很大時才放大（400→1000…）避免格線爆量。回傳 { top, ticks }（由 0 遞增到 top）。 */
+function niceScale200(max) {
+  const mults = [1, 2, 5, 10, 20, 50]; // step = m × 200 的候選
+  let step = 200;
+  for (const m of mults) {
+    step = m * 200;
+    if (Math.ceil(max / step) <= 12) break;
+  }
+  const top = Math.max(step, Math.ceil(max / step) * step);
+  const ticks = [];
+  for (let v = 0; v <= top + 1e-6; v += step) ticks.push(v);
+  return { top, ticks };
+}
+
+/* ---------------- CategoryBars（收支分類金額長條圖）----------------
+   props: data: [{ label, name, value, color }], height, formatValue
+   特性：y 軸從 0 起算、刻度以 100 為單位對齊（不同於趨勢用 ValueChart 從最小值起算）、
+        x 軸為分類名稱、每根長條綁分類色、hover 顯示「分類名稱 + 金額」。
+*/
+function CategoryBars({ data, height = 300, formatValue = (v) => v }) {
+  const wrapRef = useRef(null);
+  const [w, setW] = useState(400);
+  const [hover, setHover] = useState(null); // { i, x, y }（座標相對容器）
+  const [drawn, setDrawn] = useState(false); // 控制長條由下往上生長動畫
+
+  useEffect(() => {
+    if (!wrapRef.current) return;
+    const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
+    ro.observe(wrapRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  // 換月份 / 切換收入支出時，重播生長動畫
+  useEffect(() => {
+    setDrawn(false);
+    const t = setTimeout(() => setDrawn(true), 30);
+    return () => clearTimeout(t);
+  }, [data]);
+
+  const H = height;
+  const padL = 40; // 左側留給 y 軸金額刻度
+  const padR = 8;
+  const padT = 14;
+  const padB = 30; // 底部留給 x 軸 emoji
+  const innerW = Math.max(40, w - padL - padR);
+  const innerH = H - padT - padB;
+  const rawMax = Math.max(...data.map((d) => d.value), 1);
+  const { top, ticks } = niceScale200(rawMax); // 長條圖從 0 起算、頂端對齊 200 的倍數
+  // 金額刻度文字：≥1000 縮寫成 k（整數不帶小數，如 2k；非整如 1.5k），否則千分位整數
+  const fmtY = (v) => {
+    if (v >= 1000) {
+      const k = v / 1000;
+      return `${Number.isInteger(k) ? k : k.toFixed(1)}k`;
+    }
+    return Math.round(v).toLocaleString();
+  };
+
+  return (
+    <div className="chart-wrap cat-bars" ref={wrapRef} style={{ height }}>
+      <svg viewBox={`0 0 ${w} ${H}`} preserveAspectRatio="none">
+        <g className="chart-grid">
+          {ticks.map((v, i) => {
+            const y = padT + innerH * (1 - v / top);
+            return <line key={i} x1={padL} x2={w - padR} y1={y} y2={y} />;
+          })}
+        </g>
+        {/* y 軸金額刻度（每個 100 倍數刻度一個標籤） */}
+        <g className="chart-axis">
+          {ticks.map((v, i) => (
+            <text key={i} x={padL - 6} y={padT + innerH * (1 - v / top) + 3} textAnchor="end">
+              {fmtY(v)}
+            </text>
+          ))}
+        </g>
+        {/* x 軸分類名稱 */}
+        <g className="chart-axis cat-x">
+          {data.map((d, i) => {
+            const band = innerW / data.length;
+            const x = padL + band * i + band / 2;
+            return (
+              <text key={i} x={x} y={H - 8} textAnchor="middle">
+                {d.name}
+              </text>
+            );
+          })}
+        </g>
+        {/* 長條：未 drawn 時高度 0 貼底，drawn 後過渡到實際高度（由下往上長） */}
+        {data.map((d, i) => {
+          const band = innerW / data.length;
+          const barW = Math.min(band * 0.4, 26);
+          const x = padL + band * i + (band - barW) / 2;
+          const fullH = (d.value / top) * innerH;
+          const h = drawn ? fullH : 0;
+          const y = padT + innerH - h;
+          const ease = `cubic-bezier(.2,.8,.2,1) ${i * 40}ms`;
+          return (
+            <rect
+              key={i}
+              className="cat-bar"
+              x={x}
+              y={y}
+              width={barW}
+              height={h}
+              fill={d.color}
+              onMouseMove={(e) => {
+                const rect = wrapRef.current.getBoundingClientRect();
+                setHover({ i, x: e.clientX - rect.left, y: e.clientY - rect.top });
+              }}
+              onMouseLeave={() => setHover(null)}
+              style={{
+                transition: `height .5s ${ease}, y .5s ${ease}, opacity .15s`,
+                cursor: "pointer",
+              }}
+            />
+          );
+        })}
+      </svg>
+      {hover && data[hover.i] && (
+        <div className="tooltip on" style={{ left: hover.x, top: hover.y }}>
+          <div className="lbl">{data[hover.i].label}</div>
+          <div>{formatValue(data[hover.i].value)}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ---------------- Sparkline ---------------- */
 function Sparkline({ values, height = 32 }) {
   const wrapRef = useRef(null);
@@ -445,4 +573,4 @@ function Sparkline({ values, height = 32 }) {
   );
 }
 
-export { CountUp, ValueChart, Donut, PieDonut, Sparkline };
+export { CountUp, ValueChart, Donut, PieDonut, CategoryBars, Sparkline };

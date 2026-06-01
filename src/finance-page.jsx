@@ -8,7 +8,7 @@ import {
   categoryBreakdown,
   savingProgress,
 } from "./finance-store.jsx";
-import { ValueChart, PieDonut } from "./charts.jsx";
+import { ValueChart, PieDonut, CategoryBars } from "./charts.jsx";
 import { Modal, useToast, useConfirm, Field, CategoryPicker, fmtMoney } from "./ui.jsx";
 import { allCategories, getCategory, finCatVar, finCatSoft } from "./finance-categories.js";
 
@@ -112,6 +112,7 @@ function FinanceBreakdownCard() {
   const today = new Date();
   const [catRef, setCatRef] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [catType, setCatType] = useState("expense"); // expense | income
+  const [catView, setCatView] = useState("pie"); // pie 圓餅圖 | bar 柱狀圖
   const catYear = catRef.getFullYear();
   const catMonth = catRef.getMonth();
   const isCurrentMonth = catYear === today.getFullYear() && catMonth === today.getMonth();
@@ -138,6 +139,19 @@ function FinanceBreakdownCard() {
               收入
             </button>
           </div>
+          {/* 圖表類型切換：圓餅圖 / 柱狀圖（放在收入支出 toggle 右側）*/}
+          <span className="fin-select-wrap">
+            <select
+              className="fin-select"
+              value={catView}
+              onChange={(e) => setCatView(e.target.value)}
+              aria-label="圖表類型"
+            >
+              <option value="pie">圓餅圖</option>
+              <option value="bar">柱狀圖</option>
+            </select>
+            <i className="ph ph-caret-down"></i>
+          </span>
         </div>
         <div className="month-nav">
           <button
@@ -165,28 +179,43 @@ function FinanceBreakdownCard() {
         </div>
       </div>
       {breakdown.total > 0 ? (
-        <div className="fin-donut-row">
-          <PieDonut
-            data={breakdown.items.map((it) => ({
-              value: it.value,
-              color: finCatVar(it.cat),
-              label: `${it.cat.emoji} ${it.cat.name}`,
-            }))}
-            totalLabel={isIncome ? "本月收入（NTD）" : "本月支出（NTD）"}
-            size={260}
-            stroke={24}
-            formatValue={(v) => `$ ${fmtMoney(v)}`}
-          />
-          <div className="fin-legend">
-            {breakdown.items.map((it) => (
-              <div className="row" key={it.key}>
-                <span className="sq" style={{ background: finCatVar(it.cat) }}></span>
-                <span className="nm">{it.cat.name}</span>
-                <span className="pct">{Math.round(it.pct)}%</span>
-              </div>
-            ))}
+        catView === "pie" ? (
+          <div className="fin-donut-row">
+            <PieDonut
+              data={breakdown.items.map((it) => ({
+                value: it.value,
+                color: finCatVar(it.cat),
+                label: `${it.cat.emoji} ${it.cat.name}`,
+              }))}
+              totalLabel={isIncome ? "本月收入（NTD）" : "本月支出（NTD）"}
+              size={260}
+              stroke={24}
+              formatValue={(v) => `$ ${fmtMoney(v)}`}
+            />
+            <div className="fin-legend">
+              {breakdown.items.map((it) => (
+                <div className="row" key={it.key}>
+                  <span className="sq" style={{ background: finCatVar(it.cat) }}></span>
+                  <span className="nm">{it.cat.name}</span>
+                  <span className="pct">{Math.round(it.pct)}%</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="fin-bars-row">
+            <CategoryBars
+              data={breakdown.items.map((it) => ({
+                label: `${it.cat.emoji} ${it.cat.name}`,
+                name: it.cat.name,
+                value: it.value,
+                color: finCatVar(it.cat),
+              }))}
+              height={300}
+              formatValue={(v) => `$ ${fmtMoney(v)}`}
+            />
+          </div>
+        )
       ) : (
         <div className="chart-empty">
           {isIncome ? "這個月還沒有收入紀錄" : "這個月還沒有支出紀錄"}
