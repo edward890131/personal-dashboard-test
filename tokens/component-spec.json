@@ -1,0 +1,212 @@
+{
+  "$meta": {
+    "title": "Component Spec — Code 端元件指紋（atomic primitives v1）",
+    "description": "每個原子元件在 code 端（src/styles.css）實際綁定的 token / 結構指紋。這是 component 層的 code 端真相，對應 figma-component-snapshot.json（Figma 端真相）。用 npm run figma:diff:components 比對兩邊。",
+    "source": "src/styles.css",
+    "vocab": "radius 用 CSS var 名（--r-*），由 $radiusMap 換算成 Figma token path 後比對；colors 記 CSS var 名，於報告做 side-by-side 人工複查；literal 值代表 hard-code（應綁未綁）。",
+    "scope": "figma-mapping.md 第 3 節的 10 個易變原子元件，後續可擴充",
+    "updatedAt": "2026-06-01"
+  },
+  "$radiusMap": {
+    "--r-card": "radius/xl",
+    "--r-chip": "radius/lg",
+    "--r-sm": "radius/sm",
+    "--r-md": "radius/md",
+    "--r-pill": "radius/full"
+  },
+  "$colorMap": {
+    "--ink": "text/primary",
+    "--ink-2": "text/secondary",
+    "--bg": "bg/page",
+    "--surface": "bg/surface",
+    "--surface-2": "bg/secondary",
+    "--surface-hover": "bg/hover",
+    "--border": "border/default",
+    "--border-strong": "border/strong",
+    "--divider": "border/divider",
+    "--muted": "text/muted",
+    "--muted-2": "text/faint",
+    "--primary": "bg/brand",
+    "--primary-fg": "text/on-brand",
+    "--primary-ink": "text/brand",
+    "--primary-soft": "bg/brand-soft",
+    "--pos": "text/positive",
+    "--pos-bg": "badge/positive-bg",
+    "--neg": "text/negative",
+    "--neg-bg": "badge/negative-bg",
+    "--warn": "text/warning",
+    "--warn-bg": "badge/warning-bg",
+    "--bg-chart-area": "bg/chart-area",
+    "--state-disabled-bg": "state/disabled-bg",
+    "--state-disabled-text": "state/disabled-text",
+    "--state-disabled-border": "state/disabled-border",
+    "--shadow-card": "effect/shadow-card",
+    "--shadow-hover": "effect/shadow-hover",
+    "--violet": "text/study",
+    "--bg-chart-area-violet": "bg/study-area"
+  },
+  "components": {
+    "Button": {
+      "figmaNode": "146:709",
+      "code": ".btn-primary / .btn-secondary / .btn-sm @ src/styles.css",
+      "variants": ["primary", "secondary", "sm"],
+      "states": ["default", "hover", "active", "focus-visible", "disabled"],
+      "radius": "--r-card",
+      "colors": {
+        "primary.fill": "--ink",
+        "primary.text": "--bg",
+        "secondary.fill": "--surface",
+        "secondary.text": "--ink",
+        "secondary.border": "--border",
+        "disabled.fill": "--state-disabled-bg",
+        "disabled.text": "--state-disabled-text"
+      },
+      "hardcoded": []
+    },
+    "IconButton": {
+      "figmaNode": "151:791",
+      "code": ".icon-btn @ src/styles.css",
+      "variants": [],
+      "states": ["default", "hover", "disabled"],
+      "radius": "--r-card",
+      "colors": {
+        "fill": "--surface",
+        "border": "--border",
+        "icon": "--ink-2",
+        "hover.fill": "--surface-hover",
+        "hover.border": "--border-strong",
+        "dot": "--primary"
+      },
+      "hardcoded": []
+    },
+    "SearchInput": {
+      "figmaNode": "155:785",
+      "code": ".search @ src/styles.css",
+      "variants": [],
+      "states": ["default", "focus-within"],
+      "radius": "--r-card",
+      "colors": {
+        "fill": "--surface",
+        "border": "--border",
+        "text": "--ink",
+        "placeholder": "--muted",
+        "focus.border": "--primary"
+      },
+      "hardcoded": []
+    },
+    "Kbd": {
+      "figmaNode": "151:795",
+      "code": ".kbd @ src/styles.css",
+      "variants": [],
+      "states": ["default"],
+      "radius": "--r-sm",
+      "colors": {
+        "fill": "--surface-2",
+        "border": "--border",
+        "text": "--muted"
+      },
+      "hardcoded": []
+    },
+    "Card": {
+      "figmaNode": "167:91",
+      "code": ".card @ src/styles.css",
+      "variants": [],
+      "states": ["default", "hover"],
+      "radius": "--r-card",
+      "colors": {
+        "fill": "--surface",
+        "border": "--border",
+        "hover.border": "--border-strong",
+        "shadow": "--shadow-card",
+        "hover.shadow": "--shadow-hover"
+      },
+      "hardcoded": []
+    },
+    "Badge": {
+      "figmaNode": "153:793",
+      "code": ".badge / .badge.subtle @ src/styles.css",
+      "variants": ["default", "subtle"],
+      "states": ["default"],
+      "radius": "--r-pill",
+      "colors": {
+        "default.fill": "--primary",
+        "default.text": "--primary-fg",
+        "subtle.fill": "--surface-hover",
+        "subtle.text": "--muted"
+      },
+      "hardcoded": []
+    },
+    "DeltaBadge": {
+      "figmaNode": "153:767",
+      "code": ".delta.pos / .delta.neg @ src/styles.css",
+      "variants": ["pos", "neg"],
+      "states": ["default"],
+      "radius": "--r-pill",
+      "colors": {
+        "pos.fill": "--pos-bg",
+        "pos.text": "--pos",
+        "neg.fill": "--neg-bg",
+        "neg.text": "--neg"
+      },
+      "hardcoded": []
+    },
+    "Checkbox": {
+      "figmaNode": "376:986",
+      "code": ".checkbox @ src/styles.css",
+      "variants": [],
+      "states": ["default", "checked", "disabled"],
+      "radius": "--r-md",
+      "colors": {
+        "fill": "--surface",
+        "border": "--border-strong",
+        "check": "--primary-fg",
+        "checked.fill": "--primary",
+        "checked.border": "--primary",
+        "disabled.fill": "--state-disabled-bg",
+        "disabled.border": "--state-disabled-border"
+      },
+      "hardcoded": []
+    },
+    "Tag": {
+      "figmaNode": "153:785",
+      "code": ".tag + .tag.{work|life|health|finance|study|travel|default} @ src/styles.css",
+      "variants": ["work", "life", "health", "finance", "study", "travel", "default", "personal"],
+      "states": ["default"],
+      "radius": "--r-sm",
+      "colors": {
+        "base.fill": "--surface-2",
+        "base.text": "--muted",
+        "work.text": "--primary",
+        "work.fill": "--bg-chart-area",
+        "life.text": "--pos",
+        "life.fill": "--pos-bg",
+        "health.text": "--warn",
+        "health.fill": "--warn-bg",
+        "finance.text": "--ink-2",
+        "finance.fill": "--surface-2",
+        "study.text": "--violet",
+        "study.fill": "--bg-chart-area-violet",
+        "travel.text": "--warn",
+        "travel.fill": "--warn-bg",
+        "default.text": "--muted",
+        "default.fill": "--surface-hover",
+        "personal.text": "--muted",
+        "personal.fill": "--surface-hover"
+      },
+      "hardcoded": []
+    },
+    "DatePill": {
+      "figmaNode": "203:361",
+      "code": ".date-pill @ src/styles.css",
+      "variants": [],
+      "states": ["default"],
+      "radius": "--r-card",
+      "colors": {
+        "fill": "--surface",
+        "border": "--border",
+        "label": "--muted"
+      },
+      "hardcoded": []
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "$metadata": {
+    "title": "Figma Component Snapshot — Figma 端元件指紋（live）",
+    "fileName": "Personal-Dashboard",
+    "fileKey": "3n0ftsxOG20Hl214ii5vFL",
+    "source": "live：Figma MCP get_variable_defs + get_metadata 實拉",
+    "pulledBy": "goonsdesign.co@gmail.com（GOONS 團隊）",
+    "snapshotAt": "2026-06-01",
+    "normalize": "variants/states 基底名正規化以對齊 code：Button Size=Small→sm、Badge Style=Primary→default、Checkbox State=Unchecked→default、State=Focus→focus-visible、Direction/Type 一律小寫。",
+    "schema": {
+      "radius": "該元件外框 radius 的 Figma token path",
+      "colorSemantic": "綁到語意/primitive token 的顏色（bg/*、text/*、icon/*、state/*、bg/chart-area 等）",
+      "colorCssVarNamed": "綁到『var(--*)』命名變數的顏色 — 代表元件庫沒接上語意 token，建議 rebind",
+      "effects": "綁到的 effect style（陰影）"
+    }
+  },
+  "components": {
+    "Button": {
+      "figmaNode": "146:709",
+      "variants": ["primary", "secondary", "sm"],
+      "states": ["default", "hover", "active", "focus-visible", "disabled"],
+      "radius": "radius/xl",
+      "colorSemantic": [
+        "bg/inverse",
+        "text/on-inverse",
+        "icon/on-inverse",
+        "icon/primary",
+        "icon/muted",
+        "state/disabled-text"
+      ],
+      "colorCssVarNamed": [
+        "var(--surface-2)",
+        "var(--border)",
+        "var(--ink)",
+        "var(--surface-hover)",
+        "var(--border-strong)",
+        "var(--divider)"
+      ],
+      "effects": []
+    },
+    "IconButton": {
+      "figmaNode": "151:791",
+      "variants": [],
+      "states": ["default", "hover", "disabled"],
+      "radius": "radius/xl",
+      "colorSemantic": ["icon/secondary", "state/disabled-text"],
+      "colorCssVarNamed": [
+        "var(--surface)",
+        "var(--border)",
+        "var(--primary)",
+        "var(--surface-hover)",
+        "var(--border-strong)"
+      ],
+      "effects": []
+    },
+    "SearchInput": {
+      "figmaNode": "155:785",
+      "variants": [],
+      "states": ["default", "focus-within"],
+      "radius": "radius/xl",
+      "colorSemantic": ["icon/muted"],
+      "colorCssVarNamed": [
+        "var(--muted)",
+        "var(--surface-2)",
+        "var(--border)",
+        "var(--surface)",
+        "var(--ink)",
+        "var(--primary)"
+      ],
+      "effects": []
+    },
+    "Kbd": {
+      "figmaNode": "151:795",
+      "variants": [],
+      "states": ["default"],
+      "radius": "radius/sm",
+      "colorSemantic": [],
+      "colorCssVarNamed": ["var(--muted)", "var(--surface-2)", "var(--border)"],
+      "effects": []
+    },
+    "Card": {
+      "figmaNode": "167:91",
+      "variants": [],
+      "states": ["default", "hover"],
+      "radius": "radius/xl",
+      "colorSemantic": [],
+      "colorCssVarNamed": ["var(--surface)", "var(--border)", "var(--border-strong)"],
+      "effects": ["shadow/card-light", "shadow/hover-light"]
+    },
+    "Badge": {
+      "figmaNode": "153:793",
+      "variants": ["default", "subtle"],
+      "states": ["default"],
+      "radius": "radius/full",
+      "colorSemantic": [],
+      "colorCssVarNamed": [
+        "var(--primary)",
+        "var(--primary-fg)",
+        "var(--surface-hover)",
+        "var(--muted)"
+      ],
+      "effects": []
+    },
+    "DeltaBadge": {
+      "figmaNode": "153:767",
+      "variants": ["pos", "neg"],
+      "states": ["default"],
+      "radius": "radius/full",
+      "colorSemantic": ["icon/positive", "icon/negative"],
+      "colorCssVarNamed": ["var(--pos)", "var(--pos-bg)", "var(--neg)", "var(--neg-bg)"],
+      "effects": []
+    },
+    "Checkbox": {
+      "figmaNode": "376:986",
+      "variants": [],
+      "states": ["default", "checked", "disabled"],
+      "radius": "radius/md",
+      "colorSemantic": ["state/disabled-bg", "state/disabled-border"],
+      "colorCssVarNamed": [
+        "var(--surface)",
+        "var(--border-strong)",
+        "var(--primary)",
+        "var(--primary-fg)"
+      ],
+      "effects": []
+    },
+    "Tag": {
+      "figmaNode": "153:785",
+      "variants": ["work", "life", "health", "finance", "study", "travel", "default", "personal"],
+      "states": ["default"],
+      "radius": "radius/sm",
+      "colorSemantic": ["bg/chart-area", "text/study", "bg/study-area"],
+      "colorCssVarNamed": [
+        "var(--primary)",
+        "var(--pos)",
+        "var(--pos-bg)",
+        "var(--warn)",
+        "var(--warn-bg)",
+        "var(--ink-2)",
+        "var(--surface-2)",
+        "var(--muted)",
+        "var(--surface-hover)",
+        "var(--divider)"
+      ],
+      "effects": []
+    },
+    "DatePill": {
+      "figmaNode": "203:361",
+      "variants": [],
+      "states": ["default"],
+      "radius": "radius/xl",
+      "colorSemantic": [],
+      "colorCssVarNamed": ["var(--muted)", "var(--ink)", "var(--surface)", "var(--border)"],
+      "effects": []
+    }
+  }
+}

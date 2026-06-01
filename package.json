@@ -15,7 +15,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "prepare": "husky",
-    "figma:diff": "node scripts/check-token-drift.mjs"
+    "figma:diff": "node scripts/check-token-drift.mjs",
+    "figma:diff:components": "node scripts/check-component-drift.mjs"
   },
   "dependencies": {
     "@phosphor-icons/web": "^2.1.1",
