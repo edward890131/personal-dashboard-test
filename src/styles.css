@@ -1685,7 +1685,10 @@ input, textarea, select { font: inherit; color: inherit; }
 .fin-input::placeholder { color: var(--muted-2); }
 .fin-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14, 79, 231, 0.15); }
 .fin-input.invalid { border-color: var(--neg); }
-.fin-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* 用 minmax(0,1fr) 而非 1fr：1fr 的最小值是內容寬，iOS input[type=date] 原生最小寬很大不肯縮，
+   會撐爆左欄壓到右欄（日期框與金額框交疊）。minmax(0,1fr) + 子項 min-width:0 讓兩欄各縮到剛好一半。 */
+.fin-row-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.fin-row-2 .fin-field { min-width: 0; }
 
 /* ---- 類型切換（segmented：支出 / 收入）---- */
 .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1793,7 +1796,8 @@ input, textarea, select { font: inherit; color: inherit; }
 .fin-legend .pct { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; }
 
 /* 收支分類柱狀圖：容器 padding 對齊圓餅圖版型；x 軸 emoji 放大、長條 hover 提亮 */
-.fin-bars-row { padding-top: 16px; padding-bottom: 4px; }
+/* 柱狀圖：x 軸文字已貼近 svg 底，這裡用負 margin 把卡片底部多餘留白收掉，縮短文字↔卡底距離 */
+.fin-bars-row { padding-top: 16px; padding-bottom: 0; margin-bottom: -8px; }
 .cat-bars .cat-x text { font-size: 11px; fill: var(--ink-2); } /* x 軸分類名稱（比刻度略深） */
 .cat-bar:hover { opacity: .82; } /* 過渡寫在 inline style，避免被 rect 的 transition 覆蓋 */
 

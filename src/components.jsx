@@ -55,9 +55,13 @@ function Sidebar({
   collapsed,
   setCollapsed,
 }) {
+  // 待辦行事曆 badge：今天（TODAY）且未完成的待辦數量；為 0 時不顯示（badge 設 null）
+  const { todos } = useTodoCalendar();
+  const todoBadge = todos.filter((t) => !t.done && t.due && tcSameDay(t.due, TODAY)).length || null;
+
   const items = [
     { id: "dashboard", label: "儀表板", icon: "ph-squares-four", badge: null },
-    { id: "todo", label: "待辦行事曆", icon: "ph-check-square", badge: "8" },
+    { id: "todo", label: "待辦行事曆", icon: "ph-check-square", badge: todoBadge },
     { id: "finance", label: "理財規劃", icon: "ph-wallet", badge: null },
     { id: "goals", label: "年度目標", icon: "ph-target", badge: null },
     { id: "mood", label: "每日心情", icon: "ph-smiley", badge: null },
