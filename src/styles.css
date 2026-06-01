@@ -1753,6 +1753,26 @@ input, textarea, select { font: inherit; color: inherit; }
 /* ---- 財務分析子區（收支趨勢 / 支出分類）---- */
 /* 卡片標題左側群組（標題 + 支出／收入 toggle 並排）：收支分類卡與首頁收支分類卡共用 */
 .fin-sub-h-l { display: inline-flex; align-items: center; gap: 10px; }
+/* 圖表類型下拉（圓餅圖 / 柱狀圖）：放在收入支出 toggle 右側，原生 select + 自繪 caret */
+.fin-select-wrap { position: relative; display: inline-flex; align-items: center; }
+.fin-select-wrap > i {
+  position: absolute; right: 9px;
+  font-size: 12px; color: var(--muted);
+  pointer-events: none; /* 讓點擊穿透到 select */
+}
+.fin-select {
+  appearance: none; -webkit-appearance: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 28px 5px 10px; /* 右側留給 caret */
+  font-size: 11.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.fin-select:hover { border-color: var(--border-strong); }
+.fin-select:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 /* 收支分類卡：此卡的內容高度決定上下兩列的等高基準，收斂多餘間距避免列被撐太高
    （甜甜圈大小不變，只收標題↔甜甜圈、甜甜圈↔圖例的間距）*/
 .fin-breakdown .fin-donut-row { gap: 28px; padding-top: 16px; padding-bottom: 4px; }
@@ -1771,6 +1791,11 @@ input, textarea, select { font: inherit; color: inherit; }
 .fin-legend .sq { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 .fin-legend .nm { color: var(--ink-2); min-width: 0; }
 .fin-legend .pct { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; }
+
+/* 收支分類柱狀圖：容器 padding 對齊圓餅圖版型；x 軸 emoji 放大、長條 hover 提亮 */
+.fin-bars-row { padding-top: 16px; padding-bottom: 4px; }
+.cat-bars .cat-x text { font-size: 11px; fill: var(--ink-2); } /* x 軸分類名稱（比刻度略深） */
+.cat-bar:hover { opacity: .82; } /* 過渡寫在 inline style，避免被 rect 的 transition 覆蓋 */
 
 /* ---- 帳目 / 存入 列表 ---- */
 .txn-list { display: flex; flex-direction: column; gap: 2px; }
