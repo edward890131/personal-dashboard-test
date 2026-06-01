@@ -102,6 +102,14 @@ const fmt12Lower = (h) => {
   return `${h12}:${String(mm).padStart(2, "0")} ${ap}`;
 };
 
+// Todo 顯示用的日期標籤：未排不顯示、今天 / 明天 / M/D（對齊 DatePicker pill 格式）
+const fmtDueLabel = (d) => {
+  if (d == null) return null;
+  if (sameDay(d, TODAY)) return "今天";
+  if (sameDay(d, addDays(TODAY, 1))) return "明天";
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+};
+
 // Calendar 分類 → 首頁 .tag class（沿用 design system 既有 tag 樣式）
 // personal 沒有專屬 tag，沿用 .tag.default
 const TAG_CLASS_BY_CAT = {
@@ -196,6 +204,7 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
   };
 
   const timeStr = fmt12Lower(todo.time);
+  const dueStr = fmtDueLabel(todo.due);
 
   return (
     <div
@@ -271,6 +280,12 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
             </>
           ) : (
             <>
+              {dueStr && (
+                <span className="time">
+                  <i className="ph ph-calendar-blank" style={{ fontSize: 11, marginRight: 2 }}></i>
+                  {dueStr}
+                </span>
+              )}
               {timeStr && (
                 <span className="time">
                   <i className="ph ph-clock" style={{ fontSize: 11, marginRight: 2 }}></i>
@@ -542,10 +557,10 @@ const TimePicker = ({ value, onChange }) => {
   const ref = useRef(null);
   const btnRef = useRef(null);
   const popRef = useRef(null); // portaled 下拉的 ref，供外擊 / 捲動判斷
-  // HOUR_START (7) ~ HOUR_END (23) 每 30 min，共 32 個選項；多一個 null 代表「未排時間」
+  // HOUR_START ~ HOUR_END 每 30 min；多一個 null 代表「未排時間」
   const opts = useMemo(() => {
     const out = [null];
-    for (let h = 7; h < 23; h += 0.5) out.push(h);
+    for (let h = HOUR_START; h < HOUR_END; h += 0.5) out.push(h);
     return out;
   }, []);
 
@@ -1925,8 +1940,9 @@ const EventModal = ({ initial, onSave, onClose, onDelete }) => {
    4. Calendar grid — week / day / month + drag-to-move / resize
    ====================================================================== */
 
-const HOUR_START = 7; // 07:00
-const HOUR_END = 23; // 23:00 (exclusive)
+const HOUR_START = 0; // 00:00（整天顯示，避免清晨 / 深夜事件被裁切）
+const HOUR_END = 24; // 24:00 (exclusive)
+const DEFAULT_SCROLL_HOUR = 8; // 開啟時預設捲到 08:00，需要看清晨 / 深夜再自行上下滑
 const HOUR_PX = 56; // 每小時高度
 const HOUR_COL_W = 56; // 左側時間欄寬
 const SNAP = 0.25; // 拖曳吸附 15 分鐘
@@ -2246,7 +2262,8 @@ const TimeGridBody = ({
   const scrollerRef = useRef(null);
   const daysWrapRef = useRef(null);
   useLayoutEffect(() => {
-    if (scrollerRef.current) scrollerRef.current.scrollTop = (8 - HOUR_START) * HOUR_PX;
+    if (scrollerRef.current)
+      scrollerRef.current.scrollTop = (DEFAULT_SCROLL_HOUR - HOUR_START) * HOUR_PX;
   }, []);
 
   const layoutByEvent = useMemo(() => {
