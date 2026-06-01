@@ -90,36 +90,38 @@ function Sidebar({
         </button>
       </div>
 
-      <div className="nav-section">主要功能</div>
-      {items.map((it) => (
-        <div
-          key={it.id}
-          className={`nav-item ${active === it.id ? "active" : ""}`}
-          onClick={() => {
-            setActive(it.id);
-            setMobileOpen(false);
-          }}
-        >
-          <i className={`ph ${it.icon}`}></i>
-          <span className="lbl">{it.label}</span>
-          {it.badge && <span className="badge">{it.badge}</span>}
-        </div>
-      ))}
+      <div className="sidebar-nav">
+        <div className="nav-section">主要功能</div>
+        {items.map((it) => (
+          <div
+            key={it.id}
+            className={`nav-item ${active === it.id ? "active" : ""}`}
+            onClick={() => {
+              setActive(it.id);
+              setMobileOpen(false);
+            }}
+          >
+            <i className={`ph ${it.icon}`}></i>
+            <span className="lbl">{it.label}</span>
+            {it.badge && <span className="badge">{it.badge}</span>}
+          </div>
+        ))}
 
-      <div className="nav-section">工具</div>
-      {tools.map((it) => (
-        <div
-          key={it.id}
-          className={`nav-item ${active === it.id ? "active" : ""}`}
-          onClick={() => {
-            setActive(it.id);
-            setMobileOpen(false);
-          }}
-        >
-          <i className={`ph ${it.icon}`}></i>
-          <span className="lbl">{it.label}</span>
-        </div>
-      ))}
+        <div className="nav-section">工具</div>
+        {tools.map((it) => (
+          <div
+            key={it.id}
+            className={`nav-item ${active === it.id ? "active" : ""}`}
+            onClick={() => {
+              setActive(it.id);
+              setMobileOpen(false);
+            }}
+          >
+            <i className={`ph ${it.icon}`}></i>
+            <span className="lbl">{it.label}</span>
+          </div>
+        ))}
+      </div>
 
       <div className="sidebar-foot">
         <div className={`theme-toggle ${theme === "dark" ? "dark" : ""}`}>
@@ -636,10 +638,10 @@ function SpendCard({ onOpen }) {
   return (
     <div className="card s-6 spend-card">
       <div className="card-h">
-        <div className="fin-sub-h-l">
-          <div className="card-title">
-            <i className="ph ph-chart-pie-slice"></i>收支分類
-          </div>
+        <div className="card-title">
+          <i className="ph ph-chart-pie-slice"></i>收支分類
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div className="tab-row">
             <button className={!isIncome ? "on" : ""} onClick={() => setCatType("expense")}>
               支出
@@ -648,10 +650,10 @@ function SpendCard({ onOpen }) {
               收入
             </button>
           </div>
+          <button className="card-act" onClick={onOpen}>
+            <i className="ph ph-arrow-up-right"></i>更多
+          </button>
         </div>
-        <button className="card-act" onClick={onOpen}>
-          <i className="ph ph-arrow-up-right"></i>更多
-        </button>
       </div>
       {breakdown.total > 0 ? (
         <div className="fin-donut-row">
@@ -670,10 +672,7 @@ function SpendCard({ onOpen }) {
             {breakdown.items.map((it) => (
               <div className="row" key={it.key}>
                 <span className="sq" style={{ background: finCatVar(it.cat) }}></span>
-                <span className="nm">
-                  <span>{it.cat.emoji}</span>
-                  {it.cat.name}
-                </span>
+                <span className="nm">{it.cat.name}</span>
                 <span className="pct">{Math.round(it.pct)}%</span>
               </div>
             ))}

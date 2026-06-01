@@ -234,11 +234,13 @@
 .modal-body::-webkit-scrollbar,
 .todo-list::-webkit-scrollbar,
 .evt-list::-webkit-scrollbar,
+.sidebar-nav::-webkit-scrollbar,
 .picker-pop::-webkit-scrollbar { width: 10px; height: 10px; }
 .txn-list::-webkit-scrollbar-thumb,
 .modal-body::-webkit-scrollbar-thumb,
 .todo-list::-webkit-scrollbar-thumb,
 .evt-list::-webkit-scrollbar-thumb,
+.sidebar-nav::-webkit-scrollbar-thumb,
 .picker-pop::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 999px;
@@ -248,11 +250,13 @@
 .modal-body::-webkit-scrollbar-thumb:hover,
 .todo-list::-webkit-scrollbar-thumb:hover,
 .evt-list::-webkit-scrollbar-thumb:hover,
+.sidebar-nav::-webkit-scrollbar-thumb:hover,
 .picker-pop::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 .txn-list::-webkit-scrollbar-track,
 .modal-body::-webkit-scrollbar-track,
 .todo-list::-webkit-scrollbar-track,
 .evt-list::-webkit-scrollbar-track,
+.sidebar-nav::-webkit-scrollbar-track,
 .picker-pop::-webkit-scrollbar-track { background: transparent; }
 
 /* 月模式 +N 更多 按鈕 hover */
@@ -286,6 +290,17 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+/* 整頁捲軸：對齊設計系統 scrollbar 樣式（thumb 邊框用頁面底色 --bg 融入）。
+   注意：不可設標準屬性 scrollbar-color/scrollbar-width，否則 Chrome 會改用標準捲軸、
+   忽略下方 ::-webkit-scrollbar 的 pill 樣式，導致捲軸變粗變淡又會 overlay 消失。*/
+html::-webkit-scrollbar { width: 10px; height: 10px; }
+html::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+html::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+html::-webkit-scrollbar-track { background: transparent; }
 body {
   background: var(--bg);
   color: var(--ink);
@@ -331,7 +346,17 @@ input, textarea, select { font: inherit; color: inherit; }
   gap: 4px;
   z-index: 30;
 }
+/* 中段導覽列表：撐滿剩餘空間，高度不夠時自行 scroll，brand 與 foot 不被擠壓 */
+.sidebar-nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .brand {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -428,7 +453,7 @@ input, textarea, select { font: inherit; color: inherit; }
   color: var(--primary-fg);
 }
 .sidebar-foot {
-  margin-top: auto;
+  flex-shrink: 0;
   padding-top: 12px;
   border-top: 1px solid var(--divider);
   display: flex;
@@ -1069,7 +1094,6 @@ input, textarea, select { font: inherit; color: inherit; }
 .spend-card .fin-donut-row .donut-center .l { font-size: 12px; }
 .spend-card .fin-legend { gap: 8px 14px; }
 .spend-card .fin-legend .row { font-size: 12px; }
-.spend-card .fin-legend .nm > span:first-child { font-size: 13px; }
 .spend-card .fin-legend .pct { font-size: 12px; }
 
 /* 整張卡可點進子頁的滑鼠提示 */
@@ -1745,8 +1769,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .fin-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 20px; width: 100%; }
 .fin-legend .row { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; }
 .fin-legend .sq { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-.fin-legend .nm { color: var(--ink-2); display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
-.fin-legend .nm > span:first-child { font-size: 16px; line-height: 1; } /* emoji 略大於文字 */
+.fin-legend .nm { color: var(--ink-2); min-width: 0; }
 .fin-legend .pct { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; }
 
 /* ---- 帳目 / 存入 列表 ---- */
