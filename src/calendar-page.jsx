@@ -737,6 +737,22 @@ const DatePicker = ({ value, onChange }) => {
     };
   }, [open]);
 
+  // 開啟後量「實際高度」再精準定位：toggle 的 popH 只是估值，迷你月曆固定 6 排（約 360）比估值高，
+  // 用實量值才不會在往上翻時蓋住觸發列、或往下展開時被視窗底切掉。useLayoutEffect 於 paint 前修正，不閃動。
+  useLayoutEffect(() => {
+    if (!open || !popRef.current || !btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    const popH = popRef.current.offsetHeight;
+    const popW = popRef.current.offsetWidth;
+    const m = 8; // 與視窗邊界的留白
+    // 下方放不下、且上方放得下才往上翻
+    const flipUp = r.bottom + popH + m > window.innerHeight && r.top - popH - m > 0;
+    let top = flipUp ? r.top - popH - 4 : r.bottom + 4;
+    top = Math.max(m, Math.min(top, window.innerHeight - popH - m)); // 垂直夾在視窗內
+    const left = Math.max(m, Math.min(r.left, window.innerWidth - popW - m));
+    setCoords((c) => (c && c.top === top && c.left === left ? c : { top, left }));
+  }, [open]);
+
   // pill 顯示：未排 / 今天 / 明天 / M/D
   const display =
     value == null
@@ -752,7 +768,7 @@ const DatePicker = ({ value, onChange }) => {
     ev.stopPropagation();
     if (!open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
-      const popH = 300; // 預估高度，用來決定往上或往下展開
+      const popH = 360; // 初步估高（首幀用，掛載後由 useLayoutEffect 以實際 offsetHeight 修正）
       const flipUp = r.bottom + popH + 8 > window.innerHeight;
       const left = Math.min(r.left, window.innerWidth - POP_W - 8);
       setCoords({

@@ -2,7 +2,14 @@
 <html lang="zh-Hant" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- ⚠️ maximum-scale=1, user-scalable=no：用來擋 iOS Safari 聚焦小於 16px 的 input 時自動放大頁面。
+         副作用：會一併停用整個 App 的雙指手動縮放（pinch-to-zoom），對可及性有影響。
+         若日後遇到「無法手動縮放 / 無障礙」相關問題，從這裡找——
+         替代方案是移除這兩個參數，改在手機斷點把表單 input 字級設 16px（見 styles.css .fin-input）。 -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+    />
     <title>Dayboard · 個人生活儀表板</title>
 
     <!-- 字型：保留原本 CDN 載入方式 -->

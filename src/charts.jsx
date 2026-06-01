@@ -451,7 +451,7 @@ function CategoryBars({ data, height = 300, formatValue = (v) => v }) {
   const padL = 40; // 左側留給 y 軸金額刻度
   const padR = 8;
   const padT = 14;
-  const padB = 30; // 底部留給 x 軸 emoji
+  const padB = 26; // 底部留給 x 軸分類名稱 + 柱子到文字的間距（文字本身貼近 svg 底，見 label y）
   const innerW = Math.max(40, w - padL - padR);
   const innerH = H - padT - padB;
   const rawMax = Math.max(...data.map((d) => d.value), 1);
@@ -488,7 +488,7 @@ function CategoryBars({ data, height = 300, formatValue = (v) => v }) {
             const band = innerW / data.length;
             const x = padL + band * i + band / 2;
             return (
-              <text key={i} x={x} y={H - 8} textAnchor="middle">
+              <text key={i} x={x} y={H - 3} textAnchor="middle">
                 {d.name}
               </text>
             );

@@ -211,7 +211,7 @@ function FinanceBreakdownCard() {
                 value: it.value,
                 color: finCatVar(it.cat),
               }))}
-              height={300}
+              height={330}
               formatValue={(v) => `$ ${fmtMoney(v)}`}
             />
           </div>
@@ -730,7 +730,7 @@ function SavingGoalSection() {
         <div className="save-panel">
           <div className="save-top">
             <span className="save-target">
-              目標 <b>{fmtMoney(prog.target)}</b>
+              已存入 <b>{fmtMoney(prog.saved)}</b> / {fmtMoney(prog.target)}
             </span>
             <span className="save-pct">{Math.round(prog.pct)}%</span>
           </div>
