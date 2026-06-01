@@ -1,18 +1,18 @@
 // finance-store.jsx — 理財資料的單一 store
-// 三組資料（帳目 transactions / 存入 deposits / 目標 goal）集中於此，以 localStorage 持久化。
+// 三組資料（帳目 transactions / 存入 deposits / 目標 goal）集中於此。
 // 衍生數值（淨餘、佔比、達成率、趨勢）一律用下方純函式即時計算，不另存（對齊 PRD 6.4 / 第 10 節）。
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+//
+// ⚠️ 不使用 localStorage：每次載入都從下方 seedData() 重建，永遠對齊「當月」、永不遺失。
+// seedData() 的日期全動態相對 new Date()，故開啟的當下就是當月資料；無快取可清可壞。
+// 代價：畫面上的新增/編輯/刪除只存在於當前 session，重整即還原成 seed（刻意的 demo 行為，
+// 與 todo-calendar-store 一致）。要改資料改 seedData() 即可。
+import { createContext, useContext, useState, useCallback } from "react";
 import {
   getCategory,
   OTHER_EXPENSE,
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
 } from "./finance-categories.js";
-
-// v3：升版讓既有瀏覽器的舊存檔失效，強制重跑下方 seedData()（六月假資料）。
-// 規則：只要動到 seedData() 內容就要 bump 一次 key，否則開過頁面的瀏覽器不會生效。
-// 之後接資料庫後可移除這套 localStorage 機制。
-const LS_KEY = "dayboard-finance-v3";
 
 /* ============================ 小工具 ============================ */
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -130,17 +130,6 @@ function seedData() {
     deposits: sortByDateDesc(dep),
     goal: { year: Y, targetAmount: 360000, updatedAt: nowISO() },
   };
-}
-
-/* ============================ 持久化 ============================ */
-function load() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    /* 解析失敗就用 seed */
-  }
-  return null;
 }
 
 /* ============================ 衍生計算（純函式，不依賴 store） ============================ */
@@ -315,15 +304,9 @@ export function savingProgress(deposits, goal) {
 const FinanceCtx = createContext(null);
 
 export function FinanceProvider({ children }) {
-  const [state, setState] = useState(() => load() || seedData());
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify(state));
-    } catch {
-      /* localStorage 滿了就略過，不影響使用 */
-    }
-  }, [state]);
+  // 直接以 code 內的 seedData() 當初始狀態，不讀寫 localStorage。
+  // 模組載入時 seedData() 取真實當月，故資料永遠對齊「本月」。
+  const [state, setState] = useState(seedData);
 
   const addTransaction = useCallback((data) => {
     setState((s) => ({ ...s, transactions: sortByDateDesc([mkTxn(data), ...s.transactions]) }));

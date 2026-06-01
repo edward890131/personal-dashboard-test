@@ -1,15 +1,14 @@
 // todo-calendar-store.jsx — 待辦 + 行事曆的單一資料源（SoT）
 // 首頁「今日待辦」「行事曆」牌卡與 /todo 待辦行事曆頁面共用同一份 todos / events，
-// 任一處修改即時同步。仿 finance-store.jsx：Context + localStorage 持久化。
+// 任一處修改即時同步。Context 持有狀態，資料直接來自下方 code 內的 SEED。
+//
+// ⚠️ 不使用 localStorage：每次載入都從 code 的 SEED 重建，永遠對齊「當週」、永不遺失。
+// 代價：畫面上的勾選 / 編輯只存在於當前 session，重整即還原成 SEED（這是刻意的 demo 行為）。
+// 真正的資料定義就在 SEED_TODOS / SEED_EVENTS——要改資料改那裡即可，無快取可清。
 //
 // 「今天」由 export 的 TODAY 統一定義（真實今天的本地 00:00，與 Hero 顯示一致）；
-// 卡片 / 分組要 filter「今天」「本週」時務必用這裡的 TODAY，seed 也依它對齊當週。
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-
-// v1：改 SEED 假資料時要 bump 這個 key，否則開過頁面的瀏覽器讀舊存檔不會生效
-// （規則同 finance-store）。之後接資料庫可移除這套 localStorage 機制。
-// v3：補充六月第一週的 events / todos 假資料；bump 讓舊存檔重新 seed。
-const LS_KEY = "dayboard-todocal-v3";
+// 卡片 / 分組要 filter「今天」「本週」時務必用這裡的 TODAY，SEED 也依它對齊當週。
+import { createContext, useContext, useState, useRef, useEffect } from "react";
 
 /* ============================ 日期工具 ============================ */
 const addDays = (d, n) => {
@@ -401,46 +400,14 @@ const SEED_TODOS = [
   t({ title: "回老家探望爸媽", cat: "life", due: null }),
 ];
 
-/* ============================ 持久化（含 Date 還原） ============================ */
-// events.date 與 todos.due 是 Date 物件，JSON.stringify 會轉成字串，load 時要還原回 Date，
-// 否則 sameDay() 之類呼叫 .getFullYear() 會炸。
-function revive(state) {
-  return {
-    todos: (state.todos || []).map((td) => ({
-      ...td,
-      due: td.due ? new Date(td.due) : null,
-    })),
-    events: (state.events || []).map((ev) => ({
-      ...ev,
-      date: new Date(ev.date),
-    })),
-  };
-}
-function load() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) return revive(JSON.parse(raw));
-  } catch {
-    /* 解析失敗就用 seed */
-  }
-  return null;
-}
-
 /* ============================ Provider ============================ */
+// 直接以 code 內的 SEED 當初始狀態，不讀寫 localStorage。
+// 模組載入時 TODAY / WEEK_START 取真實今天，故 SEED 永遠對齊「當週」。
 const TodoCalCtx = createContext(null);
 
 export function TodoCalendarProvider({ children }) {
-  const initial = load();
-  const [todos, setTodos] = useState(initial?.todos ?? SEED_TODOS);
-  const [events, setEvents] = useState(initial?.events ?? SEED_EVENTS);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify({ todos, events }));
-    } catch {
-      /* localStorage 滿了就略過，不影響使用 */
-    }
-  }, [todos, events]);
+  const [todos, setTodos] = useState(SEED_TODOS);
+  const [events, setEvents] = useState(SEED_EVENTS);
 
   const value = { todos, setTodos, events, setEvents };
   return <TodoCalCtx.Provider value={value}>{children}</TodoCalCtx.Provider>;
