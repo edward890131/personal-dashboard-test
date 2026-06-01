@@ -9,7 +9,10 @@ import {
   INCOME_CATEGORIES,
 } from "./finance-categories.js";
 
-const LS_KEY = "dayboard-finance-v1";
+// v3：升版讓既有瀏覽器的舊存檔失效，強制重跑下方 seedData()（六月假資料）。
+// 規則：只要動到 seedData() 內容就要 bump 一次 key，否則開過頁面的瀏覽器不會生效。
+// 之後接資料庫後可移除這套 localStorage 機制。
+const LS_KEY = "dayboard-finance-v3";
 
 /* ============================ 小工具 ============================ */
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -80,7 +83,8 @@ function seedData() {
   ];
   for (let k = 0; k < 6; k++) {
     addTx(
-      k === 0 ? "五月薪資" : "月薪",
+      // 依該筆實際落點的月份動態命名，避免寫死月份名與資料月份對不上
+      `${new Date(Y, M - k, 1).getMonth() + 1} 月薪資`,
       "income",
       "salary",
       k === 0 ? 68000 : 64000 + (5 - k) * 800,
