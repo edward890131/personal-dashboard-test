@@ -181,10 +181,7 @@ function FinanceBreakdownCard() {
             {breakdown.items.map((it) => (
               <div className="row" key={it.key}>
                 <span className="sq" style={{ background: finCatVar(it.cat) }}></span>
-                <span className="nm">
-                  <span>{it.cat.emoji}</span>
-                  {it.cat.name}
-                </span>
+                <span className="nm">{it.cat.name}</span>
                 <span className="pct">{Math.round(it.pct)}%</span>
               </div>
             ))}
