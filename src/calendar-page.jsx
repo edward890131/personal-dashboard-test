@@ -2,12 +2,13 @@
 // 合併自 claude design 下載檔（calendar-data / calendar-todo / calendar-popovers / calendar-grid / calendar-app）
 // 原始檔保留在 ~/Downloads/todo&calendar/ 供參考
 import { useState, useEffect, useMemo, useRef, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
+// 待辦 / 行事曆資料改由共用 store 提供（首頁牌卡與本頁同源）；TODAY 固定錨點也由 store 統一
+import { TODAY, useTodoCalendar, useLingeringDone } from "./todo-calendar-store.jsx";
 
 /* ======================================================================
-   1. Data layer — 分類、日期工具、SEED data
+   1. Data layer — 分類、日期工具（SEED data 已移至 todo-calendar-store.jsx）
    ====================================================================== */
-
-const TODAY = new Date(2026, 4, 13); // 2026-05-13（Wed）— 與 Dayboard hero 對齊
 
 // 分類：bg/ink/dot/border 都引用 CSS var，會跟 theme 自動切換（定義在 styles.css）
 const CATEGORIES = [
@@ -121,210 +122,6 @@ const TAG_COLOR_BY_CAT = {
   personal: { bg: "var(--surface-hover)", ink: "var(--muted)" },
 };
 
-// Seed events
-const WEEK_START = startOfWeek(TODAY);
-const D = (n) => addDays(WEEK_START, n);
-let _eid = 1;
-const e = (o) => ({ id: "e" + _eid++, reminder: 10, ...o });
-const SEED_EVENTS = [
-  // Mon
-  e({
-    title: "Weekly Standup",
-    date: D(0),
-    start: 9.5,
-    end: 10,
-    cat: "work",
-    location: "Zoom · #design-sync",
-    notes: "回顧上週 OKR、討論 H1 設計目標。",
-  }),
-  e({
-    title: "游泳訓練",
-    date: D(0),
-    start: 19,
-    end: 20.5,
-    cat: "health",
-    location: "青年公園游泳池",
-    notes: "主項 1km + 踢腿 400m。",
-  }),
-  // Tue
-  e({
-    title: "1:1 with Lina",
-    date: D(1),
-    start: 11,
-    end: 11.5,
-    cat: "work",
-    location: "Zoom · 30 mins",
-    notes: "Q2 個人發展計畫對焦。",
-  }),
-  e({
-    title: "英文家教",
-    date: D(1),
-    start: 20,
-    end: 21,
-    cat: "study",
-    location: "Cambly",
-    notes: "主題：design portfolio review。",
-  }),
-  e({
-    title: "午餐 with Mark",
-    date: D(1),
-    start: 12.5,
-    end: 13.5,
-    cat: "life",
-    location: "信義區 · 八兵衛",
-    notes: "討論側專案合作。",
-  }),
-  // Wed (TODAY)
-  e({
-    title: "Design Review — Onboarding",
-    date: D(2),
-    start: 14,
-    end: 15.5,
-    cat: "work",
-    location: "Figma · 5 stakeholders",
-    notes: "聚焦 step 2 的空狀態與微互動。",
-  }),
-  e({
-    title: "皮膚科回診",
-    date: D(2),
-    start: 16.5,
-    end: 17.5,
-    cat: "health",
-    location: "長庚醫院 · 林醫師",
-    notes: "帶健保卡與上次處方。",
-  }),
-  e({
-    title: "晚餐 with 阿哲",
-    date: D(2),
-    start: 19,
-    end: 21,
-    cat: "life",
-    location: "永和 · 樂麵屋",
-    notes: "生日宴。",
-  }),
-  e({
-    title: "便利商店領貨",
-    date: D(2),
-    start: 21.5,
-    end: 22,
-    cat: "personal",
-    location: "永騰門市",
-    notes: "Shopee 包裹 ×2。",
-  }),
-  // Thu
-  e({
-    title: "Sprint Planning",
-    date: D(3),
-    start: 10,
-    end: 11.5,
-    cat: "work",
-    location: "Linear + Zoom",
-    notes: "排定 sprint 27 任務。",
-  }),
-  e({
-    title: "瑜珈課",
-    date: D(3),
-    start: 18.5,
-    end: 20,
-    cat: "health",
-    location: "Pure Yoga · 信義",
-    notes: "Vinyasa Lv.2。",
-  }),
-  e({
-    title: "讀書會：Shape Up",
-    date: D(3),
-    start: 21,
-    end: 22.5,
-    cat: "study",
-    location: "Discord · #book-club",
-    notes: "Ch.5–6 心得交換。",
-  }),
-  // Fri
-  e({
-    title: "Portfolio 拍攝",
-    date: D(4),
-    start: 11,
-    end: 13,
-    cat: "work",
-    location: "中山區 · 攝影棚",
-    notes: "帶兩套換洗。",
-  }),
-  e({
-    title: "電影夜",
-    date: D(4),
-    start: 20,
-    end: 22.5,
-    cat: "life",
-    location: "威秀 · IMAX",
-    notes: "Dune 3 首映。",
-  }),
-  // Sat
-  e({
-    title: "爬山 — 七星山",
-    date: D(5),
-    start: 7,
-    end: 12,
-    cat: "health",
-    location: "陽明山 · 苗圃登山口",
-    notes: "帶 1.5L 水 + 行動電源。",
-  }),
-  e({
-    title: "家庭聚餐",
-    date: D(5),
-    start: 18,
-    end: 20,
-    cat: "life",
-    location: "大稻埕 · 永樂台菜",
-    notes: "預訂 8 人桌。",
-  }),
-  // Sun
-  e({
-    title: "週計畫 + 整理 inbox",
-    date: D(6),
-    start: 10,
-    end: 11,
-    cat: "personal",
-    location: "家裡 · 書房",
-    notes: "清空 inbox、排下週重點。",
-  }),
-  e({
-    title: "Side project — landing",
-    date: D(6),
-    start: 14,
-    end: 17,
-    cat: "study",
-    location: "咖啡廳 · Goodman",
-    notes: "Hero 區 + pricing 區 first pass。",
-  }),
-];
-
-// Seed todos
-let _tid = 1;
-const t = (o) => ({ id: "t" + _tid++, done: false, ...o });
-const SEED_TODOS = [
-  // Today
-  t({ title: "寫週報草稿", cat: "work", due: D(2), time: 9, done: true }),
-  t({ title: "回信給設計團隊", cat: "work", due: D(2), time: 10 }),
-  t({ title: "完成 Onboarding step-2 mock", cat: "work", due: D(2), time: 14 }),
-  t({ title: "量血壓 + 記錄", cat: "health", due: D(2), time: 8, done: true }),
-  t({ title: "訂下週機票", cat: "life", due: D(2), time: 21 }),
-  t({ title: "看 Figma 更新筆記", cat: "study", due: D(2), time: 22 }),
-  // This week
-  t({ title: "提交報帳單據", cat: "work", due: D(3), time: 11 }),
-  t({ title: "更新 portfolio 內頁", cat: "work", due: D(4), time: 16 }),
-  t({ title: "預約牙醫洗牙", cat: "health", due: D(5), time: 10 }),
-  t({ title: "繳信用卡 5 月帳單", cat: "personal", due: D(4), time: 20 }),
-  t({ title: "幫媽媽訂母親節蛋糕", cat: "life", due: D(6), time: 15 }),
-  // This month
-  t({ title: "H1 OKR 自評", cat: "work", due: addDays(WEEK_START, 12), time: 17 }),
-  t({ title: "更新履歷 PDF", cat: "work", due: addDays(WEEK_START, 14), time: 19 }),
-  t({ title: "報名 7 月半馬", cat: "health", due: addDays(WEEK_START, 18), time: 21 }),
-  // Unscheduled（無 due 就不設 time）
-  t({ title: "研究下半年旅遊路線", cat: "life", due: null }),
-  t({ title: "整理書櫃、捐二手書", cat: "personal", due: null }),
-  t({ title: "看完《Shape Up》", cat: "study", due: null }),
-];
-
 /* ======================================================================
    2. Todo column — 左側待辦欄
    ====================================================================== */
@@ -335,23 +132,24 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
   const [draftTitle, setDraftTitle] = useState(todo.title);
   const [draftCat, setDraftCat] = useState(todo.cat);
   const [draftTime, setDraftTime] = useState(todo.time);
+  const [draftDue, setDraftDue] = useState(todo.due); // due 日期（Date 或 null）
   const cat = CAT_BY_ID[todo.cat];
   const tagClass = TAG_CLASS_BY_CAT[todo.cat] || "default";
   const inputRef = useRef(null);
   const rowRef = useRef(null);
   // 用 ref 追蹤 draft 值，避免 outside-click handler 拿到舊 closure
-  const draftRef = useRef({ title: todo.title, cat: todo.cat, time: todo.time });
+  const draftRef = useRef({ title: todo.title, cat: todo.cat, time: todo.time, due: todo.due });
 
   useEffect(() => {
-    draftRef.current = { title: draftTitle, cat: draftCat, time: draftTime };
-  }, [draftTitle, draftCat, draftTime]);
+    draftRef.current = { title: draftTitle, cat: draftCat, time: draftTime, due: draftDue };
+  }, [draftTitle, draftCat, draftTime, draftDue]);
 
   useEffect(() => {
     if (editing) inputRef.current?.focus();
   }, [editing]);
 
   const commit = () => {
-    const { title, cat: c, time } = draftRef.current;
+    const { title, cat: c, time, due } = draftRef.current;
     const v = title.trim();
     if (!v) {
       // 標題清空 → 取消編輯，不變更
@@ -359,8 +157,11 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
       setEditing(false);
       return;
     }
-    if (v !== todo.title || c !== todo.cat || time !== todo.time) {
-      onEdit({ ...todo, title: v, cat: c, time });
+    // due 是 Date / null，需逐一比對（不能用 !== 比物件）
+    const dueChanged =
+      (!due && todo.due) || (due && !todo.due) || (due && todo.due && !sameDay(due, todo.due));
+    if (v !== todo.title || c !== todo.cat || time !== todo.time || dueChanged) {
+      onEdit({ ...todo, title: v, cat: c, time, due });
     }
     setEditing(false);
   };
@@ -369,6 +170,7 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
     setDraftTitle(todo.title);
     setDraftCat(todo.cat);
     setDraftTime(todo.time);
+    setDraftDue(todo.due);
     setEditing(false);
   };
 
@@ -376,9 +178,9 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
   useEffect(() => {
     if (!editing) return;
     const onDown = (ev) => {
-      // 在 row 內或 picker popup 內（picker popup 是 fixed 在 body）都不算外擊
       if (rowRef.current && rowRef.current.contains(ev.target)) return;
-      // CatPicker / TimePicker popup 透過 absolute 渲染在 row 內，會被 rowRef 包進去
+      // CatPicker / TimePicker 下拉 portal 到 body、不在 row 內，要靠 data 標記判斷，否則點 picker 會誤觸 commit
+      if (ev.target.closest?.("[data-picker-pop]")) return;
       commit();
     };
     document.addEventListener("mousedown", onDown);
@@ -389,6 +191,7 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
     setDraftTitle(todo.title);
     setDraftCat(todo.cat);
     setDraftTime(todo.time);
+    setDraftDue(todo.due);
     setEditing(true);
   };
 
@@ -455,8 +258,16 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
         <div className="meta">
           {editing ? (
             <>
+              {/* 順序：類別 → 日期 →（有日期才出現）時間 */}
               <CatPicker value={draftCat} onChange={setDraftCat} />
-              <TimePicker value={draftTime} onChange={setDraftTime} />
+              <DatePicker
+                value={draftDue}
+                onChange={(d) => {
+                  setDraftDue(d);
+                  if (!d) setDraftTime(null); // 取消日期同時清掉時間
+                }}
+              />
+              {draftDue != null && <TimePicker value={draftTime} onChange={setDraftTime} />}
             </>
           ) : (
             <>
@@ -531,12 +342,16 @@ export const TodoRow = ({ todo, onToggle, onEdit, onDelete }) => {
   );
 };
 
-const TodoGroup = ({ title, count, children, defaultOpen = true }) => {
-  const [open, setOpen] = useState(defaultOpen);
+const TodoGroup = ({ title, count, children, defaultOpen = true, open: openProp, onToggle }) => {
+  // 受控（父層傳 open/onToggle，供「全部展開/收合」）或非受控（自管 state）
+  const [openState, setOpenState] = useState(defaultOpen);
+  const controlled = openProp !== undefined;
+  const open = controlled ? openProp : openState;
+  const toggle = () => (controlled ? onToggle?.() : setOpenState((o) => !o));
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={toggle}
         style={{
           display: "flex",
           alignItems: "center",
@@ -578,6 +393,7 @@ const CatPicker = ({ value, onChange }) => {
   const [coords, setCoords] = useState(null);
   const ref = useRef(null);
   const btnRef = useRef(null);
+  const popRef = useRef(null); // portaled 下拉的 ref，供外擊 / 捲動判斷
   const cur = CAT_BY_ID[value];
   const curColor = TAG_COLOR_BY_CAT[value];
 
@@ -585,22 +401,28 @@ const CatPicker = ({ value, onChange }) => {
     if (!open) return;
     const onDown = (ev) => {
       if (ref.current && ref.current.contains(ev.target)) return;
+      // 下拉 portal 到 body、不在 ref 內，要另外判斷，否則點選項會被當外擊而關閉
+      if (popRef.current && popRef.current.contains(ev.target)) return;
       setOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  // 開啟時：吃到外層 overflow:auto 會裁掉 absolute 子層，所以改用 fixed + viewport 座標
-  // 滾動 / resize 直接關閉，避免 fixed dropdown 跟著 scroll 飄走
+  // 下拉用 fixed + viewport 座標（避免被外層 overflow 裁切、被卡片 hover transform 影響定位）。
+  // 外層捲動 / resize 時關閉避免飄走，但「下拉自身內部捲動」不關閉。
   useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
-    window.addEventListener("scroll", close, true);
-    window.addEventListener("resize", close);
+    const onScroll = (ev) => {
+      if (popRef.current && popRef.current.contains(ev.target)) return;
+      setOpen(false);
+    };
+    const onResize = () => setOpen(false);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
     return () => {
-      window.removeEventListener("scroll", close, true);
-      window.removeEventListener("resize", close);
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
     };
   }, [open]);
 
@@ -644,66 +466,71 @@ const CatPicker = ({ value, onChange }) => {
           style={{ fontSize: 10, marginLeft: 1, color: curColor.ink, opacity: 0.7 }}
         ></i>
       </button>
-      {open && coords && (
-        <div
-          style={{
-            position: "fixed",
-            top: coords.top,
-            left: coords.left,
-            zIndex: 1000,
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 7,
-            boxShadow: "var(--shadow-popover)",
-            padding: 4,
-            minWidth: 110,
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
-        >
-          {CATEGORIES.map((c) => {
-            const color = TAG_COLOR_BY_CAT[c.id];
-            return (
-              <button
-                key={c.id}
-                type="button"
-                onMouseDown={(ev) => ev.preventDefault()}
-                onClick={(ev) => {
-                  ev.stopPropagation();
-                  onChange(c.id);
-                  setOpen(false);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "6px 8px",
-                  border: 0,
-                  background: c.id === value ? "var(--surface-hover)" : "transparent",
-                  color: "var(--ink)",
-                  borderRadius: 5,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  font: "500 12px/1 var(--font-sans)",
-                }}
-              >
-                {/* dot 用首頁 tag 對應色 (ink)，跟按鈕色一致 */}
-                <span
-                  style={{ width: 8, height: 8, borderRadius: 999, background: color.ink }}
-                ></span>
-                {c.label}
-                {c.id === value && (
-                  <i
-                    className="ph ph-check"
-                    style={{ fontSize: 12, marginLeft: "auto", color: "var(--primary)" }}
-                  ></i>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {open &&
+        coords &&
+        createPortal(
+          <div
+            ref={popRef}
+            data-picker-pop=""
+            style={{
+              position: "fixed",
+              top: coords.top,
+              left: coords.left,
+              zIndex: 1000,
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 7,
+              boxShadow: "var(--shadow-popover)",
+              padding: 4,
+              minWidth: 110,
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+            }}
+          >
+            {CATEGORIES.map((c) => {
+              const color = TAG_COLOR_BY_CAT[c.id];
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onMouseDown={(ev) => ev.preventDefault()}
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    onChange(c.id);
+                    setOpen(false);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "6px 8px",
+                    border: 0,
+                    background: c.id === value ? "var(--surface-hover)" : "transparent",
+                    color: "var(--ink)",
+                    borderRadius: 5,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    font: "500 12px/1 var(--font-sans)",
+                  }}
+                >
+                  {/* dot 用首頁 tag 對應色 (ink)，跟按鈕色一致 */}
+                  <span
+                    style={{ width: 8, height: 8, borderRadius: 999, background: color.ink }}
+                  ></span>
+                  {c.label}
+                  {c.id === value && (
+                    <i
+                      className="ph ph-check"
+                      style={{ fontSize: 12, marginLeft: "auto", color: "var(--primary)" }}
+                    ></i>
+                  )}
+                </button>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };
@@ -714,6 +541,7 @@ const TimePicker = ({ value, onChange }) => {
   const [coords, setCoords] = useState(null);
   const ref = useRef(null);
   const btnRef = useRef(null);
+  const popRef = useRef(null); // portaled 下拉的 ref，供外擊 / 捲動判斷
   // HOUR_START (7) ~ HOUR_END (23) 每 30 min，共 32 個選項；多一個 null 代表「未排時間」
   const opts = useMemo(() => {
     const out = [null];
@@ -725,21 +553,27 @@ const TimePicker = ({ value, onChange }) => {
     if (!open) return;
     const onDown = (ev) => {
       if (ref.current && ref.current.contains(ev.target)) return;
+      // 下拉 portal 到 body、不在 ref 內，要另外判斷，否則點選項會被當外擊而關閉
+      if (popRef.current && popRef.current.contains(ev.target)) return;
       setOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  // 滾動 / resize 時關閉，避免 fixed dropdown 跟著畫面飄走
+  // 外層捲動 / resize 時關閉避免飄走，但「下拉自身內部捲動」不關閉（否則一滑就消失）
   useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
-    window.addEventListener("scroll", close, true);
-    window.addEventListener("resize", close);
+    const onScroll = (ev) => {
+      if (popRef.current && popRef.current.contains(ev.target)) return;
+      setOpen(false);
+    };
+    const onResize = () => setOpen(false);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
     return () => {
-      window.removeEventListener("scroll", close, true);
-      window.removeEventListener("resize", close);
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
     };
   }, [open]);
 
@@ -784,82 +618,352 @@ const TimePicker = ({ value, onChange }) => {
         {display}
         <i className="ph ph-caret-down" style={{ fontSize: 10, marginLeft: 1, opacity: 0.7 }}></i>
       </button>
-      {open && coords && (
-        <div
-          style={{
-            position: "fixed",
-            top: coords.top,
-            left: coords.left,
-            zIndex: 1000,
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 7,
-            boxShadow: "var(--shadow-popover)",
-            padding: 4,
-            minWidth: 120,
-            maxHeight: 240,
-            overflow: "auto",
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
-        >
-          {opts.map((h, i) => {
-            const selected = h === value;
-            return (
-              <button
-                key={i}
-                type="button"
-                onMouseDown={(ev) => ev.preventDefault()}
-                onClick={(ev) => {
-                  ev.stopPropagation();
-                  onChange(h);
-                  setOpen(false);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "6px 8px",
-                  border: 0,
-                  background: selected ? "var(--surface-hover)" : "transparent",
-                  color: h == null ? "var(--muted)" : "var(--ink)",
-                  borderRadius: 5,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  font: "500 12px/1 var(--font-sans)",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {h == null ? "未排時間" : fmt12Lower(h)}
-                {selected && (
-                  <i
-                    className="ph ph-check"
-                    style={{ fontSize: 12, marginLeft: "auto", color: "var(--primary)" }}
-                  ></i>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {open &&
+        coords &&
+        createPortal(
+          <div
+            ref={popRef}
+            className="picker-pop"
+            data-picker-pop=""
+            style={{
+              position: "fixed",
+              top: coords.top,
+              left: coords.left,
+              zIndex: 1000,
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 7,
+              boxShadow: "var(--shadow-popover)",
+              padding: 4,
+              minWidth: 120,
+              maxHeight: 240,
+              overflow: "auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+            }}
+          >
+            {opts.map((h, i) => {
+              const selected = h === value;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onMouseDown={(ev) => ev.preventDefault()}
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    onChange(h);
+                    setOpen(false);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "6px 8px",
+                    border: 0,
+                    background: selected ? "var(--surface-hover)" : "transparent",
+                    color: h == null ? "var(--muted)" : "var(--ink)",
+                    borderRadius: 5,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    font: "500 12px/1 var(--font-sans)",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {h == null ? "未排時間" : fmt12Lower(h)}
+                  {selected && (
+                    <i
+                      className="ph ph-check"
+                      style={{ fontSize: 12, marginLeft: "auto", color: "var(--primary)" }}
+                    ></i>
+                  )}
+                </button>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };
 
-const TodoInlineAdd = ({ onAdd, defaultCat = "work", defaultTime = 9 }) => {
+// 日期選擇器 — 迷你月曆（仿 CatPicker / TimePicker：portal + fixed 定位），上方附今天 / 明天 / 未排快捷
+const DatePicker = ({ value, onChange }) => {
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState(null);
+  const [viewMonth, setViewMonth] = useState(() => startOfMonth(value || TODAY));
+  const ref = useRef(null);
+  const btnRef = useRef(null);
+  const popRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (ev) => {
+      if (ref.current && ref.current.contains(ev.target)) return;
+      if (popRef.current && popRef.current.contains(ev.target)) return;
+      setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onScroll = (ev) => {
+      if (popRef.current && popRef.current.contains(ev.target)) return;
+      setOpen(false);
+    };
+    const onResize = () => setOpen(false);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [open]);
+
+  // pill 顯示：未排 / 今天 / 明天 / M/D
+  const display =
+    value == null
+      ? "未排"
+      : sameDay(value, TODAY)
+        ? "今天"
+        : sameDay(value, addDays(TODAY, 1))
+          ? "明天"
+          : `${value.getMonth() + 1}/${value.getDate()}`;
+
+  const POP_W = 236;
+  const toggle = (ev) => {
+    ev.stopPropagation();
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const popH = 300; // 預估高度，用來決定往上或往下展開
+      const flipUp = r.bottom + popH + 8 > window.innerHeight;
+      const left = Math.min(r.left, window.innerWidth - POP_W - 8);
+      setCoords({
+        left: Math.max(8, left),
+        top: flipUp ? Math.max(8, r.top - popH - 4) : r.bottom + 4,
+      });
+      setViewMonth(startOfMonth(value || TODAY)); // 每次開啟回到目前日期所在月
+    }
+    setOpen((o) => !o);
+  };
+
+  const pick = (d) => {
+    onChange(d);
+    setOpen(false);
+  };
+
+  // 月曆格：以該月第一天所在週的週一為起點，排 6 週（42 格）
+  const gridStart = startOfWeek(viewMonth);
+  const days = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
+
+  const noPropDown = (e) => e.preventDefault(); // 避免按下時觸發外擊 commit
+  const quickStyle = {
+    flex: 1,
+    padding: "5px 0",
+    border: "1px solid var(--border)",
+    background: "var(--surface-2)",
+    color: "var(--ink-2)",
+    borderRadius: 5,
+    cursor: "pointer",
+    font: "500 11px/1 var(--font-sans)",
+  };
+  const navStyle = {
+    border: 0,
+    background: "transparent",
+    cursor: "pointer",
+    color: "var(--ink-2)",
+    padding: 4,
+    display: "grid",
+    placeItems: "center",
+  };
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={toggle}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 5,
+          height: 22,
+          padding: "0 7px",
+          border: "1px solid var(--border)",
+          background: "var(--surface-2)",
+          color: value == null ? "var(--muted)" : "var(--ink-2)",
+          borderRadius: 4,
+          cursor: "pointer",
+          font: "500 11px/1 var(--font-sans)",
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
+        <i className="ph ph-calendar-blank" style={{ fontSize: 11 }}></i>
+        {display}
+        <i className="ph ph-caret-down" style={{ fontSize: 10, marginLeft: 1, opacity: 0.7 }}></i>
+      </button>
+      {open &&
+        coords &&
+        createPortal(
+          <div
+            ref={popRef}
+            data-picker-pop=""
+            style={{
+              position: "fixed",
+              top: coords.top,
+              left: coords.left,
+              zIndex: 1000,
+              width: POP_W,
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 7,
+              boxShadow: "var(--shadow-popover)",
+              padding: 8,
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+            }}
+          >
+            {/* 快捷 */}
+            <div style={{ display: "flex", gap: 4 }}>
+              <button
+                type="button"
+                onMouseDown={noPropDown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  pick(TODAY);
+                }}
+                style={quickStyle}
+              >
+                今天
+              </button>
+              <button
+                type="button"
+                onMouseDown={noPropDown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  pick(addDays(TODAY, 1));
+                }}
+                style={quickStyle}
+              >
+                明天
+              </button>
+              <button
+                type="button"
+                onMouseDown={noPropDown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  pick(null);
+                }}
+                style={quickStyle}
+              >
+                未排
+              </button>
+            </div>
+            {/* 月份切換 */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <button
+                type="button"
+                onMouseDown={noPropDown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1));
+                }}
+                style={navStyle}
+              >
+                <i className="ph ph-caret-left" style={{ fontSize: 12 }}></i>
+              </button>
+              <span style={{ font: "600 12px/1 var(--font-sans)", color: "var(--ink)" }}>
+                {viewMonth.getFullYear()} 年 {viewMonth.getMonth() + 1} 月
+              </span>
+              <button
+                type="button"
+                onMouseDown={noPropDown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1));
+                }}
+                style={navStyle}
+              >
+                <i className="ph ph-caret-right" style={{ fontSize: 12 }}></i>
+              </button>
+            </div>
+            {/* 星期標頭 */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
+              {WEEK_LABELS_ZH.map((w) => (
+                <span
+                  key={w}
+                  style={{
+                    textAlign: "center",
+                    font: "500 10px/1 var(--font-sans)",
+                    color: "var(--muted)",
+                  }}
+                >
+                  {w}
+                </span>
+              ))}
+            </div>
+            {/* 日期格 */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
+              {days.map((d, i) => {
+                const inMonth = d.getMonth() === viewMonth.getMonth();
+                const isToday = sameDay(d, TODAY);
+                const selected = value && sameDay(d, value);
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onMouseDown={noPropDown}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      pick(d);
+                    }}
+                    style={{
+                      height: 26,
+                      border:
+                        isToday && !selected ? "1px solid var(--primary)" : "1px solid transparent",
+                      background: selected ? "var(--primary)" : "transparent",
+                      color: selected ? "#fff" : "var(--ink)",
+                      opacity: inMonth ? 1 : 0.4,
+                      borderRadius: 5,
+                      cursor: "pointer",
+                      font: "500 11.5px/1 var(--font-sans)",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {d.getDate()}
+                  </button>
+                );
+              })}
+            </div>
+          </div>,
+          document.body,
+        )}
+    </div>
+  );
+};
+
+export const TodoInlineAdd = ({
+  onAdd,
+  defaultCat = "work",
+  defaultTime = 9,
+  defaultDate = null,
+}) => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [cat, setCat] = useState(defaultCat);
   const [time, setTime] = useState(defaultTime);
+  const [date, setDate] = useState(defaultDate); // due 日期（Date 或 null）
   const ref = useRef(null);
   const wrapRef = useRef(null);
-  const stateRef = useRef({ text: "", cat: defaultCat, time: defaultTime });
+  const stateRef = useRef({ text: "", cat: defaultCat, time: defaultTime, date: defaultDate });
 
   // 透過 ref 追蹤最新值，避免 document listener 拿到舊 closure
   useEffect(() => {
-    stateRef.current = { text, cat, time };
-  }, [text, cat, time]);
+    stateRef.current = { text, cat, time, date };
+  }, [text, cat, time, date]);
   useEffect(() => {
     if (open) ref.current?.focus();
   }, [open]);
@@ -869,6 +973,8 @@ const TodoInlineAdd = ({ onAdd, defaultCat = "work", defaultTime = 9 }) => {
     if (!open) return;
     const onDown = (ev) => {
       if (wrapRef.current && wrapRef.current.contains(ev.target)) return;
+      // CatPicker / TimePicker 下拉 portal 到 body、不在 wrap 內，要靠 data 標記判斷，否則點 picker 會誤觸 commit/收合
+      if (ev.target.closest?.("[data-picker-pop]")) return;
       const v = stateRef.current.text.trim();
       if (v) {
         onAdd({
@@ -876,7 +982,7 @@ const TodoInlineAdd = ({ onAdd, defaultCat = "work", defaultTime = 9 }) => {
           cat: stateRef.current.cat,
           time: stateRef.current.time,
           done: false,
-          due: null,
+          due: stateRef.current.date,
         });
       }
       setText("");
@@ -913,7 +1019,7 @@ const TodoInlineAdd = ({ onAdd, defaultCat = "work", defaultTime = 9 }) => {
   const commit = () => {
     const v = text.trim();
     if (v) {
-      onAdd({ title: v, cat, time, done: false, due: null });
+      onAdd({ title: v, cat, time, done: false, due: date });
       setText("");
     }
     setOpen(false);
@@ -934,8 +1040,16 @@ const TodoInlineAdd = ({ onAdd, defaultCat = "work", defaultTime = 9 }) => {
         flexWrap: "wrap",
       }}
     >
+      {/* 順序：類別 → 日期 →（有日期才出現）時間 */}
       <CatPicker value={cat} onChange={setCat} />
-      <TimePicker value={time} onChange={setTime} />
+      <DatePicker
+        value={date}
+        onChange={(d) => {
+          setDate(d);
+          if (!d) setTime(null); // 取消日期同時清掉時間（未排日期不該帶時間）
+        }}
+      />
+      {date != null && <TimePicker value={time} onChange={setTime} />}
       <input
         ref={ref}
         value={text}
@@ -1002,8 +1116,23 @@ const EmptyHint = ({ text }) => (
   </div>
 );
 
+const ACTIVE_GROUPS = ["Unscheduled", "Today", "This week", "This month"];
+
 const TodoColumn = ({ todos, setTodos }) => {
   const [filter, setFilter] = useState("all"); // 'all' or cat.id
+  const [status, setStatus] = useState("active"); // active=進行中, done=已完成（跨日期）
+  const { lingering, begin, cancel } = useLingeringDone(); // 打勾完成的停留→淡出過場
+
+  // 各群組展開狀態（受控），供 header 的「全部展開/收合」一鍵控制；預設全展開
+  const [openGroups, setOpenGroups] = useState(() =>
+    Object.fromEntries([...ACTIVE_GROUPS, "Completed"].map((t) => [t, true])),
+  );
+  const toggleGroup = (title) => setOpenGroups((g) => ({ ...g, [title]: !g[title] }));
+  const setAllGroups = (val) =>
+    setOpenGroups((g) => Object.fromEntries(Object.keys(g).map((t) => [t, val])));
+  // 目前 view 可見的群組是否全部展開（決定按鈕是展開還是收合動作）
+  const visibleGroupTitles = status === "active" ? ACTIVE_GROUPS : ["Completed"];
+  const allExpanded = visibleGroupTitles.every((t) => openGroups[t]);
 
   // 今日完成率
   const todayTodos = todos.filter((t) => t.due && sameDay(t.due, TODAY));
@@ -1016,19 +1145,42 @@ const TodoColumn = ({ todos, setTodos }) => {
   const weekEnd = addDays(weekStart, 7);
   const monthEnd = addDays(weekEnd, 21);
 
-  const inThisWeek = (t) => t.due && t.due >= weekStart && t.due < weekEnd;
+  const isTodayDue = (t) => t.due && sameDay(t.due, TODAY);
+  // This week 不含今天（今天獨立成 Today 群組）
+  const inThisWeek = (t) => t.due && t.due >= weekStart && t.due < weekEnd && !isTodayDue(t);
   const inThisMonth = (t) => t.due && t.due >= weekEnd && t.due < monthEnd;
 
-  const visible = todos.filter(filterMatch);
-  const weekList = visible.filter(inThisWeek);
-  const monthList = visible.filter(inThisMonth);
-  const unscheduledList = visible.filter((t) => !t.due);
+  // 依「日期 → 時間」由近到遠排序（跨多天群組：日子照順序、同日內由早到晚，未排時間墊底）
+  const byDueThenTime = (a, b) => a.due - b.due || (a.time ?? Infinity) - (b.time ?? Infinity);
 
-  const toggle = (todo) =>
-    setTodos((ts) => ts.map((t) => (t.id === todo.id ? { ...t, done: !t.done } : t)));
+  const visible = todos.filter(filterMatch);
+  // 進行中（未完成，剛打勾過場中的也暫留）走原本的日期分組；已完成另收成一份跨日期扁平清單
+  const activeVisible = visible.filter((t) => !t.done || lingering[t.id]);
+  const todayList = activeVisible.filter(isTodayDue).sort(byDueThenTime);
+  const weekList = activeVisible.filter(inThisWeek).sort(byDueThenTime);
+  const monthList = activeVisible.filter(inThisMonth).sort(byDueThenTime);
+  const unscheduledList = activeVisible.filter((t) => !t.due);
+  const doneList = visible.filter((t) => t.done).sort(byDueThenTime);
+
+  const toggle = (todo) => {
+    const willBeDone = !todo.done;
+    setTodos((ts) => ts.map((t) => (t.id === todo.id ? { ...t, done: willBeDone } : t)));
+    // 在「進行中」打勾完成 → 先停留再淡出；取消勾選 → 立刻留在清單
+    if (status === "active") willBeDone ? begin(todo.id) : cancel(todo.id);
+  };
   const edit = (todo) => setTodos((ts) => ts.map((t) => (t.id === todo.id ? todo : t)));
   const remove = (todo) => setTodos((ts) => ts.filter((t) => t.id !== todo.id));
   const add = (todo) => setTodos((ts) => [...ts, { id: "t" + Date.now(), ...todo }]);
+
+  // 列渲染：過場中（fade）的項目淡出，其餘正常
+  const renderRow = (t) => (
+    <div
+      key={t.id}
+      style={{ opacity: lingering[t.id] === "fade" ? 0 : 1, transition: "opacity .4s ease" }}
+    >
+      <TodoRow todo={t} onToggle={toggle} onEdit={edit} onDelete={remove} />
+    </div>
+  );
 
   return (
     <aside
@@ -1084,9 +1236,28 @@ const TodoColumn = ({ todos, setTodos }) => {
             {WEEK_LABELS_ZH[(TODAY.getDay() + 6) % 7]}
           </div>
         </div>
-        <button className="icon-btn" style={{ width: 28, height: 28 }} title="排序">
-          <i className="ph ph-arrows-down-up" style={{ fontSize: 13, color: "var(--ink-2)" }}></i>
-        </button>
+        {/* 狀態切換 + 全部展開/收合 */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="tab-row">
+            <button className={status === "active" ? "on" : ""} onClick={() => setStatus("active")}>
+              進行中
+            </button>
+            <button className={status === "done" ? "on" : ""} onClick={() => setStatus("done")}>
+              已完成
+            </button>
+          </div>
+          <button
+            className="icon-btn"
+            style={{ width: 28, height: 28 }}
+            title={allExpanded ? "全部收合" : "全部展開"}
+            onClick={() => setAllGroups(!allExpanded)}
+          >
+            <i
+              className={`ph ${allExpanded ? "ph-arrows-in-line-vertical" : "ph-arrows-out-line-vertical"}`}
+              style={{ fontSize: 14, color: "var(--ink-2)" }}
+            ></i>
+          </button>
+        </div>
       </div>
 
       {/* 完成率區塊 */}
@@ -1170,27 +1341,62 @@ const TodoColumn = ({ todos, setTodos }) => {
 
       {/* 列表 */}
       <div className="cal-scroll" style={{ flex: 1, overflow: "auto", padding: "4px 12px 16px" }}>
-        <TodoGroup title="This week" count={weekList.length}>
-          {weekList.length === 0 && <EmptyHint text="本週沒有待辦" />}
-          {weekList.map((t) => (
-            <TodoRow key={t.id} todo={t} onToggle={toggle} onEdit={edit} onDelete={remove} />
-          ))}
-          <TodoInlineAdd onAdd={(t) => add({ ...t, due: TODAY })} />
-        </TodoGroup>
-        <TodoGroup title="This month" count={monthList.length}>
-          {monthList.length === 0 && <EmptyHint text="本月沒有更多待辦" />}
-          {monthList.map((t) => (
-            <TodoRow key={t.id} todo={t} onToggle={toggle} onEdit={edit} onDelete={remove} />
-          ))}
-          <TodoInlineAdd onAdd={(t) => add({ ...t, due: addDays(TODAY, 7) })} />
-        </TodoGroup>
-        <TodoGroup title="Unscheduled" count={unscheduledList.length} defaultOpen={false}>
-          {unscheduledList.length === 0 && <EmptyHint text="沒有未排期的待辦" />}
-          {unscheduledList.map((t) => (
-            <TodoRow key={t.id} todo={t} onToggle={toggle} onEdit={edit} onDelete={remove} />
-          ))}
-          <TodoInlineAdd onAdd={(t) => add(t)} defaultTime={null} />
-        </TodoGroup>
+        {status === "active" ? (
+          <>
+            {/* 未排（沒選日期）置頂 */}
+            <TodoGroup
+              title="Unscheduled"
+              count={unscheduledList.length}
+              open={openGroups["Unscheduled"]}
+              onToggle={() => toggleGroup("Unscheduled")}
+            >
+              {unscheduledList.length === 0 && <EmptyHint text="沒有未排期的待辦" />}
+              {unscheduledList.map(renderRow)}
+              <TodoInlineAdd onAdd={add} defaultTime={null} defaultDate={null} />
+            </TodoGroup>
+            <TodoGroup
+              title="Today"
+              count={todayList.length}
+              open={openGroups["Today"]}
+              onToggle={() => toggleGroup("Today")}
+            >
+              {todayList.length === 0 && <EmptyHint text="今天沒有待辦" />}
+              {todayList.map(renderRow)}
+              <TodoInlineAdd onAdd={add} defaultDate={TODAY} />
+            </TodoGroup>
+            <TodoGroup
+              title="This week"
+              count={weekList.length}
+              open={openGroups["This week"]}
+              onToggle={() => toggleGroup("This week")}
+            >
+              {weekList.length === 0 && <EmptyHint text="本週沒有待辦" />}
+              {weekList.map(renderRow)}
+              <TodoInlineAdd onAdd={add} defaultDate={addDays(TODAY, 1)} />
+            </TodoGroup>
+            <TodoGroup
+              title="This month"
+              count={monthList.length}
+              open={openGroups["This month"]}
+              onToggle={() => toggleGroup("This month")}
+            >
+              {monthList.length === 0 && <EmptyHint text="本月沒有更多待辦" />}
+              {monthList.map(renderRow)}
+              <TodoInlineAdd onAdd={add} defaultDate={addDays(TODAY, 7)} />
+            </TodoGroup>
+          </>
+        ) : (
+          // 已完成：跨日期全部完成，扁平清單（依日期 → 時間排序），不提供新增
+          <TodoGroup
+            title="Completed"
+            count={doneList.length}
+            open={openGroups["Completed"]}
+            onToggle={() => toggleGroup("Completed")}
+          >
+            {doneList.length === 0 && <EmptyHint text="還沒有已完成的待辦" />}
+            {doneList.map(renderRow)}
+          </TodoGroup>
+        )}
       </div>
     </aside>
   );
@@ -2700,8 +2906,8 @@ const MonthView = ({ anchor, events, onSlotClick, onHover, onUnhover, onClick, o
    ====================================================================== */
 
 export function CalendarPage({ defaultView = "week", showWeekend = true, eventStyle = "soft" }) {
-  const [todos, setTodos] = useState(SEED_TODOS);
-  const [events, setEvents] = useState(SEED_EVENTS);
+  // 改用共用 store：todos / events 與首頁牌卡同源，任一處修改即時同步、並持久化到 localStorage
+  const { todos, setTodos, events, setEvents } = useTodoCalendar();
   // 初始 view：手機（<640px）強制用 day，week/month 在窄寬度下擠到不能讀
   const [view, setView] = useState(() => {
     if (typeof window !== "undefined" && window.innerWidth < 640) return "day";
