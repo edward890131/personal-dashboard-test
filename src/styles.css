@@ -45,6 +45,8 @@
   --state-disabled-bg: var(--surface-2);
   --state-disabled-border: var(--border);
   --state-disabled-text: var(--muted-2);
+  /* Focus ring (對齊 design-token.md §1.5 color/focus/ring) */
+  --focus-ring: 0 0 0 3px rgba(14, 79, 231, 0.4);
   --shadow-card: 0 1px 0 rgba(15,23,42,0.02);
   --shadow-hover: 0 6px 20px -8px rgba(15,23,42,0.12), 0 2px 4px -2px rgba(15,23,42,0.06);
 
@@ -178,6 +180,8 @@
   --bg-chart-area: rgba(122, 168, 245, 0.2); /* dark ink 20% alpha */
   --bg-chart-area-violet: rgba(200, 181, 250, 0.2); /* violet ink 20% alpha — study 用 */
 
+  /* Focus ring — dark 需更明顯一點的 alpha */
+  --focus-ring: 0 0 0 3px rgba(14, 79, 231, 0.5);
   --shadow-card: 0 1px 0 rgba(255,255,255,0.02);
   --shadow-hover: 0 8px 24px -8px rgba(0,0,0,0.5), 0 2px 4px -2px rgba(0,0,0,0.35);
 
@@ -225,19 +229,31 @@
 }
 .cal-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 .cal-scroll::-webkit-scrollbar-track { background: transparent; }
-/* 帳目總覽 / 儲蓄目標 list、彈窗內容區 捲軸：對齊行事曆 .cal-scroll 樣式（thumb 邊框用 --surface 融入卡片底色）*/
+/* 帳目總覽 / 儲蓄目標 list、彈窗內容區、首頁待辦 / 行事曆 list 捲軸：對齊行事曆 .cal-scroll 樣式（thumb 邊框用 --surface 融入卡片底色）*/
 .txn-list::-webkit-scrollbar,
-.modal-body::-webkit-scrollbar { width: 10px; height: 10px; }
+.modal-body::-webkit-scrollbar,
+.todo-list::-webkit-scrollbar,
+.evt-list::-webkit-scrollbar,
+.picker-pop::-webkit-scrollbar { width: 10px; height: 10px; }
 .txn-list::-webkit-scrollbar-thumb,
-.modal-body::-webkit-scrollbar-thumb {
+.modal-body::-webkit-scrollbar-thumb,
+.todo-list::-webkit-scrollbar-thumb,
+.evt-list::-webkit-scrollbar-thumb,
+.picker-pop::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 999px;
   border: 2px solid var(--surface);
 }
 .txn-list::-webkit-scrollbar-thumb:hover,
-.modal-body::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+.modal-body::-webkit-scrollbar-thumb:hover,
+.todo-list::-webkit-scrollbar-thumb:hover,
+.evt-list::-webkit-scrollbar-thumb:hover,
+.picker-pop::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 .txn-list::-webkit-scrollbar-track,
-.modal-body::-webkit-scrollbar-track { background: transparent; }
+.modal-body::-webkit-scrollbar-track,
+.todo-list::-webkit-scrollbar-track,
+.evt-list::-webkit-scrollbar-track,
+.picker-pop::-webkit-scrollbar-track { background: transparent; }
 
 /* 月模式 +N 更多 按鈕 hover */
 .month-more-btn:hover { background: var(--surface-hover); color: var(--ink-2); }
@@ -515,7 +531,7 @@ input, textarea, select { font: inherit; color: inherit; }
   font-family: var(--ff-mono);
   font-size: 10.5px;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   background: var(--surface-2);
   border: 1px solid var(--border);
   color: var(--muted);
@@ -633,9 +649,8 @@ input, textarea, select { font: inherit; color: inherit; }
 
 /* Primary */
 .btn-primary { background: var(--ink); color: var(--bg); }
-[data-theme="dark"] .btn-primary { background: var(--ink); color: #0A0D12; }
 .btn-primary:hover { transform: translateY(-1px); }
-.btn-primary:focus-visible { outline: 0; box-shadow: 0 0 0 3px rgba(14, 79, 231, 0.4); }
+.btn-primary:focus-visible { outline: 0; box-shadow: var(--focus-ring); }
 .btn-primary:disabled,
 .btn-primary.disabled {
   background: var(--state-disabled-bg);
@@ -653,7 +668,7 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .btn-secondary:hover { background: var(--surface-hover); }
 .btn-secondary:active { background: var(--surface-2); border-color: var(--border-strong); }
-.btn-secondary:focus-visible { outline: 0; border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(14, 79, 231, 0.4); }
+.btn-secondary:focus-visible { outline: 0; border-color: var(--border-strong); box-shadow: var(--focus-ring); }
 .btn-secondary:disabled,
 .btn-secondary.disabled {
   background: var(--state-disabled-bg);
@@ -904,6 +919,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .tag.study   { color: var(--violet);  background: var(--bg-chart-area-violet); }
 .tag.travel  { color: var(--warn);    background: var(--warn-bg); }
 .tag.default { color: var(--muted);   background: var(--surface-hover); border-color: var(--divider); }
+.tag.personal { color: var(--muted);   background: var(--surface-hover); }
 .todo .time { font-variant-numeric: tabular-nums; }
 
 .todo-add {
@@ -970,10 +986,21 @@ input, textarea, select { font: inherit; color: inherit; }
   background: var(--surface);
 }
 .cal-day:hover { border-color: var(--border); }
+/* 選中其他日：primary 外框 + 淡底 + primary 字（外框選取感，權重低於今日的實心藍） */
+.cal-day.selected:not(.today) {
+  border-color: var(--primary);
+  background: var(--primary-pale);
+  color: var(--primary);
+}
+/* 今日：實心藍底白字（權重高） */
 .cal-day.today {
   background: var(--primary);
   border-color: var(--primary);
   color: var(--primary-fg);
+}
+/* 選中今日：實心藍 + 外圈 ring halo（權重最高） */
+.cal-day.today.selected {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary);
 }
 .cal-day .dow { font-size: 10.5px; font-weight: 500; opacity: .7; letter-spacing: 0.04em; }
 .cal-day .dnum { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -1006,7 +1033,19 @@ input, textarea, select { font: inherit; color: inherit; }
 .evt-bar { align-self: stretch; width: 3px; border-radius: 2px; background: var(--primary); flex-shrink: 0; }
 .evt-bar.b2, .evt-bar.positive { background: var(--pos); }
 .evt-bar.b3, .evt-bar.warning  { background: var(--warn); }
+.evt-bar.violet { background: var(--violet); }
+.evt-bar.muted  { background: var(--muted); }
 .evt-body { flex: 1; min-width: 0; }
+/* 行事曆牌卡：整週事件依日期分組的小標 */
+.evt-day {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  letter-spacing: 0.02em; padding: 10px 0 4px;
+}
+.evt-day-today {
+  font-size: 10px; font-weight: 600; color: var(--primary);
+  background: var(--bg-chart-area); border-radius: 999px; padding: 1px 7px;
+}
 .evt-t { font-size: 13px; font-weight: 600; line-height: 1.2; letter-spacing: -0.005em; }
 .evt-s { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 
@@ -1042,7 +1081,7 @@ input, textarea, select { font: inherit; color: inherit; }
   font-size: 12.5px;
   cursor: pointer;
   padding: 3px 4px;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   transition: background .15s;
 }
 .legend-row:hover { background: var(--surface-hover); }

@@ -26,6 +26,7 @@ import { DesignSystemPage } from "./design-system.jsx";
 import { CalendarPage } from "./calendar-page.jsx";
 import { FinancePage } from "./finance-page.jsx";
 import { FinanceProvider } from "./finance-store.jsx";
+import { TodoCalendarProvider } from "./todo-calendar-store.jsx";
 import { ToastProvider, ConfirmProvider } from "./ui.jsx";
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
@@ -89,145 +90,147 @@ function App() {
 
   return (
     <FinanceProvider>
-      <ToastProvider>
-        <ConfirmProvider>
-          <div className={`app ${collapsed ? "is-collapsed" : ""}`}>
-            <Sidebar
-              active={active}
-              setActive={navigate}
-              theme={t.dark ? "dark" : "light"}
-              setTheme={(m) => setTweak("dark", m === "dark")}
-              mobileOpen={mobileOpen}
-              setMobileOpen={setMobileOpen}
-              collapsed={collapsed}
-              setCollapsed={setCollapsed}
-            />
-            <div
-              className={`scrim ${mobileOpen ? "on" : ""}`}
-              onClick={() => setMobileOpen(false)}
-            ></div>
+      <TodoCalendarProvider>
+        <ToastProvider>
+          <ConfirmProvider>
+            <div className={`app ${collapsed ? "is-collapsed" : ""}`}>
+              <Sidebar
+                active={active}
+                setActive={navigate}
+                theme={t.dark ? "dark" : "light"}
+                setTheme={(m) => setTweak("dark", m === "dark")}
+                mobileOpen={mobileOpen}
+                setMobileOpen={setMobileOpen}
+                collapsed={collapsed}
+                setCollapsed={setCollapsed}
+              />
+              <div
+                className={`scrim ${mobileOpen ? "on" : ""}`}
+                onClick={() => setMobileOpen(false)}
+              ></div>
 
-            <main className="main">
-              <Topbar onMenu={() => setMobileOpen(true)} />
+              <main className="main">
+                <Topbar onMenu={() => setMobileOpen(true)} />
 
-              {active === "dashboard" ? (
-                <div className="dash-grid">
-                  <Hero />
+                {active === "dashboard" ? (
+                  <div className="dash-grid">
+                    <Hero />
 
-                  <div className="s-3">
-                    <Kpi
-                      icon="ph-check-square"
-                      label="待辦完成率"
-                      value={42}
-                      suffix="%"
-                      delta="+12%"
-                      deltaPos={true}
-                    />
+                    <div className="s-3">
+                      <Kpi
+                        icon="ph-check-square"
+                        label="待辦完成率"
+                        value={42}
+                        suffix="%"
+                        delta="+12%"
+                        deltaPos={true}
+                      />
+                    </div>
+                    <div className="s-3">
+                      <BalanceKpi />
+                    </div>
+                    <div className="s-3">
+                      <Kpi
+                        icon="ph-target"
+                        label="目標達成率"
+                        value={58}
+                        suffix="%"
+                        delta="+4%"
+                        deltaPos={true}
+                      />
+                    </div>
+                    <div className="s-3">
+                      <Kpi
+                        icon="ph-fire"
+                        label="連續打卡"
+                        value={27}
+                        suffix=" 天"
+                        delta="紀錄新高"
+                        deltaPos={true}
+                      />
+                    </div>
+
+                    <FinanceCard chartMode={t.chartMode} onOpen={() => navigate("finance")} />
+                    <SpendCard onOpen={() => navigate("finance")} />
+
+                    <TodoCard onSeeAll={() => navigate("todo")} />
+                    <CalendarCard onSeeAll={() => navigate("todo")} />
+
+                    <GoalsCard />
+                    <MoodCard />
+                    <QuickAddCard />
                   </div>
-                  <div className="s-3">
-                    <BalanceKpi />
-                  </div>
-                  <div className="s-3">
-                    <Kpi
-                      icon="ph-target"
-                      label="目標達成率"
-                      value={58}
-                      suffix="%"
-                      delta="+4%"
-                      deltaPos={true}
-                    />
-                  </div>
-                  <div className="s-3">
-                    <Kpi
-                      icon="ph-fire"
-                      label="連續打卡"
-                      value={27}
-                      suffix=" 天"
-                      delta="紀錄新高"
-                      deltaPos={true}
-                    />
-                  </div>
-
-                  <FinanceCard chartMode={t.chartMode} onOpen={() => navigate("finance")} />
-                  <SpendCard onOpen={() => navigate("finance")} />
-
-                  <TodoCard onSeeAll={() => navigate("todo")} />
-                  <CalendarCard />
-
-                  <GoalsCard />
-                  <MoodCard />
-                  <QuickAddCard />
-                </div>
-              ) : active === "designSystem" ? (
-                <DesignSystemPage chartMode={t.chartMode} />
-              ) : active === "todo" ? (
-                <CalendarPage
-                  defaultView={t.calendarView}
-                  showWeekend={t.showWeekend}
-                  eventStyle={t.eventStyle}
-                />
-              ) : active === "finance" ? (
-                <FinancePage chartMode={t.chartMode} />
-              ) : (
-                <Placeholder name={active} />
-              )}
-
-              <TweaksPanel title="Tweaks">
-                <TweakSection label="主題" />
-                <TweakToggle
-                  label="深色模式"
-                  value={t.dark}
-                  onChange={(v) => setTweak("dark", v)}
-                />
-                <TweakSection label="排版" />
-                <TweakSelect
-                  label="字體"
-                  value={t.font}
-                  options={["Inter", "Geist", "IBM Plex Sans", "Noto Sans TC", "JetBrains Mono"]}
-                  onChange={(v) => setTweak("font", v)}
-                />
-                <TweakSection label="圖表" />
-                <TweakRadio
-                  label="收支趨勢樣式"
-                  value={t.chartMode}
-                  options={["line", "area", "bar"]}
-                  onChange={(v) => setTweak("chartMode", v)}
-                />
-                {active === "todo" && (
-                  <>
-                    <TweakSection label="行事曆" />
-                    <TweakRadio
-                      label="預設檢視"
-                      value={t.calendarView}
-                      options={[
-                        { value: "day", label: "Day" },
-                        { value: "week", label: "Week" },
-                        { value: "month", label: "Month" },
-                      ]}
-                      onChange={(v) => setTweak("calendarView", v)}
-                    />
-                    <TweakToggle
-                      label="顯示週末"
-                      value={t.showWeekend}
-                      onChange={(v) => setTweak("showWeekend", v)}
-                    />
-                    <TweakRadio
-                      label="行程牌卡風格"
-                      value={t.eventStyle}
-                      options={[
-                        { value: "soft", label: "柔粉彩" },
-                        { value: "bar", label: "左色條" },
-                        { value: "solid", label: "飽和填色" },
-                      ]}
-                      onChange={(v) => setTweak("eventStyle", v)}
-                    />
-                  </>
+                ) : active === "designSystem" ? (
+                  <DesignSystemPage chartMode={t.chartMode} />
+                ) : active === "todo" ? (
+                  <CalendarPage
+                    defaultView={t.calendarView}
+                    showWeekend={t.showWeekend}
+                    eventStyle={t.eventStyle}
+                  />
+                ) : active === "finance" ? (
+                  <FinancePage chartMode={t.chartMode} />
+                ) : (
+                  <Placeholder name={active} />
                 )}
-              </TweaksPanel>
-            </main>
-          </div>
-        </ConfirmProvider>
-      </ToastProvider>
+
+                <TweaksPanel title="Tweaks">
+                  <TweakSection label="主題" />
+                  <TweakToggle
+                    label="深色模式"
+                    value={t.dark}
+                    onChange={(v) => setTweak("dark", v)}
+                  />
+                  <TweakSection label="排版" />
+                  <TweakSelect
+                    label="字體"
+                    value={t.font}
+                    options={["Inter", "Geist", "IBM Plex Sans", "Noto Sans TC", "JetBrains Mono"]}
+                    onChange={(v) => setTweak("font", v)}
+                  />
+                  <TweakSection label="圖表" />
+                  <TweakRadio
+                    label="收支趨勢樣式"
+                    value={t.chartMode}
+                    options={["line", "area", "bar"]}
+                    onChange={(v) => setTweak("chartMode", v)}
+                  />
+                  {active === "todo" && (
+                    <>
+                      <TweakSection label="行事曆" />
+                      <TweakRadio
+                        label="預設檢視"
+                        value={t.calendarView}
+                        options={[
+                          { value: "day", label: "Day" },
+                          { value: "week", label: "Week" },
+                          { value: "month", label: "Month" },
+                        ]}
+                        onChange={(v) => setTweak("calendarView", v)}
+                      />
+                      <TweakToggle
+                        label="顯示週末"
+                        value={t.showWeekend}
+                        onChange={(v) => setTweak("showWeekend", v)}
+                      />
+                      <TweakRadio
+                        label="行程牌卡風格"
+                        value={t.eventStyle}
+                        options={[
+                          { value: "soft", label: "柔粉彩" },
+                          { value: "bar", label: "左色條" },
+                          { value: "solid", label: "飽和填色" },
+                        ]}
+                        onChange={(v) => setTweak("eventStyle", v)}
+                      />
+                    </>
+                  )}
+                </TweaksPanel>
+              </main>
+            </div>
+          </ConfirmProvider>
+        </ToastProvider>
+      </TodoCalendarProvider>
     </FinanceProvider>
   );
 }
