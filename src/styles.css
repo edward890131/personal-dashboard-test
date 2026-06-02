@@ -1891,8 +1891,8 @@ input, textarea, select { font: inherit; color: inherit; }
 .mp-page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
 .mp-page-sub { font-size: 13px; color: var(--muted); }
 .mp-head-r { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
-/* 頁首主色 CTA 縮成與下拉選單同高（38px） */
-.mp-head-r .btn-primary { height: 38px; padding: 0 14px; font-size: 13px; gap: 5px; }
+/* 頁首主色 CTA 與下拉選單同高（34px，對齊全站工具列按鈕的精簡尺度，不過於厚重） */
+.mp-head-r .btn-primary { height: 34px; padding: 0 13px; font-size: 13px; gap: 5px; }
 .mp-head-r .btn-primary i { font-size: 15px; }
 
 /* ---- 月份切換 ---- */
@@ -1913,11 +1913,18 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .mp-month-avg { font-size: 13px; color: var(--muted); }
 
+/* 手機頁首：月份切換獨占一列，牌卡樣式 + 心情篩選 + CTA 收在下一列（CTA 靠右） */
+@media (max-width: 767px) {
+  .mp-head-r { width: 100%; justify-content: flex-start; gap: 8px; }
+  .mp-month-nav { flex: 0 0 100%; }
+  .mp-head-r .btn-primary { margin-left: auto; }
+}
+
 /* ---- 通用下拉（layout 切換 + 心情篩選共用） ---- */
 .mp-dd { position: relative; }
 .mp-dd-btn {
   display: inline-flex; align-items: center; gap: 7px;
-  height: 38px; padding: 0 12px;
+  height: 34px; padding: 0 12px;
   border: 1px solid var(--border); border-radius: var(--r-card);
   background: var(--surface); color: var(--ink-2);
   font-size: 13px; font-weight: 500; cursor: pointer;
@@ -2096,8 +2103,16 @@ input, textarea, select { font: inherit; color: inherit; }
   position: relative; width: 84px; height: 84px;
   border-radius: var(--r-chip); overflow: hidden;
   border: 1px solid var(--border); cursor: grab;
+  /* 觸控拖曳排序需停用預設手勢（否則手指一動就捲動頁面，拖不動縮圖） */
+  touch-action: none;
+  transition: opacity 0.15s, box-shadow 0.15s;
 }
 .mp-selected-item:active { cursor: grabbing; }
+.mp-selected-item.dragging { opacity: 0.45; } /* 拖曳中的來源縮圖 */
+.mp-selected-item.drop-target { /* 指標目前落點 → 高亮預示插入位置 */
+  box-shadow: 0 0 0 2px var(--primary);
+  border-color: var(--primary);
+}
 .mp-selected-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mp-selected-order {
   position: absolute; left: 4px; bottom: 4px;

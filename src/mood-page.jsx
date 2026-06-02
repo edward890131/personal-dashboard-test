@@ -314,8 +314,11 @@ const NOTE_MAX = 200;
 
 function PhotoUploader({ photos, setPhotos }) {
   const inputRef = useRef(null);
-  const dragIdx = useRef(null);
+  const listRef = useRef(null);
+  const ptrId = useRef(null); // 目前拖曳中的 pointerId（避免多指干擾）
   const toast = useToast();
+  const [dragIdx, setDragIdx] = useState(null); // 拖曳中的來源索引
+  const [overIdx, setOverIdx] = useState(null); // 指標目前落在的目標索引
 
   const addFiles = (fileList) => {
     const files = [...fileList].filter((f) => f.type.startsWith("image/"));
@@ -339,16 +342,46 @@ function PhotoUploader({ photos, setPhotos }) {
   };
 
   const removeAt = (i) => setPhotos((cur) => cur.filter((_, idx) => idx !== i));
-  const onDrop = (i) => {
-    const from = dragIdx.current;
-    dragIdx.current = null;
-    if (from === null || from === i) return;
-    setPhotos((cur) => {
-      const next = [...cur];
-      const [moved] = next.splice(from, 1);
-      next.splice(i, 0, moved);
-      return next;
-    });
+
+  // 拖曳排序改用 Pointer Events：HTML5 drag-and-drop 在手機觸控完全無效，
+  // pointer 事件可同時涵蓋滑鼠與觸控。依指標 x 座標落在哪張縮圖來決定目標位置。
+  const hitIndex = (clientX) => {
+    const tiles = listRef.current?.querySelectorAll(".mp-selected-item");
+    if (!tiles?.length) return 0;
+    for (let k = 0; k < tiles.length; k++) {
+      const r = tiles[k].getBoundingClientRect();
+      if (clientX < r.left + r.width / 2) return k; // 落在這張的左半 → 插到它前面
+    }
+    return tiles.length - 1;
+  };
+  const onPointerDown = (e, i) => {
+    if (e.button != null && e.button > 0) return; // 只接受主鍵 / 觸控
+    if (e.target.closest(".mp-selected-x")) return; // 點到刪除鈕不啟動拖曳
+    ptrId.current = e.pointerId;
+    try {
+      e.currentTarget.setPointerCapture?.(e.pointerId); // 後續 move/up 都鎖定到這張
+    } catch {
+      /* 某些環境（無 active pointer）會丟錯，忽略即可，事件委派仍可運作 */
+    }
+    setDragIdx(i);
+    setOverIdx(i);
+  };
+  const onPointerMove = (e) => {
+    if (dragIdx === null || e.pointerId !== ptrId.current) return;
+    setOverIdx(hitIndex(e.clientX));
+  };
+  const finishDrag = () => {
+    if (dragIdx !== null && overIdx !== null && overIdx !== dragIdx) {
+      setPhotos((cur) => {
+        const next = [...cur];
+        const [moved] = next.splice(dragIdx, 1);
+        next.splice(overIdx, 0, moved);
+        return next;
+      });
+    }
+    ptrId.current = null;
+    setDragIdx(null);
+    setOverIdx(null);
   };
 
   return (
@@ -364,15 +397,17 @@ function PhotoUploader({ photos, setPhotos }) {
           e.target.value = ""; // 允許重選同一檔
         }}
       />
-      <div className="mp-selected" data-count={photos.length}>
+      <div className="mp-selected" data-count={photos.length} ref={listRef}>
         {photos.map((src, i) => (
           <div
-            className="mp-selected-item"
+            className={`mp-selected-item${dragIdx === i ? "dragging" : ""}${
+              overIdx === i && dragIdx !== null && dragIdx !== i ? "drop-target" : ""
+            }`}
             key={i}
-            draggable
-            onDragStart={() => (dragIdx.current = i)}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => onDrop(i)}
+            onPointerDown={(e) => onPointerDown(e, i)}
+            onPointerMove={onPointerMove}
+            onPointerUp={finishDrag}
+            onPointerCancel={finishDrag}
           >
             <img src={src} alt="" draggable={false} />
             <span className="mp-selected-order">{i + 1}</span>
