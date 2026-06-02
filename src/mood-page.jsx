@@ -4,7 +4,7 @@
 //
 // 照片：記錄/編輯改為「使用者自行上傳」（轉 data URL 暫存於記憶體，與 seed 的 Unsplash 網址同型別）。
 // 牌卡心情以「emoji + 文字」tag 呈現，配色採語意冷暖色（低落偏冷 → 極佳偏暖）。
-// 牌卡 layout 由頁首左側下拉切換，目前提供 3 種：拍立得 / 大圖疊字 / 層疊相簿。
+// 牌卡 layout 由頁首左側下拉切換，目前提供 3 種：相簿（預設）/ 拍立得 / 滿版圖。
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import {
   useMood,
@@ -283,9 +283,9 @@ function Dropdown({ label, icon, children, align = "right" }) {
 }
 
 const LAYOUTS = [
+  { key: "stack", label: "相簿", icon: "ph-stack" },
   { key: "polaroid", label: "拍立得", icon: "ph-image-square" },
-  { key: "cover", label: "大圖疊字", icon: "ph-image" },
-  { key: "stack", label: "層疊相簿", icon: "ph-stack" },
+  { key: "cover", label: "滿版圖", icon: "ph-image" },
 ];
 
 function LayoutSelect({ value, onChange }) {
@@ -705,7 +705,7 @@ function DetailModal({ date, setDate, onClose, onEdit }) {
 export function MoodPage() {
   const { entries, monthAvg } = useMood();
   const [filter, setFilter] = useState("all"); // 'all' | 0..4
-  const [layout, setLayout] = useState("polaroid"); // polaroid | cover | stack
+  const [layout, setLayout] = useState("stack"); // stack(相簿，預設) | polaroid | cover
   const [view, setView] = useState(() => ({ y: TODAY.getFullYear(), m: TODAY.getMonth() })); // 顯示中的月份
   const [recordDate, setRecordDate] = useState(null);
   const [detailDate, setDetailDate] = useState(null);
