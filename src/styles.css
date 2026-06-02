@@ -1185,6 +1185,36 @@ input, textarea, select { font: inherit; color: inherit; }
 .hm-legend .scale { display: flex; align-items: center; gap: 4px; }
 .hm-legend .scale .sw { width: 10px; height: 10px; border-radius: 2px; background: var(--divider); }
 
+/* ---- 首頁每日心情卡：本月平均 + 記錄今天 + 已上傳照片瀑布流 ---- */
+.mood-sum { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mood-sum-l { display: flex; flex-direction: column; gap: 4px; }
+.mood-sum-label { font-size: 11.5px; color: var(--muted); }
+.mood-sum-val {
+  font-size: 22px; font-weight: 600; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+/* 瀑布流：CSS columns 讓不同高度的照片自然錯落（masonry）；
+   固定高度 + 底部漸層淡出，避免照片把卡片撐高、同列牌卡才好等高（對齊參考圖） */
+/* 4 欄手刻 masonry：每欄垂直堆照片、內容刻意超出固定高度，底部漸層讓照片逐漸淡出延續（非硬切） */
+.mood-masonry {
+  display: flex; gap: 6px; margin-top: 4px;
+  height: 280px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 48%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 48%, transparent 100%);
+}
+.mood-masonry-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.mood-masonry-img {
+  width: 100%; display: block; object-fit: cover; /* 高度由 inline style 指定，cover 裁切 */
+  border-radius: 8px; cursor: pointer;
+  background: var(--surface-hover);
+  transition: opacity .15s;
+}
+.mood-masonry-img:hover { opacity: .88; }
+.mood-masonry-empty {
+  font-size: 12px; color: var(--muted-2);
+  text-align: center; padding: 22px 0;
+}
+
 /* =============== Charts =============== */
 .chart-wrap {
   position: relative;

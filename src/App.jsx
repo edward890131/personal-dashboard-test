@@ -170,7 +170,7 @@ function App() {
                       <CalendarCard onSeeAll={() => navigate("todo")} />
 
                       <GoalsCard />
-                      <MoodCard />
+                      <MoodCard onSeeAll={() => navigate("mood")} />
                       <QuickAddCard />
                     </div>
                   ) : active === "designSystem" ? (

@@ -486,7 +486,7 @@ function PhotoUploader({ photos, setPhotos }) {
   );
 }
 
-function RecordModal({ open, initialDate, onClose }) {
+export function RecordModal({ open, initialDate, onClose }) {
   const { getEntry, upsertEntry, deleteEntry } = useMood();
   const toast = useToast();
   const confirm = useConfirm();

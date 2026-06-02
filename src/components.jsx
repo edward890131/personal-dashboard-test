@@ -9,6 +9,9 @@ import { finCatVar } from "./finance-categories.js";
 import { fmtMoney } from "./ui.jsx";
 // 待辦 / 行事曆與 /todo 頁面共用同一份 store（單一來源）；TODAY 為固定「今天」錨點
 import { useTodoCalendar, TODAY, useLingeringDone } from "./todo-calendar-store.jsx";
+// 每日心情：首頁卡與 /mood 頁共用同一份 store；記錄彈窗直接複用 mood-page 的 RecordModal
+import { useMood, todayISO } from "./mood-store.jsx";
+import { RecordModal } from "./mood-page.jsx";
 
 /* ---------------- 待辦 / 行事曆共用小工具 ---------------- */
 // 與 calendar-page 一致：週一為週首、十進位小時格式
@@ -754,54 +757,22 @@ function GoalsCard() {
 }
 
 /* ---------------- Mood ---------------- */
-function MoodCard() {
-  const [picked, setPicked] = useState(3);
-  const moods = [
-    { i: "ph-cloud-rain", l: "低落" },
-    { i: "ph-cloud", l: "一般" },
-    { i: "ph-cloud-sun", l: "尚可" },
-    { i: "ph-sun", l: "不錯" },
-    { i: "ph-sun-horizon", l: "極佳" },
-  ];
-
-  // 30-day mood values 0..4
-  const days = useMemo(() => {
-    const seed = [
-      2,
-      3,
-      3,
-      2,
-      4,
-      3,
-      4,
-      3,
-      2,
-      1,
-      2,
-      3,
-      4,
-      4,
-      3,
-      2,
-      3,
-      4,
-      3,
-      2,
-      1,
-      2,
-      3,
-      4,
-      4,
-      3,
-      3,
-      4,
-      3,
-      picked,
-    ];
-    return seed;
-  }, [picked]);
-  const avg = days.reduce((s, v) => s + v, 0) / days.length;
-  const labels = ["低", "1", "2", "3", "好"];
+// onSeeAll：由 App 注入，導向 /mood 頁。資料接 mood-store（單一來源），與 /mood 頁同步。
+function MoodCard({ onSeeAll }) {
+  const { entries, monthAvg } = useMood();
+  const [recordOpen, setRecordOpen] = useState(false);
+  const avg = monthAvg(); // 本月平均（0–4），無紀錄回 null
+  // 已上傳照片瀑布流（4 欄）：entries 已按日期新→舊排序，攤平後以 round-robin 分到 4 欄。
+  // 每張給一個固定但有變化的高度（取自 7 長度 pattern，與欄距互質讓各欄高低錯落），
+  // 確保每欄內容都超出固定高度 → 底部才能呈現「照片逐漸淡出延續」而非空白截斷。
+  const cols = useMemo(() => {
+    const HS = [120, 92, 108, 84, 128, 100, 76]; // px，刻意非 4 倍數讓欄與欄錯開
+    const all = entries.flatMap((e) => e.photos).slice(0, 24);
+    const buckets = [[], [], [], []];
+    all.forEach((src, i) => buckets[i % 4].push({ src, h: HS[i % HS.length] }));
+    return buckets;
+  }, [entries]);
+  const hasPhotos = cols.some((c) => c.length);
 
   return (
     <div className="card s-4">
@@ -809,77 +780,53 @@ function MoodCard() {
         <div className="card-title">
           <i className="ph ph-smiley"></i>今日心情 · 30 天趨勢
         </div>
-        <button className="card-act">
-          本月 <i className="ph ph-caret-down"></i>
+        {/* 查看全部 → 進每日心情頁 */}
+        <button className="card-act" onClick={onSeeAll}>
+          查看全部 <i className="ph ph-arrow-up-right"></i>
         </button>
       </div>
 
-      <div>
-        <div style={{ fontSize: 11.5, color: "var(--muted)", marginBottom: 8 }}>今天感覺如何？</div>
-        <div className="mood-pick">
-          {moods.map((m, i) => (
-            <button
-              key={i}
-              className={`mood-btn ${i === picked ? "on" : ""}`}
-              onClick={() => setPicked(i)}
-            >
-              <span className="glyph">
-                <i className={`ph ${m.i}`}></i>
-              </span>
-              <span>{m.l}</span>
-            </button>
-          ))}
+      {/* 本月平均 + 記錄今天（開記錄彈窗，與 /mood 頁同一個 RecordModal） */}
+      <div className="mood-sum">
+        <div className="mood-sum-l">
+          <div className="mood-sum-label">本月平均</div>
+          <div className="mood-sum-val">
+            {avg === null ? "— / 4" : <CountUp to={avg} decimals={1} suffix=" / 4" />}
+          </div>
         </div>
+        <button type="button" className="btn-primary btn-sm" onClick={() => setRecordOpen(true)}>
+          <i className="ph ph-plus"></i>記錄今天
+        </button>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <div style={{ fontSize: 11.5, color: "var(--muted)" }}>本月平均</div>
-        <div
-          style={{
-            fontSize: 22,
-            fontWeight: 600,
-            letterSpacing: "-.02em",
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          <CountUp to={avg} decimals={1} suffix=" / 4" />
-        </div>
-      </div>
-
-      <div style={{ marginTop: 4 }}>
-        <div className="heatmap">
-          {days.map((v, i) => (
-            <div
-              key={i}
-              className={`hm-cell l${v}`}
-              title={`第 ${i + 1} 天`}
-              style={{ animationDelay: `${i * 18}ms` }}
-            ></div>
+      {/* 已上傳照片瀑布流（4 欄，底部漸層淡出；點任一張 → 進每日心情頁） */}
+      {hasPhotos ? (
+        <div className="mood-masonry">
+          {cols.map((col, ci) => (
+            <div className="mood-masonry-col" key={ci}>
+              {col.map((p, i) => (
+                <img
+                  key={i}
+                  src={p.src}
+                  alt=""
+                  loading="lazy"
+                  className="mood-masonry-img"
+                  style={{ height: p.h }}
+                  onClick={onSeeAll}
+                />
+              ))}
+            </div>
           ))}
         </div>
-        <div className="hm-legend">
-          <span>30 天前</span>
-          <span className="scale">
-            <span>低</span>
-            <span className="sw l0"></span>
-            <span
-              className="sw l1"
-              style={{ background: "color-mix(in oklch, var(--primary) 20%, var(--divider))" }}
-            ></span>
-            <span
-              className="sw l2"
-              style={{ background: "color-mix(in oklch, var(--primary) 40%, var(--divider))" }}
-            ></span>
-            <span
-              className="sw l3"
-              style={{ background: "color-mix(in oklch, var(--primary) 65%, var(--divider))" }}
-            ></span>
-            <span className="sw l4" style={{ background: "var(--primary)" }}></span>
-            <span>好</span>
-          </span>
-          <span>今天</span>
-        </div>
-      </div>
+      ) : (
+        <div className="mood-masonry-empty">還沒有照片，記錄今天留下第一張吧</div>
+      )}
+
+      <RecordModal
+        open={recordOpen}
+        initialDate={todayISO()}
+        onClose={() => setRecordOpen(false)}
+      />
     </div>
   );
 }
