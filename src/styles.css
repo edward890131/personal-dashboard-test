@@ -1978,7 +1978,8 @@ input, textarea, select { font: inherit; color: inherit; }
 .mp-wall { display: grid; gap: 16px; align-items: start; }
 .mp-wall.v-photo,
 .mp-wall.v-polaroid,
-.mp-wall.v-cover { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.mp-wall.v-cover,
+.mp-wall.v-stack { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 .mp-wall.v-list { grid-template-columns: 1fr; gap: 10px; }
 @media (min-width: 1100px) { .mp-wall.v-list { grid-template-columns: 1fr 1fr; } }
 
@@ -2040,6 +2041,54 @@ input, textarea, select { font: inherit; color: inherit; }
 .mp-cover-overlay .mp-date { color: #fff; }
 .mp-cover-overlay .mp-weekday { color: rgba(255, 255, 255, 0.82); }
 .mp-cover-note { color: rgba(255, 255, 255, 0.9); min-height: 0; }
+
+/* E 層疊相簿（扇形交疊探出）：上方文字（日期放大），下方一疊微旋轉的小相片卡從底部探出 */
+.mp-card-stack { min-height: 272px; position: relative; } /* 降低高度，拉近日記與相片堆疊的距離 */
+.mp-card-stack .mp-date { font-size: 16px; } /* 相簿模式日期放大、更像標題 */
+.mp-stack-head {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 14px 14px 0;
+}
+/* 堆疊區：貼齊卡片底部，固定高度；超出的照片邊緣由卡片 overflow:hidden 裁掉（探出感） */
+.mp-stack {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+  height: 188px;
+  transition: transform 0.22s ease;
+}
+/* hover 牌卡時整疊相片往上位移，做出「浮起」手感 */
+.mp-card-stack:hover .mp-stack { transform: translateY(-12px); }
+.mp-stack-item {
+  position: absolute; left: 50%; bottom: -22px; margin-left: -76px;
+  width: 152px; height: 152px;
+  border: 5px solid var(--surface); border-radius: 12px; overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), 0 1px 0 rgba(0, 0, 0, 0.04);
+  transform-origin: bottom center; /* 以底部為支點旋轉，扇形展開 */
+  transition: transform 0.22s ease;
+}
+.mp-stack-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* 單張：置中微傾 */
+.mp-stack[data-count="1"] .mp-stack-item { transform: rotate(-3deg); }
+/* 兩張：左右對稱小扇形（第一張在前） */
+.mp-stack[data-count="2"] .mp-stack-item:nth-child(1) { transform: translateX(26px) rotate(7deg); z-index: 2; }
+.mp-stack[data-count="2"] .mp-stack-item:nth-child(2) { transform: translateX(-26px) rotate(-7deg); z-index: 1; }
+/* 三張：刻意不對稱（左右不等角／不等距／不同高低），像隨手疊的一落照片才自然 */
+.mp-stack[data-count="3"] .mp-stack-item:nth-child(1) { transform: translate(-4px, -3px) rotate(-2.5deg); z-index: 3; }
+.mp-stack[data-count="3"] .mp-stack-item:nth-child(2) { transform: translate(-58px, 8px) rotate(-13deg); z-index: 1; }
+.mp-stack[data-count="3"] .mp-stack-item:nth-child(3) { transform: translate(48px, -5px) rotate(9deg); z-index: 2; }
+/* hover 時整疊微微張開，加強翻看手感 */
+.mp-card-stack:hover .mp-stack[data-count="3"] .mp-stack-item:nth-child(1) { transform: translate(-4px, -7px) rotate(-2.5deg); }
+.mp-card-stack:hover .mp-stack[data-count="3"] .mp-stack-item:nth-child(2) { transform: translate(-70px, 5px) rotate(-16deg); }
+.mp-card-stack:hover .mp-stack[data-count="3"] .mp-stack-item:nth-child(3) { transform: translate(58px, -9px) rotate(12deg); }
+.mp-card-stack:hover .mp-stack[data-count="2"] .mp-stack-item:nth-child(1) { transform: translateX(32px) rotate(9deg); }
+.mp-card-stack:hover .mp-stack[data-count="2"] .mp-stack-item:nth-child(2) { transform: translateX(-32px) rotate(-9deg); }
+/* 無照片：虛線空卡 */
+.mp-stack-ph {
+  display: grid; place-items: center;
+  border: 1px dashed var(--border-strong); background: var(--surface-2);
+  box-shadow: none; transform: rotate(-3deg);
+}
 
 /* ---- 照片拼貼（共用：牌卡 + 詳情） ---- */
 /* height 不在 base 設死：A/C 用固定 .mp-card-photos 高度、B 靠 flex stretch、D 靠 absolute 填滿；

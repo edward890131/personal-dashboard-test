@@ -4,7 +4,7 @@
 //
 // 照片：記錄/編輯改為「使用者自行上傳」（轉 data URL 暫存於記憶體，與 seed 的 Unsplash 網址同型別）。
 // 牌卡心情以「emoji + 文字」tag 呈現，配色採語意冷暖色（低落偏冷 → 極佳偏暖）。
-// 牌卡提供 4 種 layout（照片主導 / 緊湊清單 / 拍立得 / 大圖疊字），由頁首左側下拉切換。
+// 牌卡 layout 由頁首左側下拉切換，目前提供 3 種：拍立得 / 大圖疊字 / 層疊相簿。
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import {
   useMood,
@@ -141,6 +141,33 @@ function PhotoCarousel({ photos = [], className = "" }) {
 }
 
 /* ====================================================================
+   照片層疊（扇形交疊探出）：把當天照片堆成一疊微旋轉的小相片卡，從卡片底部探出，
+   呈現「翻看一疊生活照」的豐富生活感（參考 Oku Collections 的書封堆疊）。
+   最多取 3 張；扇形角度與位移由 CSS 依 data-count 控制。無照片退回虛線「未上傳」卡。
+   ==================================================================== */
+function PhotoStack({ photos = [] }) {
+  if (!photos.length) {
+    return (
+      <div className="mp-stack mp-stack-empty">
+        <div className="mp-stack-item mp-stack-ph">
+          <span className="mp-no-photo">未上傳</span>
+        </div>
+      </div>
+    );
+  }
+  const shown = photos.slice(0, 3);
+  return (
+    <div className="mp-stack" data-count={shown.length}>
+      {shown.map((src, i) => (
+        <div className="mp-stack-item" key={i}>
+          <img src={src} alt="" loading="lazy" draggable={false} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ====================================================================
    總覽牆：單張卡片（依 variant 切換 layout）
    ==================================================================== */
 function MoodWallCard({ entry, variant, onOpen }) {
@@ -200,6 +227,22 @@ function MoodWallCard({ entry, variant, onOpen }) {
     );
   }
 
+  // E 層疊相簿：上方日期/心情/一行筆記，下方扇形堆疊的照片從底部探出
+  if (variant === "stack") {
+    return (
+      <button type="button" className="mp-card mp-card-stack" onClick={open}>
+        <div className="mp-stack-head">
+          <div className="mp-card-meta">
+            {dateEl}
+            <MoodTag score={entry.mood} />
+          </div>
+          {entry.note && <p className="mp-note">{entry.note}</p>}
+        </div>
+        <PhotoStack photos={entry.photos} />
+      </button>
+    );
+  }
+
   // A 照片主導（預設）
   return (
     <button type="button" className="mp-card mp-card-photo" onClick={open}>
@@ -242,6 +285,7 @@ function Dropdown({ label, icon, children, align = "right" }) {
 const LAYOUTS = [
   { key: "polaroid", label: "拍立得", icon: "ph-image-square" },
   { key: "cover", label: "大圖疊字", icon: "ph-image" },
+  { key: "stack", label: "層疊相簿", icon: "ph-stack" },
 ];
 
 function LayoutSelect({ value, onChange }) {
@@ -661,7 +705,7 @@ function DetailModal({ date, setDate, onClose, onEdit }) {
 export function MoodPage() {
   const { entries, monthAvg } = useMood();
   const [filter, setFilter] = useState("all"); // 'all' | 0..4
-  const [layout, setLayout] = useState("polaroid"); // polaroid | cover
+  const [layout, setLayout] = useState("polaroid"); // polaroid | cover | stack
   const [view, setView] = useState(() => ({ y: TODAY.getFullYear(), m: TODAY.getMonth() })); // 顯示中的月份
   const [recordDate, setRecordDate] = useState(null);
   const [detailDate, setDetailDate] = useState(null);
